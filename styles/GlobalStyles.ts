@@ -1,5 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap');
+import { createGlobalStyle } from 'styled-components';
 
+const GlobalStyles = createGlobalStyle`
 /* Box sizing rules */
 *,
 *::before,
@@ -22,6 +23,10 @@ blockquote,
 dl,
 dd {
   margin: 0;
+}
+
+body {
+  background-color: #fbfbfb;
 }
 
 /* Remove list styles on ul, ol elements with a list role, which suggests default styling will be removed */
@@ -77,3 +82,7 @@ select {
     scroll-behavior: auto !important;
   }
 }
+
+`;
+
+export default GlobalStyles;

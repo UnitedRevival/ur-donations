@@ -1,0 +1,52 @@
+.container {
+  background-color: #fff;
+  padding: 2rem;
+  width: 100%;
+  max-width: 500px;
+  box-shadow: 0px 4px 15px -3px rgba(0, 0, 0, 0.1);
+
+  border-radius: 5px;
+  margin-bottom: 2rem;
+  margin-top: 2rem;
+}
+
+.secondaryText {
+  color: #777;
+  font-weight: 600;
+  margin-left: 0.5rem;
+  font-size: 15px;
+  line-height: 2rem;
+  align-self: flex-end;
+}
+
+.amount {
+  font-weight: bold;
+  font-size: 1.5rem;
+}
+
+.progressText {
+  font-weight: bold;
+}
+
+.progressBarContainer {
+  width: 100%;
+  background-color: #e8e8e8;
+  height: 8px;
+  border-radius: 16px;
+
+  overflow: hidden;
+}
+
+.progressPercent {
+  margin-left: 1rem;
+  color: #777;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.spaced {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}

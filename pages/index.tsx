@@ -4,15 +4,17 @@ import PrimaryButton from '../components/buttons/PrimaryButton';
 import FundCounter from '../components/fundcounter/FundCounter';
 import styles from '../styles/Home.module.css';
 import styled from 'styled-components';
+import Hero from '../components/hero/Hero';
+import HomeAccents from '../components/accents/HomeAccents';
 
-const Hero = styled.div`
-  width: 100%;
-  background-color: #eee;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-`;
+// const Hero = styled.div`
+//   width: 100%;
+//   // background-color: #fff;
+//   display: flex;
+//   justify-content: center;
+//   align-items: center;
+//   height: 100vh;
+// `;
 
 const Center = styled.div`
   display: flex;
@@ -30,7 +32,10 @@ export default function Home() {
       </Head>
 
       <main className={styles.main}>
-        <Hero>
+        <HomeAccents>
+          <Hero></Hero>
+        </HomeAccents>
+        {/* <Hero>
           <Center>
             <div>
               <h1 className={styles.mainheader}>
@@ -40,7 +45,7 @@ export default function Home() {
             </div>
             <div className={styles.video}></div>
           </Center>
-        </Hero>
+        </Hero> */}
         <FundCounter />
         <AmountPicker />
       </main>

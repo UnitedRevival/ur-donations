@@ -9,6 +9,10 @@ declare module 'styled-components' {
       primary: string;
       light: string;
     };
+    fonts: {
+      display: string;
+      readText: string;
+    };
     borderRadius: string | number;
     boxShadow: string;
   }

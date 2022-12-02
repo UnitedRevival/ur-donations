@@ -6,13 +6,14 @@ interface PrimaryButtonProps {
   variant?: 'small' | 'large';
   height?: number;
   fullWidth?: boolean;
+  width?: string;
 }
 
 const StyledButton = styled.button<PrimaryButtonProps>`
   display: flex;
   justify-content: center;
   align-items: center;
-
+  ${(props) => (props.width ? 'width: ' + props.width + ';' : '')};
   ${(props) => (props.fullWidth ? 'width: 100%;' : '')}
 
   ${(props) =>

@@ -6,6 +6,7 @@ import styles from '../styles/Home.module.css';
 import styled from 'styled-components';
 import Hero from '../components/hero/Hero';
 import HomeAccents from '../components/accents/HomeAccents';
+import PaymentCard from '../components/payment/PaymentCard';
 
 // const Hero = styled.div`
 //   width: 100%;
@@ -35,19 +36,10 @@ export default function Home() {
         <HomeAccents>
           <Hero></Hero>
         </HomeAccents>
-        {/* <Hero>
-          <Center>
-            <div>
-              <h1 className={styles.mainheader}>
-                Join The March Across America
-              </h1>
-              <PrimaryButton>Donate</PrimaryButton>
-            </div>
-            <div className={styles.video}></div>
-          </Center>
-        </Hero> */}
         <FundCounter />
         <AmountPicker />
+
+        <PaymentCard />
       </main>
 
       <footer className={styles.footer}></footer>

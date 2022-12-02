@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import PrimaryButton from '../buttons/PrimaryButton';
+import Card from '../card/Card';
 import TextDivider from '../dividers/TextDivider';
 import TextInput from '../inputs/TextInput';
 import QuickPickItem from './QuickPickItem';
 
-const Root = styled.div`
-  background-color: #fff;
-  box-shadow: ${(props) => props.theme.boxShadow};
-  padding: 2rem;
+const Root = styled(Card)`
   min-width: 500px;
 `;
 

@@ -24,12 +24,12 @@ export default function Home(props: HomePageProps) {
 
   useEffect(() => {
     if (!stripePromise) {
-      const sPromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_KEY);
+      const sPromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_KEY as string);
       setStripePromise(sPromise);
     }
   }, []);
   return (
-    <HomePageProvider value={props}>
+    <HomePageProvider data={props}>
       <div className={styles.container}>
         <Head>
           <meta name="description" content="Give to United Church" />

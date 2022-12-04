@@ -7,9 +7,10 @@ import {
   useElements,
   PaymentRequestButtonElement,
 } from '@stripe/react-stripe-js';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import PrimaryButton from '../buttons/PrimaryButton';
 import Divider from '../dividers/Divider';
+import { HomePageContext } from '../../contexts/HomePageContext';
 const Root = styled(Card)`
   min-width: 500px;
 
@@ -44,6 +45,7 @@ const StyledCard = styled(CardElement)<{ focused: boolean }>`
 `;
 
 const PaymentCard = () => {
+  const { amountToDonate } = useContext(HomePageContext);
   const [error, setError] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [cardReady, setCardReady] = useState(false);
@@ -108,7 +110,6 @@ const PaymentCard = () => {
         ) : (
           <NoWallet>No wallets found</NoWallet>
         )}
-        {/* <TextDivider>or</TextDivider> */}
         <Divider />
         <SubTitle>Card</SubTitle>
         <StyledCard
@@ -126,12 +127,10 @@ const PaymentCard = () => {
 
         <PrimaryButton
           variant="large"
-          // height={100}
-
           fullWidth
           disabled={!cardReady || !elements || !stripe}
         >
-          Submit Payment
+          Submit Payment - ${amountToDonate}
         </PrimaryButton>
       </form>
     </Root>

@@ -29,16 +29,6 @@ interface OptionContainerProps {
   selected?: boolean;
 }
 
-const RadioCircle = styled.div<OptionContainerProps>`
-  border-radius: 50%;
-  width: 1rem;
-  height: 1rem;
-  border: 4px solid
-    ${({ theme, selected }) =>
-      selected ? theme.colors.primary : theme.colors.light};
-  margin-right: 0.5rem;
-`;
-
 const OptionContainer = styled.div<OptionContainerProps>`
   padding: 2rem 1rem;
   display: flex;

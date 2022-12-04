@@ -11,10 +11,21 @@ const Container = styled.div<ContainerProps>`
   justify-content: center;
   align-items: center;
   padding: 3rem;
-  border: ${(props) => (props.selected ? 'none' : '1px solid #e8e8e8')};
-  box-shadow: ${(props) => (props.selected ? props.theme.boxShadow : 'none')};
+  transition: 0.1s all linear;
+  border-radius: ${({ theme }) => theme.borderRadius}px;
+  border: ${(props) =>
+    props.selected
+      ? `1px solid ${props.theme.colors.primary}`
+      : `1px solid ${props.theme.colors.light}`};
 
-  ${(props) => (props.selected ? '' : 'cursor: pointer;')}
+  cursor: pointer;
+
+  ${(props) =>
+    props.selected
+      ? `
+  outline: 3px solid ${props.theme.colors.primary}77;
+  `
+      : ''}
 `;
 
 const AmountText = styled.p`

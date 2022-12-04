@@ -1,63 +1,109 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import styled from 'styled-components';
+import { HomePageContext } from '../../contexts/HomePageContext';
 import PrimaryButton from '../buttons/PrimaryButton';
 import Card from '../card/Card';
 import TextDivider from '../dividers/TextDivider';
 import TextInput from '../inputs/TextInput';
 import QuickPickItem from './QuickPickItem';
 
-const Root = styled(Card)`
-  min-width: 500px;
-`;
-
-const QuickPickContainer = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-
-  margin-bottom: 1rem;
-`;
-
 const quickPickValues = [50, 100, 200, 1000, 2500, 5000];
 
 const AmountPicker = () => {
-  const [amount, setAmount] = useState('Enter Price Manually');
+  const { setAmountToDonate } = useContext(HomePageContext);
+  const [manualAmount, setManualAmount] = useState('Enter Price Manually');
   const [selectedPick, setSelectedPick] = useState(-1);
+  const [enabledItems, setEnabledItems] = useState({
+    quickPick: false,
+    manual: false,
+  });
 
   const onChangeAmount = (e) => {
-    setAmount(e.target.value);
+    setManualAmount(e.target.value);
   };
 
   const onQuickPickSelect = (amount) => (e) => {
     setSelectedPick(amount);
+    if (!enabledItems.quickPick)
+      setEnabledItems({ quickPick: true, manual: false });
   };
 
+  const onContinue = () => {
+    let selectedAmount: number | null = null;
+
+    if (enabledItems.quickPick) selectedAmount = selectedPick;
+    if (enabledItems.manual) selectedAmount = parseInt(manualAmount);
+
+    setAmountToDonate(selectedAmount);
+  };
+
+  const disabledBtn =
+    (enabledItems.manual &&
+      (!parseInt(manualAmount) || parseInt(manualAmount) <= 0)) ||
+    (enabledItems.quickPick && selectedPick <= 0) ||
+    (!enabledItems.manual && !enabledItems.quickPick);
   return (
     <Root>
-      <QuickPickContainer>
+      <QuickPickContainer current={enabledItems.quickPick}>
         {quickPickValues.map((val) => (
           <QuickPickItem
             value={val}
             key={val}
             onSelect={onQuickPickSelect(val)}
-            selected={selectedPick === val}
+            selected={selectedPick === val && enabledItems.quickPick}
           />
         ))}
       </QuickPickContainer>
       <TextDivider>or</TextDivider>
-      <TextInput
+      <StyledTextInput
         type="number"
         placeholder="Enter Price Manually"
         name="manual-amount"
-        value={amount}
+        value={manualAmount}
         onChange={onChangeAmount}
+        onClick={() => {
+          setEnabledItems({ manual: true, quickPick: false });
+        }}
+        current={enabledItems.manual}
       />
 
-      <PrimaryButton variant="large" fullWidth>
+      <PrimaryButton
+        variant="large"
+        fullWidth
+        disabled={disabledBtn}
+        onClick={onContinue}
+      >
         Select Payment
       </PrimaryButton>
     </Root>
   );
 };
+
+const Root = styled(Card)`
+  min-width: 500px;
+`;
+
+const QuickPickContainer = styled.div<{ current?: boolean }>`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+
+  margin-bottom: 1rem;
+
+  ${(props) => (props.current ? '' : 'opacity: 0.5;')}
+`;
+
+const StyledTextInput = styled(TextInput)<{ current?: boolean }>`
+  ${({ current, theme }) =>
+    current ? `border: 1px solid ${theme.colors.primary};` : `opacity: 0.5; `}
+
+  ${(props) =>
+    props.current
+      ? `
+        outline: 3px solid ${props.theme.colors.primary}77;
+
+  `
+      : ''}
+`;
 
 export default AmountPicker;

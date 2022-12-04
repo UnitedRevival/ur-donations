@@ -9,6 +9,8 @@ interface PrimaryButtonProps {
   width?: string;
 
   disabled?: boolean;
+
+  onClick: (e: any) => any;
 }
 
 const StyledButton = styled.button<PrimaryButtonProps>`

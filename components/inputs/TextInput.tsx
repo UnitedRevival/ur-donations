@@ -4,17 +4,17 @@ import styled from 'styled-components';
 const StyledInput = styled.input`
   border: none;
   outline: none;
-  background-color: #f6f6f6;
-  color: #888;
+  background-color: #fff;
+  color: ${({ theme }) => theme.colors.black};
 
   border-radius: ${(props) => props.theme.borderRadius}px;
   padding: 2rem;
 
+  border: 1px solid ${({ theme }) => theme.colors.light};
   font-weight: bold;
   font-size: 1.1rem;
 
   width: 100%;
-
   text-align: center;
 
   margin-bottom: 2rem;

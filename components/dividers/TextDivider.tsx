@@ -8,7 +8,7 @@ const Root = styled.div`
   margin-bottom: 1rem;
 `;
 
-const SubDivider = styled.div`
+const Divider = styled.div`
   width: 100%;
   height: 1px;
   background-color: #e8e8e8;
@@ -25,9 +25,9 @@ const SubText = styled.span`
 const TextDivider = ({ children }) => {
   return (
     <Root>
-      <SubDivider />
+      <Divider />
       <SubText>{children}</SubText>
-      <SubDivider />
+      <Divider />
     </Root>
   );
 };

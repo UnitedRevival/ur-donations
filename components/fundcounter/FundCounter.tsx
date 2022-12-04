@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import FlexHorizontal from '../flex/FlexHorizontal';
 import styles from './FundCounter.module.css';
 import styled from 'styled-components';
+import { HomePageContext } from '../../contexts/HomePageContext';
 
 interface ProgressBarProps {
   percentage: number | string;
@@ -14,10 +15,11 @@ const ProgressBar = styled.div<ProgressBarProps>`
   height: 100%;
 `;
 
+const goal = 150000;
 const FundCounter = () => {
-  const goal = 150000;
-  const amount = 50000;
-  const percentage = Math.floor((amount / goal) * 100);
+  const { amountRaised } = useContext(HomePageContext);
+
+  const percentage = Math.floor((amountRaised / goal) * 100);
 
   return (
     <div className={styles.container}>
@@ -30,7 +32,7 @@ const FundCounter = () => {
       </FlexHorizontal>
 
       <FlexHorizontal>
-        <span className={styles.amount}>${amount}</span>
+        <span className={styles.amount}>${amountRaised}</span>
         <span className={styles.secondaryText}>/ ${goal}</span>
       </FlexHorizontal>
     </div>

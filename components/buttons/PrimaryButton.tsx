@@ -7,6 +7,8 @@ interface PrimaryButtonProps {
   height?: number;
   fullWidth?: boolean;
   width?: string;
+
+  disabled?: boolean;
 }
 
 const StyledButton = styled.button<PrimaryButtonProps>`
@@ -39,7 +41,13 @@ const StyledButton = styled.button<PrimaryButtonProps>`
   font-size: 1.2rem;
   font-weight: bold;
 
-  &: hover {
+  &:disabled {
+    background-color: ${({ theme }) => theme.colors.darkGray};
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &:hover {
     background-color: #444;
   }
 `;

@@ -8,6 +8,16 @@ const GlobalStyles = createGlobalStyle`
   box-sizing: border-box;
 }
 
+h1,
+h2,
+h3,
+h4,
+h5,
+p,
+span {
+  color: #1f1401;
+}
+
 * {
   font-family: 'Nunito', sans-serif;
 }

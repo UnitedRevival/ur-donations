@@ -8,10 +8,16 @@ declare module 'styled-components' {
     colors: {
       primary: string;
       light: string;
+      darkGray: string;
+      gray: string;
+      black: string;
     };
     fonts: {
       display: string;
       readText: string;
+    };
+    breakpoints: {
+      large: string;
     };
     borderRadius: string | number;
     boxShadow: string;

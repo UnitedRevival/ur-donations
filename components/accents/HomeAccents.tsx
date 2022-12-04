@@ -87,7 +87,12 @@ const HomeAccents = ({ children }) => {
       {/* <Sphere position={{ top: 50, left: 50 }} size={350} /> */}
       {/* <Sphere position={{ top: 150, left: 200 }} /> */}
       {/* <Sphere position={{ top: 150, left: 200 }} /> */}
-      {/* <Rectangle position={{ top: 50, left: 50 }} width={150} height={150} /> */}
+      {/* <Rectangle
+        position={{ top: 50, left: 50 }}
+        width={150}
+        height={150}
+        color="white"
+      /> */}
       <Diamond
         position={{ top: 50, right: 50 }}
         width={100}

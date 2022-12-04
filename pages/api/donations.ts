@@ -41,7 +41,14 @@ export default async function handler(
   }
 }
 
-async function getTotalDonationAmount(donationType: boolean = true) {
+interface Total {
+  _id: string;
+  total: number;
+}
+
+export async function getTotalDonationAmount(
+  donationType: boolean = true
+): Promise<Total[]> {
   const cacheExists = await redis.exists('totals');
 
   if (cacheExists) {

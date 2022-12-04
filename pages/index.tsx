@@ -7,42 +7,63 @@ import styled from 'styled-components';
 import Hero from '../components/hero/Hero';
 import HomeAccents from '../components/accents/HomeAccents';
 import PaymentCard from '../components/payment/PaymentCard';
+import { getTotalDonationAmount } from './api/donations';
+import { HomePageProvider } from '../contexts/HomePageContext';
+import { loadStripe } from '@stripe/stripe-js';
+import { Elements } from '@stripe/react-stripe-js';
+import { useEffect, useState } from 'react';
 
-// const Hero = styled.div`
-//   width: 100%;
-//   // background-color: #fff;
-//   display: flex;
-//   justify-content: center;
-//   align-items: center;
-//   height: 100vh;
-// `;
+interface HomePageProps {
+  amountRaised: number;
+}
 
-const Center = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 70%;
-`;
+// @ts-ignore
 
-export default function Home() {
+export default function Home(props: HomePageProps) {
+  const [stripePromise, setStripePromise] = useState<any>(null);
+
+  useEffect(() => {
+    if (!stripePromise) {
+      const sPromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_KEY);
+      setStripePromise(sPromise);
+    }
+  }, []);
   return (
-    <div className={styles.container}>
-      <Head>
-        <meta name="description" content="Give to United Church" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+    <HomePageProvider value={props}>
+      <div className={styles.container}>
+        <Head>
+          <meta name="description" content="Give to United Church" />
+          <link rel="icon" href="/favicon.ico" />
+        </Head>
 
-      <main className={styles.main}>
-        <HomeAccents>
-          <Hero></Hero>
-        </HomeAccents>
-        <FundCounter />
-        <AmountPicker />
+        <main className={styles.main}>
+          <HomeAccents>
+            <Hero></Hero>
+          </HomeAccents>
+          <FundCounter />
+          <AmountPicker />
 
-        <PaymentCard />
-      </main>
+          <Elements stripe={stripePromise}>
+            <PaymentCard />
+          </Elements>
+        </main>
 
-      <footer className={styles.footer}></footer>
-    </div>
+        <footer className={styles.footer}></footer>
+      </div>
+    </HomePageProvider>
   );
+}
+
+export async function getServerSideProps(
+  context
+): Promise<{ props: HomePageProps }> {
+  const totals = await getTotalDonationAmount();
+
+  const jesusMarchDonations = totals.find((t) => t._id === 'Jesus March');
+
+  return {
+    props: {
+      amountRaised: jesusMarchDonations?.total || 0,
+    },
+  };
 }

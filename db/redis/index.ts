@@ -10,7 +10,7 @@ const redis = new Redis({
   username: REDIS_USERNAME, // needs Redis >= 6
   password: REDIS_PASSWORD,
   db: 0, // Defaults to 0
-  // TODO: Ready check...
+  enableReadyCheck: false,
 });
 
 export default redis;

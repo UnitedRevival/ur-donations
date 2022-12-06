@@ -143,6 +143,7 @@ const HeroContent = styled.div`
     justify-content: center;
     align-items: center;
     padding: 2rem 0px 0rem 0px;
+    margin-right: 0;
   }
 `;
 

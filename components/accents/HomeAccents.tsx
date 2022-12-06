@@ -16,6 +16,7 @@ interface AccentProps {
     top?: number;
   };
   color?: string;
+  theme?: any;
 }
 
 interface SphereProps extends AccentProps {

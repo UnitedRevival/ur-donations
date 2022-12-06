@@ -7,6 +7,8 @@ export const defaultTheme: DefaultTheme = {
     darkGray: '#444444',
     light: '#e0e0e0',
     black: '#1f1401',
+
+    error: '#eb1c26',
   },
   fonts: {
     display: `'Nunito', sans-serif`,

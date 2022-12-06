@@ -1,23 +1,22 @@
 import Head from 'next/head';
-import AmountPicker from '../components/amountpicker/AmountPicker';
-import PrimaryButton from '../components/buttons/PrimaryButton';
 import FundCounter from '../components/fundcounter/FundCounter';
 import styles from '../styles/Home.module.css';
-import styled from 'styled-components';
 import Hero from '../components/hero/Hero';
 import HomeAccents from '../components/accents/HomeAccents';
-import PaymentCard from '../components/payment/PaymentCard';
 import { getTotalDonationAmount } from './api/donations';
 import { HomePageProvider } from '../contexts/HomePageContext';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import { useEffect, useState } from 'react';
+import Payment from '../components/payment/Payment';
+import { StepContextProvider } from '../contexts/StepContext';
+import { PaymentsContextProvider } from '../contexts/PaymentsContext';
+import styled from 'styled-components';
+import InfoCard from '../components/infocard/InfoCard';
 
 interface HomePageProps {
   amountRaised: number;
 }
-
-// @ts-ignore
 
 export default function Home(props: HomePageProps) {
   const [stripePromise, setStripePromise] = useState<any>(null);
@@ -40,12 +39,18 @@ export default function Home(props: HomePageProps) {
           <HomeAccents>
             <Hero></Hero>
           </HomeAccents>
-          <FundCounter />
-          <AmountPicker />
 
-          <Elements stripe={stripePromise}>
-            <PaymentCard />
-          </Elements>
+          <Content>
+            <InfoCard />
+
+            <Elements stripe={stripePromise}>
+              <StepContextProvider>
+                <PaymentsContextProvider>
+                  <Payment />
+                </PaymentsContextProvider>
+              </StepContextProvider>
+            </Elements>
+          </Content>
         </main>
 
         <footer className={styles.footer}></footer>
@@ -67,3 +72,8 @@ export async function getServerSideProps(
     },
   };
 }
+
+const Content = styled.div`
+  max-width: 600px;
+  margin: 0 0.5rem;
+`;

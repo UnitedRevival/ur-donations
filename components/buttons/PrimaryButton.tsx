@@ -1,16 +1,17 @@
 import React from 'react';
 import styled from 'styled-components';
+import DefaultLoader from '../loaders/Default';
 
 interface PrimaryButtonProps {
   children: any;
   variant?: 'small' | 'large';
   height?: number;
   fullWidth?: boolean;
+  type?: any;
   width?: string;
-
   disabled?: boolean;
-
-  onClick: (e: any) => any;
+  loading?: boolean;
+  onClick?: (e: any) => any;
 }
 
 const StyledButton = styled.button<PrimaryButtonProps>`
@@ -26,7 +27,6 @@ const StyledButton = styled.button<PrimaryButtonProps>`
       height:  ${props.height || '75'}px;  
     `
       : `
-        
         padding-top: 0.5rem;
         padding-bottom: 0.5rem;
   `}
@@ -58,7 +58,11 @@ const PrimaryButton: React.FC<PrimaryButtonProps> = ({
   children,
   ...props
 }) => {
-  return <StyledButton {...props}>{children}</StyledButton>;
+  return (
+    <StyledButton {...props}>
+      {props.loading ? <DefaultLoader /> : children}
+    </StyledButton>
+  );
 };
 
 export default PrimaryButton;

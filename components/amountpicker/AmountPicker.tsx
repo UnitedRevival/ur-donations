@@ -1,16 +1,20 @@
 import React, { useContext, useState } from 'react';
 import styled from 'styled-components';
 import { HomePageContext } from '../../contexts/HomePageContext';
+import { usePaymentContext } from '../../contexts/PaymentsContext';
+import { useStepper } from '../../contexts/StepContext';
 import PrimaryButton from '../buttons/PrimaryButton';
-import Card from '../card/Card';
 import TextDivider from '../dividers/TextDivider';
 import TextInput from '../inputs/TextInput';
 import QuickPickItem from './QuickPickItem';
+import axios from 'axios';
 
 const quickPickValues = [50, 100, 200, 1000, 2500, 5000];
 
 const AmountPicker = () => {
   const { setAmountToDonate } = useContext(HomePageContext);
+  const { setData } = usePaymentContext();
+  const { nextStep } = useStepper();
   const [manualAmount, setManualAmount] = useState('Enter Price Manually');
   const [selectedPick, setSelectedPick] = useState(-1);
   const [enabledItems, setEnabledItems] = useState({
@@ -22,19 +26,28 @@ const AmountPicker = () => {
     setManualAmount(e.target.value);
   };
 
-  const onQuickPickSelect = (amount) => (e) => {
+  const onQuickPickSelect = (amount) => () => {
     setSelectedPick(amount);
     if (!enabledItems.quickPick)
       setEnabledItems({ quickPick: true, manual: false });
   };
 
-  const onContinue = () => {
+  const onContinue = async () => {
     let selectedAmount: number | null = null;
 
     if (enabledItems.quickPick) selectedAmount = selectedPick;
-    if (enabledItems.manual) selectedAmount = parseInt(manualAmount);
+    if (enabledItems.manual) selectedAmount = parseFloat(manualAmount);
+
+    if (!selectedAmount) throw new Error('Error, selectedAmount still not set');
 
     setAmountToDonate(selectedAmount);
+
+    const response = await axios.post('/api/paymentIntent', {
+      amount: selectedAmount * 100,
+    });
+
+    setData({ client_secret: response.data?.client_secret });
+    nextStep();
   };
 
   const disabledBtn =
@@ -79,9 +92,7 @@ const AmountPicker = () => {
   );
 };
 
-const Root = styled(Card)`
-  min-width: 500px;
-`;
+const Root = styled.div``;
 
 const QuickPickContainer = styled.div<{ current?: boolean }>`
   display: grid;

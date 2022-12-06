@@ -8,35 +8,11 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const { method, body } = req;
+  const { method } = req;
 
   if (method === 'GET') {
     const total = await getTotalDonationAmount();
     res.status(200).json(total);
-    return;
-  }
-
-  if (method === 'POST') {
-    await dbConnect();
-
-    const { amount, donationType, anonymous } = body;
-
-    if (!amount) throw new Error('amount is a required field in the body');
-    if (!donationType)
-      throw new Error('donationType is a required field in the body');
-
-    const newPayment = new PaymentModel({
-      amount,
-      donationType,
-      anonymous: !!anonymous,
-    });
-
-    await newPayment.save();
-
-    redis.del('totals');
-
-    res.status(200).json(newPayment.toObject());
-
     return;
   }
 }

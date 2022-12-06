@@ -7,13 +7,11 @@ import PrimaryButton from '../buttons/PrimaryButton';
 import TextDivider from '../dividers/TextDivider';
 import TextInput from '../inputs/TextInput';
 import QuickPickItem from './QuickPickItem';
-import axios from 'axios';
 
 const quickPickValues = [50, 100, 200, 1000, 2500, 5000];
 
 const AmountPicker = () => {
   const { setAmountToDonate } = useContext(HomePageContext);
-  const { setData } = usePaymentContext();
   const { nextStep } = useStepper();
   const [manualAmount, setManualAmount] = useState('Enter Price Manually');
   const [selectedPick, setSelectedPick] = useState(-1);
@@ -42,11 +40,6 @@ const AmountPicker = () => {
 
     setAmountToDonate(selectedAmount);
 
-    const response = await axios.post('/api/paymentIntent', {
-      amount: selectedAmount * 100,
-    });
-
-    setData({ client_secret: response.data?.client_secret });
     nextStep();
   };
 

@@ -7,13 +7,12 @@ import Divider from '../dividers/Divider';
 import { HomePageContext } from '../../contexts/HomePageContext';
 import { useStepper } from '../../contexts/StepContext';
 import SecondaryButton from '../buttons/SecondaryButton';
-import { usePaymentContext } from '../../contexts/PaymentsContext';
+import axios from 'axios';
 
 const PaymentCard = () => {
   const stripe = useStripe();
   const elements = useElements();
   const { setStep } = useStepper();
-  const { client_secret } = usePaymentContext();
   const { amountToDonate } = useContext(HomePageContext);
 
   const [error, setError] = useState<any>(null);
@@ -55,13 +54,19 @@ const PaymentCard = () => {
     setLoading(true);
     setError('');
 
+    const response = await axios.post('/api/paymentIntent', {
+      amount: amountToDonate * 100,
+    });
+
+    const client_secret = response.data?.client_secret;
     const result = await stripe.confirmCardPayment(client_secret!, {
       payment_method: {
         card: elements.getElement(CardElement)!,
-        billing_details: {
-          name: 'Mark Artishuk',
-          email: 'markyshuk@gmail.com',
-        },
+        // TODO: name/email info
+        // billing_details: {
+        //   name: 'Mark Artishuk',
+        //   email: 'markyshuk@gmail.com',
+        // },
       },
     });
 
@@ -72,15 +77,17 @@ const PaymentCard = () => {
       // The payment has been processed!
 
       if (result.paymentIntent.status === 'succeeded') {
-        console.log('Succeeded!', result);
+        // Take them to the success display
         setStep(3);
-        // Show a success message to the customer
         // There's a risk of the customer closing the window before callback
         // execution. Set up a webhook or plugin to listen for the
         // payment_intent.succeeded event that handles any business critical
         // post-payment actions.
       } else {
-        console.log('IDK SOMETHING OTHER THAN', result);
+        console.error(
+          'paymentIntent has been processed and the status was not succeeded: ',
+          result
+        );
       }
     }
 

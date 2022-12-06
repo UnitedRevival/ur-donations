@@ -26,7 +26,7 @@ const FundCounter = () => {
       <p className={styles.progressText}>Progress</p>
       <FlexHorizontal>
         <div className={styles.progressBarContainer}>
-          <ProgressBar percentage={70} />
+          <ProgressBar percentage={percentage} />
         </div>
         <span className={styles.progressPercent}>{percentage}%</span>
       </FlexHorizontal>

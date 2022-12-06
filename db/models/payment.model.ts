@@ -1,10 +1,10 @@
 import mongoose from 'mongoose';
 
-interface Payment {
+export interface Payment {
   amount: number;
   anonymous?: boolean;
   donationType: string;
-  dateCreated?: Date;
+  dateCreated: Date | number;
 }
 
 const PaymentSchema = new mongoose.Schema<Payment>({
@@ -14,6 +14,8 @@ const PaymentSchema = new mongoose.Schema<Payment>({
   dateCreated: { type: Date, required: true, default: () => Date.now() },
 });
 
+let existingModel = mongoose.models.Payment<Payment>;
+
 const PaymentModel =
-  mongoose.models.Payment || mongoose.model<Payment>('Payment', PaymentSchema);
+  existingModel || mongoose.model<Payment>('Payment', PaymentSchema);
 export default PaymentModel;

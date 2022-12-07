@@ -31,20 +31,25 @@ export default async function handler(
   }
 
   switch (event.type) {
-    // case 'charge.succeeded':
-    //   const charge = event.data.object;
-    //   break;
-    case 'payment_intent.succeeded':
-      const paymentIntent = event.data.object;
-      const { created, amount } = paymentIntent;
+    case 'charge.succeeded':
+      const charge = event.data.object;
+
+      const { amount, created, billing_details } = charge;
 
       const calculatedAmount = amount / 100;
+
+      const name = billing_details?.name;
+      const email = billing_details?.email;
+
       await createPaymentData({
         amount: calculatedAmount,
         dateCreated: created,
         donationType: 'Jesus March',
+        name,
+        email,
       });
-
+      break;
+    case 'payment_intent.succeeded':
       break;
     // case 'payment_method.attached':
     //   const paymentMethod = event.data.object;

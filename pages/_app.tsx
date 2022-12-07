@@ -10,7 +10,7 @@ export default function App({ Component, pageProps }: AppProps) {
       <GlobalStyles />
       <Header />
       <ThemeProvider theme={defaultTheme}>
-        <Component {...pageProps} />;
+        <Component {...pageProps} />
       </ThemeProvider>
     </>
   );

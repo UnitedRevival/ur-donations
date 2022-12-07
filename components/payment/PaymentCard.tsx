@@ -8,12 +8,18 @@ import { HomePageContext } from '../../contexts/HomePageContext';
 import { useStepper } from '../../contexts/StepContext';
 import SecondaryButton from '../buttons/SecondaryButton';
 import axios from 'axios';
+import Label from '../inputs/Label';
+import LabeledInput from '../inputs/LabeledInput';
 
 const PaymentCard = () => {
   const stripe = useStripe();
   const elements = useElements();
   const { setStep } = useStepper();
   const { amountToDonate } = useContext(HomePageContext);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+  });
 
   const [error, setError] = useState<any>(null);
   const [loading, setLoading] = useState(false);
@@ -62,11 +68,10 @@ const PaymentCard = () => {
     const result = await stripe.confirmCardPayment(client_secret!, {
       payment_method: {
         card: elements.getElement(CardElement)!,
-        // TODO: name/email info
-        // billing_details: {
-        //   name: 'Mark Artishuk',
-        //   email: 'markyshuk@gmail.com',
-        // },
+        billing_details: {
+          name: formData.name,
+          email: formData.email,
+        },
       },
     });
 
@@ -94,16 +99,37 @@ const PaymentCard = () => {
     setLoading(false);
   };
 
+  const onChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
   return (
     <form onSubmit={handleSubmit}>
       <Title>Payment</Title>
-      <Divider />
+      {/* <Divider />
 
       <SubTitle>Wallets</SubTitle>
-      <NoWallet>No wallets found</NoWallet>
+      <NoWallet>No wallets found</NoWallet> */}
 
       <Divider />
-      <SubTitle>Card</SubTitle>
+      <LabeledInput
+        inputId={'name'}
+        label="Name"
+        placeholder="Name"
+        required
+        value={formData.name}
+        onChange={onChange}
+      />
+      <LabeledInput
+        inputId={'email'}
+        label="Email"
+        placeholder="Email"
+        type="email"
+        required
+        value={formData.email}
+        onChange={onChange}
+      />
+      <Label>Card</Label>
       <StyledCard
         focused={cardFocused}
         onFocus={() => {

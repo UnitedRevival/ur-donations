@@ -32,6 +32,13 @@ const Hero = () => {
     <HeroContainer>
       <HeroContent>
         <Bar />
+        {/* <Image
+          src={urLogo}
+          alt="united revival logo"
+          priority
+          width={460}
+          height={133.2}
+        /> */}
         <Title>Help Fund Jesus March 2023</Title>
         <Description>
           Partner with us to see souls saved, lives transformed, and hearts
@@ -133,7 +140,7 @@ const HeroContent = styled.div`
   max-width: 460px;
   width: 100%;
   height: 90%;
-  padding: 2rem 0px 4rem 0px;
+  padding: 1.5rem 0px 4rem 0px;
 
   margin-right: 2rem;
 

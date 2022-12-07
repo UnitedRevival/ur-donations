@@ -6,6 +6,8 @@ export async function createPaymentData({
   amount,
   donationType,
   dateCreated,
+  name,
+  email,
 }: Payment) {
   await dbConnect();
 
@@ -15,8 +17,10 @@ export async function createPaymentData({
 
   const newPayment = new PaymentModel({
     amount,
+    email,
+    name,
     donationType,
-    anonymous: true,
+    anonymous: !name && !email,
     dateCreated,
   });
 

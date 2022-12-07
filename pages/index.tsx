@@ -31,8 +31,11 @@ export default function Home(props: HomePageProps) {
     <HomePageProvider data={props}>
       <div className={styles.container}>
         <Head>
-          <meta name="description" content="Give to United Church" />
-          <link rel="icon" href="/favicon.ico" />
+          <meta
+            name="description"
+            content="Give to support Jesus Marches in 2023"
+          />
+          <link rel="icon" href="/favicon.png" />
         </Head>
 
         <main className={styles.main}>

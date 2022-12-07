@@ -56,12 +56,17 @@ const PaymentCard = () => {
     if (elements == null || stripe == null) {
       return;
     }
+    if (!formData?.email) {
+      setError('Email is required');
+      return;
+    }
 
     setLoading(true);
     setError('');
 
     const response = await axios.post('/api/paymentIntent', {
       amount: amountToDonate * 100,
+      email: formData.email,
     });
 
     const client_secret = response.data?.client_secret;

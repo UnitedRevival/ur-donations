@@ -65,7 +65,7 @@ const SuccessDisplay = () => {
       <BoxLink href="https://www.instagram.com/unitedrevival/" fill="black">
         Follow us on Instagram
       </BoxLink>
-      <BoxLink href="https://www.instagram.com/unitedrevival/">
+      <BoxLink href="https://unitedrevival.org/jesus-march-2023/#tour">
         Jesus March Tour Dates
       </BoxLink>
     </Root>

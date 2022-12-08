@@ -1,7 +1,6 @@
 import React, { useContext, useState } from 'react';
 import styled from 'styled-components';
 import { HomePageContext } from '../../contexts/HomePageContext';
-import { usePaymentContext } from '../../contexts/PaymentsContext';
 import { useStepper } from '../../contexts/StepContext';
 import PrimaryButton from '../buttons/PrimaryButton';
 import TextDivider from '../dividers/TextDivider';

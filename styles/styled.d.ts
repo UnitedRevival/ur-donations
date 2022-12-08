@@ -16,7 +16,6 @@ declare module 'styled-components' {
     };
     fonts: {
       display: string;
-      readText: string;
     };
     breakpoints: {
       large: string;

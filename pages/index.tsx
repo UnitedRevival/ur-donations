@@ -1,16 +1,11 @@
 import Head from 'next/head';
-import FundCounter from '../components/fundcounter/FundCounter';
 import styles from '../styles/Home.module.css';
 import Hero from '../components/hero/Hero';
 import HomeAccents from '../components/accents/HomeAccents';
 import { getTotalDonationAmount } from './api/donations';
 import { HomePageProvider } from '../contexts/HomePageContext';
-import { loadStripe } from '@stripe/stripe-js';
-import { Elements } from '@stripe/react-stripe-js';
-import { useEffect, useState } from 'react';
 import Payment from '../components/payment/Payment';
 import { StepContextProvider } from '../contexts/StepContext';
-import { PaymentsContextProvider } from '../contexts/PaymentsContext';
 import styled from 'styled-components';
 import InfoCard from '../components/infocard/InfoCard';
 
@@ -19,14 +14,6 @@ interface HomePageProps {
 }
 
 export default function Home(props: HomePageProps) {
-  const [stripePromise, setStripePromise] = useState<any>(null);
-
-  useEffect(() => {
-    if (!stripePromise) {
-      const sPromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_KEY as string);
-      setStripePromise(sPromise);
-    }
-  }, []);
   return (
     <HomePageProvider data={props}>
       <div className={styles.container}>
@@ -45,14 +32,9 @@ export default function Home(props: HomePageProps) {
 
           <Content>
             <InfoCard />
-
-            <Elements stripe={stripePromise}>
-              <StepContextProvider>
-                <PaymentsContextProvider>
-                  <Payment />
-                </PaymentsContextProvider>
-              </StepContextProvider>
-            </Elements>
+            <StepContextProvider>
+              <Payment />
+            </StepContextProvider>
           </Content>
         </main>
 

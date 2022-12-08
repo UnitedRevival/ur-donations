@@ -12,7 +12,6 @@ export const defaultTheme: DefaultTheme = {
   },
   fonts: {
     display: `'Nunito', sans-serif`,
-    readText: `'Lora', serif`,
   },
   breakpoints: {
     large: '1060px',

@@ -14,10 +14,14 @@ export const Centered = styled.div`
   padding: 1rem;
 `;
 
-const CenteredLoader = () => {
+interface CenteredLoaderProps {
+  color?: string;
+}
+
+const CenteredLoader: React.FC<CenteredLoaderProps> = ({ color }) => {
   return (
     <Centered>
-      <DefaultLoader />
+      <DefaultLoader color={color} />
     </Centered>
   );
 };

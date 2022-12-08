@@ -16,7 +16,7 @@ export default function MyDocument() {
           crossOrigin="true"
         />
         <link
-          href="https://fonts.googleapis.com/css2?family=Cabin:wght@700&family=Lora:wght@400;700&family=Nunito:wght@400;600;700&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap"
           rel="stylesheet"
         />
       </Head>

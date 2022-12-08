@@ -19,10 +19,6 @@ interface AccentProps {
   theme?: any;
 }
 
-interface SphereProps extends AccentProps {
-  size?: number;
-}
-
 interface RectangleProps extends AccentProps {
   width?: number;
   height?: number;
@@ -58,42 +54,11 @@ const Diamond = styled(Rectangle)`
   border-radius: ${({ theme }) => theme.borderRadius}px;
 `;
 
-const Sphere = styled.div<SphereProps>`
-  ${(props) =>
-    props.size
-      ? `
-    height: ${props.size}px;
-    width: ${props.size}px;
-  `
-      : `
-      height: 100px;
-      width: 100px;
-  
-  `}
-  border-radius: 50%;
-  z-index: -1;
-  position: absolute;
-
-  ${(props) => (props.position ? positionalProps(props) : '')}
-
-  overflow: hidden;
-  opacity: 25%;
-`;
-
 const HomeAccents = ({ children }) => {
   const theme = useTheme();
 
   return (
     <Root>
-      {/* <Sphere position={{ top: 50, left: 50 }} size={350} /> */}
-      {/* <Sphere position={{ top: 150, left: 200 }} /> */}
-      {/* <Sphere position={{ top: 150, left: 200 }} /> */}
-      {/* <Rectangle
-        position={{ top: 50, left: 50 }}
-        width={150}
-        height={150}
-        color="white"
-      /> */}
       <Diamond
         position={{ top: 50, right: 50 }}
         width={100}

@@ -32,13 +32,6 @@ const Hero = () => {
     <HeroContainer>
       <HeroContent>
         <Bar />
-        {/* <Image
-          src={urLogo}
-          alt="united revival logo"
-          priority
-          width={460}
-          height={133.2}
-        /> */}
         <Title>Help Fund Jesus March 2023</Title>
         <Description>
           Partner with us to see souls saved, lives transformed, and hearts

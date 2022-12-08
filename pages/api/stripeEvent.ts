@@ -48,6 +48,8 @@ export default async function handler(
         name,
         email,
       });
+      await res.revalidate('/');
+
       break;
     case 'payment_intent.succeeded':
       break;

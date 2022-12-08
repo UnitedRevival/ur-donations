@@ -8,6 +8,7 @@ import Payment from '../components/payment/Payment';
 import { StepContextProvider } from '../contexts/StepContext';
 import styled from 'styled-components';
 import InfoCard from '../components/infocard/InfoCard';
+import { GetStaticProps } from 'next';
 
 interface HomePageProps {
   amountRaised: number;
@@ -44,9 +45,7 @@ export default function Home(props: HomePageProps) {
   );
 }
 
-export async function getServerSideProps(
-  context
-): Promise<{ props: HomePageProps }> {
+export const getStaticProps: GetStaticProps = async (ctx) => {
   const totals = await getTotalDonationAmount();
 
   const jesusMarchDonations = totals.find((t) => t._id === 'Jesus March');
@@ -55,8 +54,9 @@ export async function getServerSideProps(
     props: {
       amountRaised: jesusMarchDonations?.total || 0,
     },
+    revalidate: 60 * 60 * 7,
   };
-}
+};
 
 const Content = styled.div`
   max-width: 600px;

@@ -10,6 +10,7 @@ import SecondaryButton from '../buttons/SecondaryButton';
 import axios from 'axios';
 import Label from '../inputs/Label';
 import LabeledInput from '../inputs/LabeledInput';
+import * as fbq from '../../lib/pixel';
 
 const PaymentCard = () => {
   const stripe = useStripe();
@@ -89,6 +90,8 @@ const PaymentCard = () => {
       if (result.paymentIntent.status === 'succeeded') {
         // Take them to the success display
         setStep(3);
+        // Track purchase to pixel
+        fbq.event('Purchase', { currency: 'USD', value: amountToDonate });
         // There's a risk of the customer closing the window before callback
         // execution. Set up a webhook or plugin to listen for the
         // payment_intent.succeeded event that handles any business critical

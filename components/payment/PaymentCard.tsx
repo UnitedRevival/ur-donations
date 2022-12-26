@@ -1,7 +1,12 @@
 import * as React from 'react';
 import styled from 'styled-components';
-import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
-import { useContext, useState } from 'react';
+import {
+  CardElement,
+  useStripe,
+  useElements,
+  PaymentRequestButtonElement,
+} from '@stripe/react-stripe-js';
+import { useContext, useEffect, useState } from 'react';
 import PrimaryButton from '../buttons/PrimaryButton';
 import Divider from '../dividers/Divider';
 import { HomePageContext } from '../../contexts/HomePageContext';
@@ -25,31 +30,73 @@ const PaymentCard = () => {
   const [error, setError] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [cardFocused, setCardFocused] = useState(false);
-  // const [paymentRequest, setPaymentRequest] = useState<any>(null);
+  const [paymentRequest, setPaymentRequest] = useState<any>(null);
 
   // TODO: Future Wallet payment features
-  // useEffect(() => {
-  //   if (stripe) {
-  //     const pr = stripe.paymentRequest({
-  //       country: 'US',
-  //       currency: 'usd',
-  //       total: {
-  //         label: 'Demo total',
-  //         amount: 1099,
-  //       },
-  //       requestPayerName: true,
-  //       requestPayerEmail: true,
-  //     });
+  useEffect(() => {
+    if (stripe) {
+      const pr = stripe.paymentRequest({
+        country: 'US',
+        currency: 'usd',
+        total: {
+          label: 'Demo total',
+          amount: 1099,
+        },
+        requestPayerName: true,
+        requestPayerEmail: true,
+      });
+      // Check the availability of the Payment Request API.
+      pr.canMakePayment().then((result) => {
+        console.log('Got back a result: ', result);
+        if (result) {
+          setPaymentRequest(pr);
+        }
+      });
+    }
+  }, [stripe]);
 
-  //     // Check the availability of the Payment Request API.
-  //     pr.canMakePayment().then((result) => {
-  //       console.log('Got back a result: ', result);
-  //       if (result) {
-  //         setPaymentRequest(pr);
-  //       }
-  //     });
-  //   }
-  // }, [stripe]);
+  useEffect(() => {
+    if (paymentRequest && stripe) {
+      const paymentMethodHandler = async function (ev) {
+        // Confirm the PaymentIntent without handling potential next actions (yet).
+        console.log('Received paymentMethod,', ev);
+        const { paymentIntent, error: confirmError } =
+          await stripe.confirmCardPayment(
+            process.env.NEXT_PUBLIC_STRIPE_KEY as string,
+            { payment_method: ev.paymentMethod.id },
+            { handleActions: false }
+          );
+
+        if (confirmError) {
+          // Report to the browser that the payment failed, prompting it to
+          // re-show the payment interface, or show an error message and close
+          // the payment interface.
+          ev.complete('fail');
+        } else {
+          // Report to the browser that the confirmation was successful, prompting
+          // it to close the browser payment method collection interface.
+          ev.complete('success');
+          // Check if the PaymentIntent requires any actions and if so let Stripe.js
+          // handle the flow. If using an API version older than "2019-02-11"
+          // instead check for: `paymentIntent.status === "requires_source_action"`.
+          if (paymentIntent.status === 'requires_action') {
+            // Let Stripe.js handle the rest of the payment flow.
+            const { error } = await stripe.confirmCardPayment(
+              process.env.NEXT_PUBLIC_STRIPE_KEY as string
+            );
+            if (error) {
+              // The payment failed -- ask your customer for a new payment method.
+            }
+          }
+          console.log('Payment succeeded');
+        }
+      };
+      paymentRequest.on('paymentmethod', paymentMethodHandler);
+      return () => {
+        paymentRequest.off('paymentMethod', paymentMethodHandler);
+      };
+    }
+  }, [paymentRequest]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -114,10 +161,14 @@ const PaymentCard = () => {
   return (
     <form onSubmit={handleSubmit}>
       <Title>Payment</Title>
-      {/* <Divider />
+      <Divider />
 
       <SubTitle>Wallets</SubTitle>
-      <NoWallet>No wallets found</NoWallet> */}
+      {paymentRequest ? (
+        <PaymentRequestButtonElement options={{ paymentRequest }} />
+      ) : (
+        <NoWallet>No wallets found</NoWallet>
+      )}
 
       <Divider />
       <LabeledInput

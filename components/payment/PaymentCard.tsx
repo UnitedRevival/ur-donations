@@ -39,30 +39,33 @@ const PaymentCard = () => {
         country: 'US',
         currency: 'usd',
         total: {
-          label: 'Demo total',
-          amount: 1099,
+          label: 'Jesus March Donation',
+          amount: amountToDonate * 100,
         },
         requestPayerName: true,
         requestPayerEmail: true,
       });
       // Check the availability of the Payment Request API.
       pr.canMakePayment().then((result) => {
-        console.log('Got back a result: ', result);
         if (result) {
           setPaymentRequest(pr);
         }
       });
     }
-  }, [stripe]);
+  }, [stripe, amountToDonate]);
 
   useEffect(() => {
     if (paymentRequest && stripe) {
       const paymentMethodHandler = async function (ev) {
         // Confirm the PaymentIntent without handling potential next actions (yet).
         console.log('Received paymentMethod,', ev);
+        const client_secret = await createPaymentIntentClientSecret({
+          amount: amountToDonate,
+          email: ev.payerEmail,
+        });
         const { paymentIntent, error: confirmError } =
           await stripe.confirmCardPayment(
-            process.env.NEXT_PUBLIC_STRIPE_KEY as string,
+            client_secret,
             { payment_method: ev.paymentMethod.id },
             { handleActions: false }
           );
@@ -81,14 +84,15 @@ const PaymentCard = () => {
           // instead check for: `paymentIntent.status === "requires_source_action"`.
           if (paymentIntent.status === 'requires_action') {
             // Let Stripe.js handle the rest of the payment flow.
-            const { error } = await stripe.confirmCardPayment(
-              process.env.NEXT_PUBLIC_STRIPE_KEY as string
-            );
+            const { error } = await stripe.confirmCardPayment(client_secret, {
+              payment_method: ev.paymentMethod.id,
+            });
             if (error) {
               // The payment failed -- ask your customer for a new payment method.
+              console.error('ERROR with wallet pay: ', error);
             }
           }
-          console.log('Payment succeeded');
+          console.log('Payment succeeded through wallet');
         }
       };
       paymentRequest.on('paymentmethod', paymentMethodHandler);
@@ -112,12 +116,11 @@ const PaymentCard = () => {
     setLoading(true);
     setError('');
 
-    const response = await axios.post('/api/paymentIntent', {
-      amount: amountToDonate * 100,
+    const client_secret = await createPaymentIntentClientSecret({
+      amount: amountToDonate,
       email: formData.email,
     });
 
-    const client_secret = response.data?.client_secret;
     const result = await stripe.confirmCardPayment(client_secret!, {
       payment_method: {
         card: elements.getElement(CardElement)!,
@@ -224,6 +227,22 @@ const PaymentCard = () => {
     </form>
   );
 };
+
+async function createPaymentIntentClientSecret({
+  amount,
+  email,
+}: {
+  amount: number;
+  email: string;
+}) {
+  const response = await axios.post('/api/paymentIntent', {
+    amount: amount * 100,
+    email,
+  });
+
+  const client_secret = response.data?.client_secret;
+  return client_secret as string;
+}
 
 const ErrorText = styled.p`
   color: ${({ theme }) => theme.colors.error};

@@ -54,7 +54,6 @@ const PaymentCard = () => {
   }, [!!stripe, amountToDonate]);
 
   useEffect(() => {
-    console.log('HELLO', !!paymentRequest, !!stripe);
     if (paymentRequest && stripe) {
       const paymentMethodHandler = async function (ev) {
         // Confirm the PaymentIntent without handling potential next actions (yet).
@@ -73,6 +72,7 @@ const PaymentCard = () => {
           // Report to the browser that the payment failed, prompting it to
           // re-show the payment interface, or show an error message and close
           // the payment interface.
+          console.error('Confirmation Error: ', confirmError);
           ev.complete('fail');
         } else {
           // Report to the browser that the confirmation was successful, prompting
@@ -83,10 +83,14 @@ const PaymentCard = () => {
           // instead check for: `paymentIntent.status === "requires_source_action"`.
           if (paymentIntent.status === 'requires_action') {
             // Let Stripe.js handle the rest of the payment flow.
+            console.log(
+              'Setting loading in promise... first interaction with react'
+            );
             setLoading(true);
             const { error } = await stripe.confirmCardPayment(client_secret, {
               payment_method: ev.paymentMethod.id,
             });
+            console.log('Setting to off...');
             setLoading(false);
             if (error) {
               // The payment failed -- ask your customer for a new payment method.
@@ -104,7 +108,6 @@ const PaymentCard = () => {
         }
       };
       paymentRequest.on('paymentmethod', paymentMethodHandler);
-      console.log('IS THIS FIRING?!?! PART 1');
       return () => {
         console.log('IS THIS FIRING?!?!');
         paymentRequest.off('paymentMethod');

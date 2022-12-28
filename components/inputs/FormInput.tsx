@@ -13,6 +13,10 @@ const FormInput = styled.input`
     outline: 3px solid ${({ theme }) => theme.colors.primary}77;
     border: 1px solid ${({ theme }) => theme.colors.primary};
   }
+
+  &:disabled {
+    color: ${({ theme }) => theme.colors.gray};
+  }
 `;
 
 export default FormInput;

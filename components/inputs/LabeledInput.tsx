@@ -18,6 +18,7 @@ interface LabeledInputProps {
   placeholder?: string;
   required?: boolean;
   value?: any;
+  disabled?: boolean;
   onChange?: any;
 }
 

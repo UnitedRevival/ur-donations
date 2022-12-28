@@ -62,7 +62,7 @@ const SuccessDisplay = () => {
       </PaymentDetails>
 
       <Divider />
-      <BoxLink href="https://www.instagram.com/unitedrevival/" fill="black">
+      <BoxLink href="https://www.instagram.com/unitedrevival/" fill="#000000">
         Follow us on Instagram
       </BoxLink>
       <BoxLink href="https://unitedrevival.org/jesus-march-2023/#tour">

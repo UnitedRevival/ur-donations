@@ -16,8 +16,14 @@ const BoxLink = styled.a<BoxLinkProps>`
   text-align: center;
   text-decoration: none;
 
+  box-sizing: border-box;
   font-weight: bold;
-  border: 1px solid ${({ theme }) => theme.colors.light};
+
+  &:hover {
+    outline: 4px solid
+      ${({ fill, theme }) => (fill ? fill : theme.colors.primary)}33;
+  }
+  transition: 0.1s all linear;
   border-radius: ${({ theme }) => theme.borderRadius}px;
 `;
 

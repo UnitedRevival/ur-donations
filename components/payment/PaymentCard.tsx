@@ -32,7 +32,6 @@ const PaymentCard = () => {
   const [cardFocused, setCardFocused] = useState(false);
   const [paymentRequest, setPaymentRequest] = useState<any>(null);
 
-  // TODO: Future Wallet payment features
   useEffect(() => {
     if (stripe) {
       const pr = stripe.paymentRequest({
@@ -58,7 +57,6 @@ const PaymentCard = () => {
     if (paymentRequest && stripe) {
       const paymentMethodHandler = async function (ev) {
         // Confirm the PaymentIntent without handling potential next actions (yet).
-        console.log('Received paymentMethod,', ev);
         const client_secret = await createPaymentIntentClientSecret({
           amount: amountToDonate,
           email: ev.payerEmail,
@@ -84,15 +82,22 @@ const PaymentCard = () => {
           // instead check for: `paymentIntent.status === "requires_source_action"`.
           if (paymentIntent.status === 'requires_action') {
             // Let Stripe.js handle the rest of the payment flow.
+            setLoading(true);
             const { error } = await stripe.confirmCardPayment(client_secret, {
               payment_method: ev.paymentMethod.id,
             });
+            setLoading(false);
             if (error) {
               // The payment failed -- ask your customer for a new payment method.
               console.error('ERROR with wallet pay: ', error);
+              setError(
+                'There was a problem with the payment, please choose a different payment method.'
+              );
+              return;
             }
           }
           console.log('Payment succeeded through wallet');
+          handleSuccess();
         }
       };
       paymentRequest.on('paymentmethod', paymentMethodHandler);
@@ -101,6 +106,13 @@ const PaymentCard = () => {
       };
     }
   }, [paymentRequest]);
+
+  const handleSuccess = () => {
+    // Take them to the success display
+    setStep(3);
+    // Track purchase to pixel
+    fbq.event('Purchase', { currency: 'USD', value: amountToDonate });
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -138,10 +150,7 @@ const PaymentCard = () => {
       // The payment has been processed!
 
       if (result.paymentIntent.status === 'succeeded') {
-        // Take them to the success display
-        setStep(3);
-        // Track purchase to pixel
-        fbq.event('Purchase', { currency: 'USD', value: amountToDonate });
+        handleSuccess();
         // There's a risk of the customer closing the window before callback
         // execution. Set up a webhook or plugin to listen for the
         // payment_intent.succeeded event that handles any business critical
@@ -165,7 +174,6 @@ const PaymentCard = () => {
     <form onSubmit={handleSubmit}>
       <Title>Payment</Title>
       <Divider />
-
       <SubTitle>Wallets</SubTitle>
       {paymentRequest ? (
         <PaymentRequestButtonElement options={{ paymentRequest }} />
@@ -180,6 +188,7 @@ const PaymentCard = () => {
         placeholder="Name"
         required
         value={formData.name}
+        disabled={loading}
         onChange={onChange}
       />
       <LabeledInput
@@ -189,11 +198,13 @@ const PaymentCard = () => {
         type="email"
         required
         value={formData.email}
+        disabled={loading}
         onChange={onChange}
       />
       <Label>Card</Label>
       <StyledCard
         focused={cardFocused}
+        options={{ disabled: loading }}
         onFocus={() => {
           setCardFocused(true);
         }}

@@ -56,7 +56,6 @@ const PaymentCard = () => {
   useEffect(() => {
     console.log('HELLO', !!paymentRequest, !!stripe);
     if (paymentRequest && stripe) {
-      console.log('YO');
       const paymentMethodHandler = async function (ev) {
         // Confirm the PaymentIntent without handling potential next actions (yet).
         const client_secret = await createPaymentIntentClientSecret({
@@ -98,6 +97,8 @@ const PaymentCard = () => {
               return;
             }
           }
+          paymentRequest.off('paymentMethod', paymentMethodHandler);
+
           console.log('Payment succeeded through wallet');
           handleSuccess();
         }
@@ -106,8 +107,8 @@ const PaymentCard = () => {
       console.log('IS THIS FIRING?!?! PART 1');
       return () => {
         console.log('IS THIS FIRING?!?!');
-        console.log('Something with paymentHandler? ', paymentMethodHandler);
-        paymentRequest.off('paymentMethod', paymentMethodHandler);
+        paymentRequest.off('paymentMethod');
+        console.log('OFFED');
       };
     }
   }, [!!paymentRequest, !!stripe]);

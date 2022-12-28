@@ -89,6 +89,8 @@ const PaymentCard = () => {
               );
               return;
             }
+          } else {
+            console.log('DOES NOT REQUIRE ACTION');
           }
           console.log('Payment succeeded through wallet');
           handleSuccess();

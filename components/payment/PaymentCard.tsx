@@ -107,7 +107,8 @@ const PaymentCard = () => {
       console.log('IS THIS FIRING?!?! PART 1');
       return () => {
         console.log('IS THIS FIRING?!?!');
-        paymentRequest.off('paymentMethod');
+        // paymentRequest.off('paymentMethod');
+
         console.log('OFFED');
       };
     }

@@ -51,10 +51,12 @@ const PaymentCard = () => {
         }
       });
     }
-  }, [stripe, amountToDonate]);
+  }, [!!stripe, amountToDonate]);
 
   useEffect(() => {
+    console.log('HELLO', !!paymentRequest, !!stripe);
     if (paymentRequest && stripe) {
+      console.log('YO');
       const paymentMethodHandler = async function (ev) {
         // Confirm the PaymentIntent without handling potential next actions (yet).
         const client_secret = await createPaymentIntentClientSecret({
@@ -101,11 +103,14 @@ const PaymentCard = () => {
         }
       };
       paymentRequest.on('paymentmethod', paymentMethodHandler);
+      console.log('IS THIS FIRING?!?! PART 1');
       return () => {
+        console.log('IS THIS FIRING?!?!');
+        console.log('Something with paymentHandler? ', paymentMethodHandler);
         paymentRequest.off('paymentMethod', paymentMethodHandler);
       };
     }
-  }, [paymentRequest]);
+  }, [!!paymentRequest, !!stripe]);
 
   const handleSuccess = () => {
     // Take them to the success display

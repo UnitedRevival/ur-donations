@@ -17,6 +17,7 @@ import Label from '../inputs/Label';
 import LabeledInput from '../inputs/LabeledInput';
 import usePaymentRequest from '../../hooks/usePaymentRequest';
 import usePaymentSuccess from '../../hooks/usePaymentSuccess';
+import CenteredLoader from '../loaders/CenteredLoader';
 
 const PaymentCard = () => {
   const stripe = useStripe();
@@ -32,7 +33,7 @@ const PaymentCard = () => {
   const [error, setError] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [cardFocused, setCardFocused] = useState(false);
-  const paymentRequest = usePaymentRequest(amountToDonate);
+  const { paymentRequest, prLoading } = usePaymentRequest(amountToDonate);
 
   useEffect(() => {
     if (paymentRequest && stripe) {
@@ -142,7 +143,9 @@ const PaymentCard = () => {
       <Title>Payment</Title>
       <Divider />
       <SubTitle>Wallets</SubTitle>
-      {paymentRequest ? (
+      {prLoading ? (
+        <CenteredLoader color="#000000" />
+      ) : paymentRequest ? (
         <PaymentRequestButtonElement options={{ paymentRequest }} />
       ) : (
         <NoWallet>No wallets found</NoWallet>

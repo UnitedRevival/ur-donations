@@ -6,6 +6,7 @@ export default (amount: number) => {
   const [paymentRequest, setPaymentRequest] = useState<PaymentRequest | null>(
     null
   );
+  const [prLoading, setPrLoading] = useState(true);
   const stripe = useStripe();
   useEffect(() => {
     if (stripe) {
@@ -19,14 +20,17 @@ export default (amount: number) => {
         requestPayerName: true,
         requestPayerEmail: true,
       });
+      setPrLoading(true);
       // Check the availability of the Payment Request API.
-      pr.canMakePayment().then((result) => {
-        if (result) {
-          setPaymentRequest(pr);
-        }
-      });
+      pr.canMakePayment()
+        .then((result) => {
+          if (result) {
+            setPaymentRequest(pr);
+          }
+        })
+        .finally(() => setPrLoading(false));
     }
   }, [!!stripe, amount]);
 
-  return paymentRequest;
+  return { paymentRequest, prLoading };
 };

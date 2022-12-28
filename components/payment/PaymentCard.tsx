@@ -16,6 +16,7 @@ import axios from 'axios';
 import Label from '../inputs/Label';
 import LabeledInput from '../inputs/LabeledInput';
 import * as fbq from '../../lib/pixel';
+import usePaymentRequest from '../../hooks/usePaymentRequest';
 
 const PaymentCard = () => {
   const stripe = useStripe();
@@ -30,28 +31,14 @@ const PaymentCard = () => {
   const [error, setError] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [cardFocused, setCardFocused] = useState(false);
-  const [paymentRequest, setPaymentRequest] = useState<any>(null);
+  const paymentRequest = usePaymentRequest(amountToDonate);
 
-  useEffect(() => {
-    if (stripe) {
-      const pr = stripe.paymentRequest({
-        country: 'US',
-        currency: 'usd',
-        total: {
-          label: 'Jesus March Donation',
-          amount: amountToDonate * 100,
-        },
-        requestPayerName: true,
-        requestPayerEmail: true,
-      });
-      // Check the availability of the Payment Request API.
-      pr.canMakePayment().then((result) => {
-        if (result) {
-          setPaymentRequest(pr);
-        }
-      });
-    }
-  }, [!!stripe, amountToDonate]);
+  const handleSuccess = () => {
+    // Take them to the success display
+    setStep(3);
+    // Track purchase to pixel
+    fbq.event('Purchase', { currency: 'USD', value: amountToDonate });
+  };
 
   useEffect(() => {
     if (paymentRequest && stripe) {
@@ -73,6 +60,7 @@ const PaymentCard = () => {
           // re-show the payment interface, or show an error message and close
           // the payment interface.
           console.error('Confirmation Error: ', confirmError);
+          setError(confirmError?.message);
           ev.complete('fail');
         } else {
           // Report to the browser that the confirmation was successful, prompting
@@ -90,6 +78,7 @@ const PaymentCard = () => {
             const { error } = await stripe.confirmCardPayment(client_secret, {
               payment_method: ev.paymentMethod.id,
             });
+
             console.log('Setting to off...');
             setLoading(false);
             if (error) {
@@ -101,8 +90,6 @@ const PaymentCard = () => {
               return;
             }
           }
-          paymentRequest.off('paymentMethod', paymentMethodHandler);
-
           console.log('Payment succeeded through wallet');
           handleSuccess();
         }
@@ -110,19 +97,12 @@ const PaymentCard = () => {
       paymentRequest.on('paymentmethod', paymentMethodHandler);
       return () => {
         console.log('IS THIS FIRING?!?!');
-        paymentRequest.off('paymentMethod');
+        paymentRequest.off('paymentmethod', paymentMethodHandler);
 
         console.log('OFFED');
       };
     }
   }, [!!paymentRequest, !!stripe]);
-
-  const handleSuccess = () => {
-    // Take them to the success display
-    setStep(3);
-    // Track purchase to pixel
-    fbq.event('Purchase', { currency: 'USD', value: amountToDonate });
-  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();

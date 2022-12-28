@@ -15,14 +15,15 @@ import SecondaryButton from '../buttons/SecondaryButton';
 import axios from 'axios';
 import Label from '../inputs/Label';
 import LabeledInput from '../inputs/LabeledInput';
-import * as fbq from '../../lib/pixel';
 import usePaymentRequest from '../../hooks/usePaymentRequest';
+import usePaymentSuccess from '../../hooks/usePaymentSuccess';
 
 const PaymentCard = () => {
   const stripe = useStripe();
   const elements = useElements();
   const { setStep } = useStepper();
   const { amountToDonate } = useContext(HomePageContext);
+  const handleSuccess = usePaymentSuccess();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -32,13 +33,6 @@ const PaymentCard = () => {
   const [loading, setLoading] = useState(false);
   const [cardFocused, setCardFocused] = useState(false);
   const paymentRequest = usePaymentRequest(amountToDonate);
-
-  const handleSuccess = () => {
-    // Take them to the success display
-    setStep(3);
-    // Track purchase to pixel
-    fbq.event('Purchase', { currency: 'USD', value: amountToDonate });
-  };
 
   useEffect(() => {
     if (paymentRequest && stripe) {
@@ -56,41 +50,25 @@ const PaymentCard = () => {
           );
 
         if (confirmError) {
-          // Report to the browser that the payment failed, prompting it to
-          // re-show the payment interface, or show an error message and close
-          // the payment interface.
           console.error('Confirmation Error: ', confirmError);
           setError(confirmError?.message);
           ev.complete('fail');
         } else {
-          // Report to the browser that the confirmation was successful, prompting
-          // it to close the browser payment method collection interface.
           ev.complete('success');
-          // Check if the PaymentIntent requires any actions and if so let Stripe.js
-          // handle the flow. If using an API version older than "2019-02-11"
-          // instead check for: `paymentIntent.status === "requires_source_action"`.
           if (paymentIntent.status === 'requires_action') {
             // Let Stripe.js handle the rest of the payment flow.
-            console.log(
-              'Setting loading in promise... first interaction with react'
-            );
-            setLoading(true);
             const { error } = await stripe.confirmCardPayment(client_secret, {
               payment_method: ev.paymentMethod.id,
             });
 
-            console.log('Setting to off...');
-            setLoading(false);
             if (error) {
-              // The payment failed -- ask your customer for a new payment method.
+              // The payment failed
               console.error('ERROR with wallet pay: ', error);
               setError(
                 'There was a problem with the payment, please choose a different payment method.'
               );
               return;
             }
-          } else {
-            console.log('DOES NOT REQUIRE ACTION');
           }
           console.log('Payment succeeded through wallet');
           handleSuccess();
@@ -98,10 +76,7 @@ const PaymentCard = () => {
       };
       paymentRequest.on('paymentmethod', paymentMethodHandler);
       return () => {
-        console.log('IS THIS FIRING?!?!');
         paymentRequest.off('paymentmethod', paymentMethodHandler);
-
-        console.log('OFFED');
       };
     }
   }, [!!paymentRequest, !!stripe]);

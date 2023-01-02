@@ -4,20 +4,34 @@ import GlobalStyles from '../styles/GlobalStyles';
 import { ThemeProvider } from 'styled-components';
 import { defaultTheme } from '../styles/themes';
 import Header from '../components/Header';
-
+import TiktokPixel from 'tiktok-pixel';
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import * as fbq from '../lib/pixel';
+
+const tikTokOptions = {
+  debug: true, // enable logs
+};
+
+const enableTikTokPixel = async () => {
+  //Tiktok pixel
+  await TiktokPixel.init('CA62CRBC77U3IR5TM5SG', {}, tikTokOptions);
+  TiktokPixel.pageView();
+};
 
 export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter();
 
   useEffect(() => {
+    enableTikTokPixel();
+
+    //Fb pixel
     // This pageview only triggers the first time (it's important for Pixel to have real information)
     fbq.pageview();
 
     const handleRouteChange = () => {
       fbq.pageview();
+      TiktokPixel.pageView();
     };
 
     router.events.on('routeChangeComplete', handleRouteChange);

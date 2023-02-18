@@ -18,6 +18,7 @@ import LabeledInput from '../inputs/LabeledInput';
 import usePaymentRequest from '../../hooks/usePaymentRequest';
 import usePaymentSuccess from '../../hooks/usePaymentSuccess';
 import CenteredLoader from '../loaders/CenteredLoader';
+import { useRouter } from 'next/router';
 
 const PaymentCard = () => {
   const stripe = useStripe();
@@ -30,10 +31,13 @@ const PaymentCard = () => {
     email: '',
   });
 
+  const router = useRouter();
   const [error, setError] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [cardFocused, setCardFocused] = useState(false);
   const { paymentRequest, prLoading } = usePaymentRequest(amountToDonate);
+
+  const source = router?.query?.source as string;
 
   useEffect(() => {
     if (paymentRequest && stripe) {
@@ -42,6 +46,7 @@ const PaymentCard = () => {
         const client_secret = await createPaymentIntentClientSecret({
           amount: amountToDonate,
           email: ev.payerEmail,
+          utm: source,
         });
         const { paymentIntent, error: confirmError } =
           await stripe.confirmCardPayment(
@@ -99,6 +104,7 @@ const PaymentCard = () => {
     const client_secret = await createPaymentIntentClientSecret({
       amount: amountToDonate,
       email: formData.email,
+      utm: source,
     });
 
     const result = await stripe.confirmCardPayment(client_secret!, {
@@ -212,13 +218,16 @@ const PaymentCard = () => {
 async function createPaymentIntentClientSecret({
   amount,
   email,
+  utm,
 }: {
   amount: number;
   email: string;
+  utm?: string;
 }) {
   const response = await axios.post('/api/paymentIntent', {
     amount: amount * 100,
     email,
+    utm,
   });
 
   const client_secret = response.data?.client_secret;

@@ -6,6 +6,8 @@ import Card from '../card/Card';
 
 import dynamic from 'next/dynamic';
 import CenteredLoader from '../loaders/CenteredLoader';
+import Tabs, { Tab } from '../tabs/Tabs';
+import { useState } from 'react';
 
 const DynamicPaymentCard = dynamic(() => import('./PaymentCardWrapped'));
 const DynamicSuccessDisplay = dynamic(() => import('./SuccessDisplay'));
@@ -16,10 +18,18 @@ const Root = styled(Card)`
 `;
 
 const Payment = () => {
+  const [selectedTab, setSelectedTab] = useState(0);
   const { step } = useStepper();
 
   return (
     <Root>
+      <Tabs
+        selectedIndex={selectedTab}
+        onChange={(changedIndex) => setSelectedTab(changedIndex)}
+      >
+        <Tab>Subscription</Tab>
+        <Tab>Single Donation</Tab>
+      </Tabs>
       {step === 0 && <AmountPicker />}
       {step === 1 && (
         <React.Suspense fallback={<CenteredLoader color={'black'} />}>

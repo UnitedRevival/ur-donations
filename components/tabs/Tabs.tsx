@@ -1,6 +1,6 @@
 import { Children, cloneElement } from 'react';
-import styled from 'styled-components';
-
+import styled, { css } from 'styled-components';
+import { motion } from 'framer-motion';
 interface TabsProps {
   children?: any;
   selectedIndex: number;
@@ -26,8 +26,10 @@ export const Tab: React.FC<TabProps> = (props) => {
 const Tabs: React.FC<TabsProps> = (props) => {
   const { children, selectedIndex, onChange } = props;
   const arrayChildren = Children.toArray(children);
+
   return (
     <TabsContainer {...props}>
+      <SelectedBar selectedIndex={selectedIndex} />
       {Children.map(arrayChildren, (child, index) =>
         // @ts-ignore
         cloneElement(child, {
@@ -40,6 +42,21 @@ const Tabs: React.FC<TabsProps> = (props) => {
   );
 };
 
+const AnimatedSelectBar = ({ className, selectedIndex }) => {
+  return (
+    <motion.div
+      animate={{
+        left: `${selectedIndex * 50}%`,
+      }}
+      transition={{
+        type: 'spring',
+        duration: 0.5,
+      }}
+      className={className}
+    ></motion.div>
+  );
+};
+
 const TabsContainer = styled.div<TabsProps>`
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -47,18 +64,6 @@ const TabsContainer = styled.div<TabsProps>`
   margin-bottom: 1rem;
   position: relative;
   user-select: none;
-
-  &::before {
-    transition: all 0.15s ease-in;
-    position: absolute;
-    content: '';
-    width: 49%;
-    bottom: -2px;
-    border-radius: ${({ theme }) => theme.borderRadius}px;
-    left: ${({ selectedIndex }) => selectedIndex * 51}%;
-    height: 3px;
-    background-color: ${({ theme }) => theme.colors.primary};
-  }
 `;
 
 const TabContainer = styled.div<TabProps>`
@@ -80,6 +85,15 @@ const TabContainer = styled.div<TabProps>`
     background-color: ${theme.colors.light}33`
         : ``}
   }
+`;
+
+const SelectedBar = styled<any>(AnimatedSelectBar)`
+  position: absolute;
+  width: 50%;
+  bottom: -2px;
+  border-radius: ${({ theme }) => theme.borderRadius}px;
+  height: 3px;
+  background-color: ${({ theme }) => theme.colors.primary};
 `;
 
 export default Tabs;

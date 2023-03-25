@@ -1,16 +1,13 @@
 import * as React from 'react';
 import styled from 'styled-components';
 import { useStepper } from '../../contexts/StepContext';
-import AmountPicker from '../amountpicker/AmountPicker';
 import Card from '../card/Card';
 
-import dynamic from 'next/dynamic';
-import CenteredLoader from '../loaders/CenteredLoader';
 import Tabs, { Tab } from '../tabs/Tabs';
 import { useState } from 'react';
-
-const DynamicPaymentCard = dynamic(() => import('./PaymentCardWrapped'));
-const DynamicSuccessDisplay = dynamic(() => import('./SuccessDisplay'));
+import ExpandablePanel from '../panel/ExpandablePanel';
+import Subscription from './Subscription';
+import SinglePayment from './SinglePayment';
 
 const Root = styled(Card)`
   margin-bottom: 4rem;
@@ -30,13 +27,14 @@ const Payment = () => {
         <Tab>Subscription</Tab>
         <Tab>Single Donation</Tab>
       </Tabs>
-      {step === 0 && <AmountPicker />}
-      {step === 1 && (
-        <React.Suspense fallback={<CenteredLoader color={'black'} />}>
-          <DynamicPaymentCard />
-        </React.Suspense>
-      )}
-      {step === 3 && <DynamicSuccessDisplay />}
+
+      <ExpandablePanel
+        animateKey={`${step}-${selectedTab}`}
+        slide={selectedTab === 0 ? 'Right' : 'Left'}
+      >
+        {selectedTab === 0 && <Subscription />}
+        {selectedTab === 1 && <SinglePayment step={step} />}
+      </ExpandablePanel>
     </Root>
   );
 };

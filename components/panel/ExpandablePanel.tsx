@@ -9,23 +9,25 @@ interface ExpandablePanelProps {
   slide: 'Left' | 'Right';
 }
 
+const fadeDistance = 100;
+
 const variants = {
   slideLeftInitial: {
     opacity: 0,
-    x: 400,
+    x: fadeDistance,
   },
   slideLeftExit: {
     opacity: 0,
-    x: 400,
+    x: fadeDistance,
   },
 
   slideRightInitial: {
     opacity: 0,
-    x: -400,
+    x: -fadeDistance,
   },
   slideRightExit: {
     opacity: 0,
-    x: -400,
+    x: -fadeDistance,
   },
 };
 
@@ -40,7 +42,7 @@ const ExpandablePanel: React.FC<ExpandablePanelProps> = ({
     <motion.div
       animate={{ height }}
       transition={{
-        duration: 0.25,
+        duration: 0.35,
       }}
       className={className}
     >
@@ -51,7 +53,7 @@ const ExpandablePanel: React.FC<ExpandablePanelProps> = ({
           initial={`slide${slide}Initial`}
           animate={{ opacity: 1, x: 0 }}
           transition={{
-            duration: 0.45,
+            duration: 0.35,
           }}
           exit={`slide${slide}Exit`}
         >

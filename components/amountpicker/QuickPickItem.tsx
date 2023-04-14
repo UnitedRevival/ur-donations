@@ -28,7 +28,7 @@ const Container = styled.div<ContainerProps>`
       : ''}
 `;
 
-const AmountText = styled.p`
+export const AmountText = styled.p`
   text-align: center;
   font-size: 1.2rem;
   font-weight: bold;

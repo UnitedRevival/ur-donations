@@ -22,5 +22,8 @@ declare module 'styled-components' {
     };
     borderRadius: string | number;
     boxShadow: string;
+    transitions: {
+      bezier1: string;
+    };
   }
 }

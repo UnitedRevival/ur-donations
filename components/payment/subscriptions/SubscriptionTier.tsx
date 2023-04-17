@@ -21,7 +21,6 @@ const SubscriptionTier: React.FC<SubscriptionTierProps> = ({
     <Container onClick={onSelected} {...rest}>
       <SelectedCircle {...rest} />
       <PriceContainer>
-        {/* <Title>{title}</Title> */}
         <Price>{children}</Price>
       </PriceContainer>
       <Benefits>
@@ -96,15 +95,6 @@ const Price = styled.p`
   margin: 0;
   padding: 0;
   color: ${({ theme }) => theme.colors.darkGray};
-`;
-
-const Title = styled.p`
-  font-weight: 600;
-  font-size: 14px;
-  color: ${({ theme }) => theme.colors.gray};
-  text-align: center;
-  margin: 0;
-  padding: 0;
 `;
 
 const Container = styled.div<SubscriptionTierProps>`

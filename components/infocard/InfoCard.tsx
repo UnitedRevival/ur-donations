@@ -58,7 +58,7 @@ const IconContainer = styled.div`
 const InfoCard = () => {
   return (
     <Root noPad>
-      <Image src="/infoPic.png" />
+      <Image src="/infoPic.jpg" />
       <Content>
         <Title id="scrollTitle">Fund Jesus March 2023</Title>
         <Text>

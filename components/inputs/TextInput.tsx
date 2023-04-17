@@ -11,8 +11,7 @@ const StyledInput = styled.input`
   padding: 2rem;
 
   border: 1px solid ${({ theme }) => theme.colors.light};
-  font-weight: bold;
-  font-size: 1.1rem;
+  font-size: 17px;
 
   width: 100%;
   text-align: center;

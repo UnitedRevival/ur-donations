@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import SubscriptionTier from './subscriptions/SubscriptionTier';
 import { AmountText } from '../amountpicker/QuickPickItem';
 import { useState } from 'react';
+import PrimaryButton from '../buttons/PrimaryButton';
 
 const subscriptionTiers = [
   {
@@ -21,13 +22,13 @@ const subscriptionTiers = [
     benefits: [
       'Free Flag',
       'Enter into travel giveaway(Hotel + Flight)',
-      'Free Flag, Enter into travel Giveaway (Hotel + Flight), Merch release',
+      'Merch release',
     ],
   },
 ];
 
 const Subscription = () => {
-  const [selectedTier, setSelectedTier] = useState(2);
+  const [selectedTier, setSelectedTier] = useState(0);
 
   return (
     <Tiers>
@@ -41,6 +42,9 @@ const Subscription = () => {
           ${s.amount}
         </SubscriptionTier>
       ))}
+      <PrimaryButton margin="1rem 0 0 0" fullWidth>
+        Continue
+      </PrimaryButton>
     </Tiers>
   );
 };

@@ -5,6 +5,6 @@ const Divider = styled.div`
   background-color: #e8e8e8;
   border-radius: ${(props) => props.theme.borderRadius};
 
-  margin: 1rem 0;
+  margin: 1.5rem 0;
 `;
 export default Divider;

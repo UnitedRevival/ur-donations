@@ -2,13 +2,25 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import stripe from '../../lib/stripe';
 
+const priceIds = {
+  0: 'price_1MwxUpKPc1fSUjuYL3wy6akg', // 50
+  1: 'price_1MwxUpKPc1fSUjuYGCIDCVRN', //100
+  2: 'price_1MwxUpKPc1fSUjuYBXTAZVuk', //250
+};
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
   if (req.method === 'POST') {
     const customerId = req.body.customerId;
-    const priceId = req.body.priceId;
+    const priceOption = req.body.priceOption;
+    const priceId = priceIds[priceOption];
+
+    if (!priceId)
+      throw new Error(
+        'Invalid price option passed in, cannot do' + priceOption
+      );
 
     try {
       // Create the subscription. Note we're expanding the Subscription's
@@ -27,7 +39,6 @@ export default async function handler(
         expand: ['latest_invoice.payment_intent'],
       });
 
-      // console.log('SUB: ', subscription);
       res.send({
         clientSecret:
           // @ts-ignore

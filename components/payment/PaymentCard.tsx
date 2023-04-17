@@ -148,16 +148,12 @@ const PaymentCard = () => {
     <form onSubmit={handleSubmit}>
       <Title>Payment</Title>
       <Divider />
-      <SubTitle>Wallets</SubTitle>
       {prLoading ? (
         <CenteredLoader color="#000000" />
       ) : paymentRequest ? (
         <PaymentRequestButtonElement options={{ paymentRequest }} />
-      ) : (
-        <NoWallet>No wallets found</NoWallet>
-      )}
+      ) : null}
 
-      <Divider />
       <LabeledInput
         inputId={'name'}
         label="Name"
@@ -190,7 +186,7 @@ const PaymentCard = () => {
       />
       {!!error && <ErrorText>{error}</ErrorText>}
       <PrimaryButton
-        variant="large"
+        // variant="large"
         fullWidth
         type="submit"
         loading={loading}
@@ -203,12 +199,12 @@ const PaymentCard = () => {
         <SecondaryButton
           type="button"
           fullWidth
-          variant="large"
+          // variant="large"
           onClick={() => {
             setStep(0);
           }}
         >
-          Go Back
+          Back
         </SecondaryButton>
       )}
     </form>

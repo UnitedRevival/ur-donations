@@ -1,5 +1,6 @@
+import { faCheck } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styled from 'styled-components';
-
 interface SubscriptionTierProps {
   children?: any;
 
@@ -20,17 +21,32 @@ const SubscriptionTier: React.FC<SubscriptionTierProps> = ({
     <Container onClick={onSelected} {...rest}>
       <SelectedCircle {...rest} />
       <PriceContainer>
-        <Title>{title}</Title>
+        {/* <Title>{title}</Title> */}
         <Price>{children}</Price>
       </PriceContainer>
       <Benefits>
         {benefits?.map((b) => (
-          <Benefit>- {b}</Benefit>
+          <BenefitContainer>
+            <IconContainer>
+              <FontAwesomeIcon icon={faCheck} size="1x" />
+            </IconContainer>
+            <Benefit>{b}</Benefit>
+          </BenefitContainer>
         ))}
       </Benefits>
     </Container>
   );
 };
+
+const IconContainer = styled.div`
+  width: 1rem;
+  margin-right: 0.5rem;
+  color: ${({ theme }) => theme.colors.gray};
+`;
+
+const BenefitContainer = styled.div`
+  display: flex;
+`;
 
 const SelectedCircle = styled.div<SubscriptionTierProps>`
   position: absolute;
@@ -79,6 +95,7 @@ const Price = styled.p`
   font-size: 28px;
   margin: 0;
   padding: 0;
+  color: ${({ theme }) => theme.colors.darkGray};
 `;
 
 const Title = styled.p`
@@ -97,7 +114,7 @@ const Container = styled.div<SubscriptionTierProps>`
   display: flex;
 
   width: 100%;
-  margin: 1rem;
+  margin: 0.5rem;
   padding: 1.5rem;
   transition: 0.1s all linear;
   box-sizing: border-box;

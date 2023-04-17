@@ -2,9 +2,11 @@ import styled from 'styled-components';
 
 const FormInput = styled.input`
   padding: 1rem;
+  height: 3rem;
 
   background-color: #fff;
 
+  box-sizing: border-box;
   border-radius: ${({ theme }) => theme.borderRadius}px;
   border: 1px solid ${({ theme }) => theme.colors.light};
   color: ${({ theme }) => theme.colors.black};

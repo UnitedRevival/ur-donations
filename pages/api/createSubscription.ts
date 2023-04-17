@@ -2,10 +2,14 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import stripe from '../../lib/stripe';
 
+// Currently are test price ids... change to env variables later
+const PRICE_ID_1 = process.env.SUBSCRIPTION_ID_1;
+const PRICE_ID_2 = process.env.SUBSCRIPTION_ID_2;
+const PRICE_ID_3 = process.env.SUBSCRIPTION_ID_3;
 const priceIds = {
-  0: 'price_1MwxUpKPc1fSUjuYL3wy6akg', // 50
-  1: 'price_1MwxUpKPc1fSUjuYGCIDCVRN', //100
-  2: 'price_1MwxUpKPc1fSUjuYBXTAZVuk', //250
+  0: PRICE_ID_1, // 50
+  1: PRICE_ID_2, //100
+  2: PRICE_ID_3, //250
 };
 
 export default async function handler(
@@ -17,6 +21,7 @@ export default async function handler(
     const priceOption = req.body.priceOption;
     const priceId = priceIds[priceOption];
 
+    console.log(priceIds);
     if (!priceId)
       throw new Error(
         'Invalid price option passed in, cannot do' + priceOption
@@ -26,7 +31,7 @@ export default async function handler(
       // Create the subscription. Note we're expanding the Subscription's
       // latest invoice and that invoice's payment_intent
       // so we can pass it to the front end to confirm the payment
-      // client secret: pi_3MwAbFKPc1fSUjuY1qeGTm4s_secret_Ptp92nUTAtyduXpiVmtlMa2Od
+
       const subscription = await stripe.subscriptions.create({
         customer: customerId,
         items: [

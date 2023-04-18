@@ -3,14 +3,6 @@ import styled from 'styled-components';
 import FormInput from './FormInput';
 import Label from './Label';
 
-const Container = styled.div`
-  display: flex;
-  justify-content: flex-start;
-
-  flex-direction: column;
-  margin: 1rem 0;
-`;
-
 interface LabeledInputProps {
   type?: string;
   label: string;
@@ -20,7 +12,20 @@ interface LabeledInputProps {
   value?: any;
   disabled?: boolean;
   onChange?: any;
+  fullWidth?: boolean;
+  spaced?: boolean;
+  autocomplete?: string;
 }
+
+const Container = styled.div<LabeledInputProps>`
+  display: flex;
+  justify-content: flex-start;
+
+  flex-direction: column;
+  margin: 1rem 0;
+  margin-right: ${({ spaced }) => (spaced ? '1rem' : '0')};
+  ${({ fullWidth }) => (fullWidth ? 'width: 100%' : '')}
+`;
 
 const LabeledInput: React.FC<LabeledInputProps> = ({
   type = 'text',
@@ -29,7 +34,8 @@ const LabeledInput: React.FC<LabeledInputProps> = ({
   ...rest
 }) => {
   return (
-    <Container>
+    // @ts-ignore
+    <Container {...rest}>
       <Label htmlFor={inputId}>{label}</Label>
       <FormInput id={inputId} type={type} name={inputId} {...rest} />
     </Container>

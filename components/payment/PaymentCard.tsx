@@ -230,7 +230,7 @@ async function createPaymentIntentClientSecret({
   return client_secret as string;
 }
 
-const ErrorText = styled.p`
+export const ErrorText = styled.p`
   color: ${({ theme }) => theme.colors.error};
 
   padding: 1rem;
@@ -241,35 +241,18 @@ const ErrorText = styled.p`
   border-radius: ${({ theme }) => theme.borderRadius};
 `;
 
-const NoWallet = styled.p`
-  padding: 1rem;
-  border: 1px solid ${({ theme }) => theme.colors.light};
-  border-radius: ${({ theme }) => theme.borderRadius}px;
-  color: ${({ theme }) => theme.colors.light};
-  text-align: center;
-
-  font-weight: bold;
-  font-size: 1.2rem;
-  margin-bottom: 2rem;
-`;
-
-const Title = styled.h2`
+export const Title = styled.h2`
   margin-bottom: 1rem;
   text-align: center;
 `;
 
-const SubTitle = styled.h3`
-  font-weight: bold;
-  margin-bottom: 1rem;
-  color: ${({ theme }) => theme.colors.light};
-`;
-
-const StyledCard = styled(CardElement)<{ focused: boolean }>`
-  margin-top: 1rem;
+export const StyledCard = styled(CardElement)<{ focused: boolean }>`
+  margin-top: 0.5rem;
   margin-bottom: 2rem;
 
   background-color: white;
   padding: 1rem;
+  height: 3rem;
   border-radius: ${({ theme }) => theme.borderRadius}px;
 
   box-sizing: border-box;

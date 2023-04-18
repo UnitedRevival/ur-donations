@@ -5,7 +5,7 @@ const FormInput = styled.input`
   height: 3rem;
 
   background-color: #fff;
-
+  font-size: 15px;
   box-sizing: border-box;
   border-radius: ${({ theme }) => theme.borderRadius}px;
   border: 1px solid ${({ theme }) => theme.colors.light};

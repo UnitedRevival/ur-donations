@@ -7,6 +7,7 @@ interface SubscriptionTierProps {
   selected?: boolean;
   title?: string;
   onSelected?: any;
+  yearly?: boolean;
   benefits?: string[];
 }
 
@@ -14,6 +15,7 @@ const SubscriptionTier: React.FC<SubscriptionTierProps> = ({
   children,
   onSelected,
   benefits,
+  yearly,
   title,
   ...rest
 }) => {
@@ -22,6 +24,7 @@ const SubscriptionTier: React.FC<SubscriptionTierProps> = ({
       <SelectedCircle {...rest} />
       <PriceContainer>
         <Price>{children}</Price>
+        <Interval>per {yearly ? 'year' : 'month'}</Interval>
       </PriceContainer>
       <Benefits>
         {benefits?.map((b) => (
@@ -36,6 +39,12 @@ const SubscriptionTier: React.FC<SubscriptionTierProps> = ({
     </Container>
   );
 };
+
+const Interval = styled.span`
+  color: ${({ theme }) => theme.colors.gray};
+  font-size: 15px;
+  margin-left: 0.5rem;
+`;
 
 const IconContainer = styled.div`
   width: 1rem;
@@ -74,6 +83,7 @@ const PriceContainer = styled.div`
   box-sizing: border-box;
   padding: 1rem;
   padding-left: 0;
+  padding-right: 1.5rem;
   border-right: 1px solid ${({ theme }) => theme.colors.light};
   margin-right: 1rem;
 `;

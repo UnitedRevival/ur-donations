@@ -1,6 +1,8 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next';
 import stripe from '../../lib/stripe';
+import CustomerModel from '../../db/models/customer.model';
+import dbConnect from '../../db/connect';
 
 // Currently are test price ids... change to env variables later
 const PRICE_ID_1 = process.env.SUBSCRIPTION_ID_1;
@@ -17,26 +19,56 @@ export default async function handler(
   res: NextApiResponse
 ) {
   if (req.method === 'POST') {
-    const customerId = req.body.customerId;
+    const { email, name, address, utm } = req.body;
+
+    await dbConnect();
+
+    const foundCustomer = await CustomerModel.findOne({ email });
+
+    let customerId: any = null;
+    if (foundCustomer) customerId = foundCustomer?.stripeCustomer;
+    else {
+      const customer = await stripe.customers.create({
+        email,
+        name,
+        address,
+        shipping: {
+          address,
+          name,
+        },
+      });
+
+      if (!customer) {
+        res.status(500).json({ error: 'Could not create customer' });
+        return;
+      }
+
+      const c = new CustomerModel({
+        email,
+        name,
+        stripeCustomer: customer.id,
+      });
+      customerId = customer.id;
+      await c.save();
+    }
+
     const priceOption = req.body.priceOption;
     const priceId = priceIds[priceOption];
 
-    console.log(priceIds);
     if (!priceId)
       throw new Error(
         'Invalid price option passed in, cannot do' + priceOption
       );
 
     try {
-      // Create the subscription. Note we're expanding the Subscription's
-      // latest invoice and that invoice's payment_intent
-      // so we can pass it to the front end to confirm the payment
-
       const subscription = await stripe.subscriptions.create({
         customer: customerId,
         items: [
           {
             price: priceId,
+            metadata: {
+              utm_source: utm ? utm : 'unknown',
+            },
           },
         ],
         payment_behavior: 'default_incomplete',
@@ -45,9 +77,8 @@ export default async function handler(
       });
 
       res.send({
-        clientSecret:
-          // @ts-ignore
-          subscription?.latest_invoice?.payment_intent?.client_secret,
+        // @ts-ignore
+        url: subscription?.latest_invoice?.hosted_invoice_url,
       });
     } catch (error) {
       // @ts-ignore

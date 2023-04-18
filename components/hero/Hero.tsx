@@ -32,10 +32,10 @@ const Hero = () => {
     <HeroContainer>
       <HeroContent>
         <Bar />
-        <Title>Help Fund Jesus March 2023</Title>
+        <Title>Partner With Us in Bringing Revival to America</Title>
         <Description>
-          Partner with us to see souls saved, lives transformed, and hearts
-          reignited to share the Gospel in 9 Cities Across America in 2023.
+          Together, we can fulfill the great commission and see the
+          transformative power of God in the cities of America.
         </Description>
         <PrimaryButton variant="large" width="60%" onClick={onClick}>
           Donate

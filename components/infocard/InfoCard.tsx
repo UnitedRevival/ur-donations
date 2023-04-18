@@ -60,13 +60,17 @@ const InfoCard = () => {
     <Root noPad>
       <Image src="/infoPic.jpg" />
       <Content>
-        <Title id="scrollTitle">Fund Jesus March 2023</Title>
+        <Title id="scrollTitle">Transform Lives Through Your Generosity</Title>
         <Text>
-          For 2023, we are planning to march through the cities of Dallas,
-          Phoenix, Denver, Tampa, Santa Monica, Portland, Seattle, San
-          Fransisco, and Sacramento. We need your help to cover costs for sound
-          equipment rental, hotel & travel expenses for our team, city permits,
-          and more.
+          Your generosity can make a significant impact in the lives of those
+          who have never heard about Jesus. Every year, millions of people in
+          the United States die without ever having the chance to know Him. By
+          towards the Jesus Marches, you have the power to bring hope to those
+          who are struggling and to be a part of the incredible work that God is
+          doing. Your support can help us host more Jesus Marches, reach more
+          people with the Gospel, and transform more lives. Will you partner
+          with God's vision and help bring hope to the lost by making a donation
+          today?
         </Text>
         <Flex>
           <IconContainer>

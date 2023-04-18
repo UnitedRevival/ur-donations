@@ -65,12 +65,12 @@ const InfoCard = () => {
           Your generosity can make a significant impact in the lives of those
           who have never heard about Jesus. Every year, millions of people in
           the United States die without ever having the chance to know Him. By
-          towards the Jesus Marches, you have the power to bring hope to those
-          who are struggling and to be a part of the incredible work that God is
-          doing. Your support can help us host more Jesus Marches, reach more
-          people with the Gospel, and transform more lives. Will you partner
-          with God's vision and help bring hope to the lost by making a donation
-          today?
+          donating towards the Jesus Marches, you have the power to bring hope
+          to those who are struggling and to be a part of the incredible work
+          that God is doing. Your support can help us host more Jesus Marches,
+          reach more people with the Gospel, and transform more lives. Will you
+          partner with God's vision and help bring hope to the lost by making a
+          donation today?
         </Text>
         <Flex>
           <IconContainer>

@@ -32,10 +32,10 @@ export default async function handler(
         email,
         name,
         address,
-        shipping: {
-          address,
-          name,
-        },
+        // shipping: {
+        //   address,
+        //   name: name,
+        // },
       });
 
       if (!customer) {

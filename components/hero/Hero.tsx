@@ -32,7 +32,7 @@ const Hero = () => {
     <HeroContainer>
       <HeroContent>
         <Bar />
-        <Title>Partner With Us in Bringing Revival to America</Title>
+        <Title>Partner With Us to Bring Revival to America</Title>
         <Description>
           Together, we can fulfill the great commission and see the
           transformative power of God in the cities of America.

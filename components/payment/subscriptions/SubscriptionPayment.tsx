@@ -141,7 +141,7 @@ const SubscriptionPayment: React.FC<SubscriptionPaymentProps> = ({
         loading={loading}
         disabled={loading}
       >
-        Complete Subscription
+        Complete Partnership
       </PrimaryButton>
       {!loading && (
         <SecondaryButton type="button" fullWidth onClick={() => onBack()}>

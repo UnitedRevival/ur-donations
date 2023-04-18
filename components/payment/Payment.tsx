@@ -24,7 +24,7 @@ const Payment = () => {
         selectedIndex={selectedTab}
         onChange={(changedIndex) => setSelectedTab(changedIndex)}
       >
-        <Tab>Subscription</Tab>
+        <Tab>Partnership</Tab>
         <Tab>Single Donation</Tab>
       </Tabs>
 

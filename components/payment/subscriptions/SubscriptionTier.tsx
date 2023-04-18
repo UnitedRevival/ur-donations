@@ -44,6 +44,7 @@ const Interval = styled.span`
   color: ${({ theme }) => theme.colors.gray};
   font-size: 15px;
   margin-left: 0.5rem;
+  text-align: center;
 `;
 
 const IconContainer = styled.div`

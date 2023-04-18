@@ -59,7 +59,7 @@ const TierSelection: React.FC<TierSelection> = ({
       <PrimaryButton margin="1rem 0 0 0" fullWidth onClick={onContinue}>
         Continue
       </PrimaryButton>
-      <Hint>Already have a subscription?</Hint>
+      <Hint>Already have a partnership/subscription?</Hint>
       <StyledLink href={STRIPE_CUSTOMER_PORTAL_URL}>
         Click here to manage your subscription
       </StyledLink>

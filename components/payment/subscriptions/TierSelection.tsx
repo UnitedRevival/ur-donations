@@ -12,7 +12,10 @@ export const subscriptionTiers = [
   {
     title: 'Supporter',
     amount: 100,
-    benefits: ['Free Flag', 'Enter into travel giveaway (Hotel + Flight)'],
+    benefits: [
+      'Free Flag',
+      'Enter into Jesus March Giveaway (Hotel + Flight to Jesus March)',
+    ],
   },
   {
     title: 'Member',
@@ -20,7 +23,7 @@ export const subscriptionTiers = [
 
     benefits: [
       'Free Flag',
-      'Enter into travel giveaway (Hotel + Flight)',
+      'Enter into Jesus March Giveaway (Hotel + Flight to Jesus March)',
       'Merch release',
     ],
   },

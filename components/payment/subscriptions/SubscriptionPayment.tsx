@@ -57,7 +57,6 @@ const SubscriptionPayment: React.FC<SubscriptionPaymentProps> = ({
       setError
     );
 
-    console.log('URL: ', url);
     // @ts-ignore
     window.location.href = url;
 

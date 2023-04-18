@@ -12,6 +12,7 @@ interface PrimaryButtonProps {
   disabled?: boolean;
   loading?: boolean;
   onClick?: (e: any) => any;
+  margin?: string;
 }
 
 const StyledButton = styled.button<PrimaryButtonProps>`
@@ -24,12 +25,11 @@ const StyledButton = styled.button<PrimaryButtonProps>`
   ${(props) =>
     props.variant === 'large'
       ? `
-      height:  ${props.height || '75'}px;  
+      height: 4rem;  
     `
       : `
-        padding-top: 0.5rem;
-        padding-bottom: 0.5rem;
-  `}
+      height: 3rem; 
+    `}
   padding-left: 1rem;
   padding-right: 1rem;
 
@@ -40,8 +40,9 @@ const StyledButton = styled.button<PrimaryButtonProps>`
   border-radius: ${(props) => props.theme.borderRadius}px;
   cursor: pointer;
   transition: all 0.1s linear;
-  font-size: 1.2rem;
-  font-weight: bold;
+  font-size: 17px;
+
+  ${(props) => (props.margin ? `margin: ${props.margin};` : '')}
 
   &:disabled {
     background-color: ${({ theme }) => theme.colors.darkGray};

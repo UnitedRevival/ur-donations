@@ -15,7 +15,7 @@ h4,
 h5,
 p,
 span {
-  color: #1f1401;
+  color: #3C1903;
 }
 
 * {

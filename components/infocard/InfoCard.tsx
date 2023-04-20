@@ -60,7 +60,7 @@ const InfoCard = () => {
     <Root noPad>
       <Image src="/infoPic.jpg" />
       <Content>
-        <Title id="scrollTitle">Transform Lives Through Your Generosity</Title>
+        <Title>Transform Lives Through Your Generosity</Title>
         <Text>
           Your generosity can make a significant impact in the lives of those
           who have never heard about Jesus. Every year, millions of people in

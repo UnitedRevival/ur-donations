@@ -15,7 +15,7 @@ const Root = styled(Card)`
 `;
 
 const Payment = () => {
-  const [selectedTab, setSelectedTab] = useState(0);
+  const [selectedTab, setSelectedTab] = useState(1);
   const { step } = useStepper();
 
   return (
@@ -24,7 +24,7 @@ const Payment = () => {
         selectedIndex={selectedTab}
         onChange={(changedIndex) => setSelectedTab(changedIndex)}
       >
-        <Tab>Partnership</Tab>
+        <Tab>Monthly</Tab>
         <Tab>Single Donation</Tab>
       </Tabs>
 

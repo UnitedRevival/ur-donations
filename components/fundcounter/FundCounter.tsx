@@ -22,7 +22,7 @@ const FundCounter = () => {
   const percentage = Math.floor((amountRaised / goal) * 100);
 
   return (
-    <div id="scrollTitle" className={styles.container}>
+    <div className={styles.container}>
       <p className={styles.progressText}>Progress</p>
       <FlexHorizontal>
         <div className={styles.progressBarContainer}>

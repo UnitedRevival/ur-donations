@@ -71,7 +71,7 @@ const InfoCard = () => {
           <IconContainer>
             <CheckFilled />
           </IconContainer>
-          <TaxText>Your donation is tax deductible</TaxText>
+          <TaxText id="scrollTitle">Your donation is tax deductible</TaxText>
         </Flex>
       </Content>
 

@@ -11,7 +11,7 @@ declare module 'styled-components' {
       darkGray: string;
       gray: string;
       black: string;
-
+      heartRed: string;
       error: string;
     };
     fonts: {

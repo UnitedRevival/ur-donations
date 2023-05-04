@@ -8,10 +8,16 @@ import dbConnect from '../../db/connect';
 const PRICE_ID_1 = process.env.SUBSCRIPTION_ID_1;
 const PRICE_ID_2 = process.env.SUBSCRIPTION_ID_2;
 const PRICE_ID_3 = process.env.SUBSCRIPTION_ID_3;
+const PRICE_ID_4 = process.env.SUBSCRIPTION_ID_4;
+const PRICE_ID_5 = process.env.SUBSCRIPTION_ID_5;
+const PRICE_ID_6 = process.env.SUBSCRIPTION_ID_6;
 const priceIds = {
-  0: PRICE_ID_1, // 50
-  1: PRICE_ID_2, //100
-  2: PRICE_ID_3, //250
+  0: PRICE_ID_1, // 10
+  1: PRICE_ID_2, // 25
+  2: PRICE_ID_3, // 50
+  3: PRICE_ID_4, // 100, ...etc
+  4: PRICE_ID_5,
+  5: PRICE_ID_6,
 };
 
 export default async function handler(

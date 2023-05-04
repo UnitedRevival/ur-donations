@@ -42,7 +42,7 @@ const ExpandablePanel: React.FC<ExpandablePanelProps> = ({
     <motion.div
       animate={{ height }}
       transition={{
-        duration: 0.35,
+        duration: 0.15,
       }}
       className={className}
     >
@@ -53,7 +53,8 @@ const ExpandablePanel: React.FC<ExpandablePanelProps> = ({
           initial={`slide${slide}Initial`}
           animate={{ opacity: 1, x: 0 }}
           transition={{
-            duration: 0.35,
+            duration: 0.15,
+            delay: 0.15,
           }}
           exit={`slide${slide}Exit`}
         >

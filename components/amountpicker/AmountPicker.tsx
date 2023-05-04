@@ -86,7 +86,7 @@ const AmountPicker = () => {
 
 const Root = styled.div``;
 
-const QuickPickContainer = styled.div<{ current?: boolean }>`
+export const QuickPickContainer = styled.div<{ current?: boolean }>`
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1rem;

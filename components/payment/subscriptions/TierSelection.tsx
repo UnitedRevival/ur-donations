@@ -1,7 +1,8 @@
 import styled from 'styled-components';
-import SubscriptionTier from './SubscriptionTier';
+// import SubscriptionTier from './SubscriptionTier';
 import { useState } from 'react';
 import PrimaryButton from '../../buttons/PrimaryButton';
+import QuickPickItem from '../../amountpicker/QuickPickItem';
 
 export const subscriptionTiers = [
   {
@@ -29,6 +30,8 @@ export const subscriptionTiers = [
   },
 ];
 
+export const subscriptionAmounts = [10, 25, 50, 100, 250, 500];
+
 const STRIPE_CUSTOMER_PORTAL_URL =
   process.env.NEXT_PUBLIC_STRIPE_CUSTOMER_PORTAL_URL;
 
@@ -48,7 +51,7 @@ const TierSelection: React.FC<TierSelection> = ({
   return (
     <Tiers>
       {/* <Toggle toggled={isYearly} onClick={() => setIsYearly(!isYearly)} /> */}
-      {subscriptionTiers.map((s, index) => (
+      {/* {subscriptionTiers.map((s, index) => (
         <SubscriptionTier
           onSelected={() => setTier(index)}
           title={s.title}
@@ -58,7 +61,17 @@ const TierSelection: React.FC<TierSelection> = ({
         >
           ${s.amount}
         </SubscriptionTier>
-      ))}
+      ))} */}
+      <QuickPickContainer>
+        {subscriptionAmounts.map((amount, index) => (
+          <QuickPickItem
+            value={amount}
+            key={amount + '-s'}
+            onSelect={() => setTier(index)}
+            selected={tier === index}
+          />
+        ))}
+      </QuickPickContainer>
       <PrimaryButton margin="1rem 0 0 0" fullWidth onClick={onContinue}>
         Continue
       </PrimaryButton>
@@ -69,6 +82,15 @@ const TierSelection: React.FC<TierSelection> = ({
     </Tiers>
   );
 };
+
+const QuickPickContainer = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+
+  width: 100%;
+  margin-bottom: 1rem;
+`;
 
 const StyledLink = styled.a`
   color: ${({ theme }) => theme.colors.primary};

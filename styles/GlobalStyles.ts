@@ -93,6 +93,47 @@ select {
   }
 }
 
+
+
+.heart-particle {
+  margin-left: 1rem;
+  opacity: 1;
+  width: 0.5rem;
+  height: 0.5rem;
+  position: absolute;
+  top: 0px;
+  left: -16px;
+  background-color: rgba(204, 42, 93, 1);
+  transition: all 1.4s ease-out;
+
+  z-index: 100;
+
+  &:before,
+  &:after {
+    position: absolute;
+    content: '';
+    border-radius: 100px;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    transition: all 0.1s ease-in;
+    background-color: rgba(204, 42, 93, 1);
+  }
+  &:before {
+    transform: translateX(-50%);
+  }
+  &:after {
+    transform: translateY(-50%);
+  }
+
+  &.particle-float {
+    left: -40px;
+    top: -25px;
+    opacity: 0;
+  }
+}
+
 `;
 
 export default GlobalStyles;

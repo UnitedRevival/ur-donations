@@ -1,7 +1,6 @@
 import * as React from 'react';
 import styled from 'styled-components';
 import Card from '../card/Card';
-import FundCounter from '../fundcounter/FundCounter';
 import CheckFilled from '../icons/CheckFilled';
 
 const Root = styled(Card)`
@@ -13,7 +12,7 @@ const Root = styled(Card)`
 
   overflow: hidden;
   width: 100%;
-
+  padding-bottom: 2rem;
   margin-bottom: 2rem;
 `;
 
@@ -76,7 +75,7 @@ const InfoCard = () => {
         </Flex>
       </Content>
 
-      <FundCounter />
+      {/* <FundCounter /> */}
     </Root>
   );
 };

@@ -7,7 +7,7 @@ export const defaultTheme: DefaultTheme = {
     darkGray: '#4E4138',
     light: '#e0e0e0',
     black: '#3C1903',
-
+    heartRed: 'rgba(204, 42, 93, 1)',
     error: '#eb1c26',
   },
   fonts: {

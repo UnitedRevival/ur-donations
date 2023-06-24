@@ -20,6 +20,10 @@ export default function MyDocument() {
           href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap"
           rel="stylesheet"
         />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Kanit:wght@700&display=swap"
+          rel="stylesheet"
+        ></link>
         <noscript>
           <img
             height="1"

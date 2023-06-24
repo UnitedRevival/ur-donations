@@ -33,7 +33,7 @@ const Payment = () => {
   };
 
   return (
-    <Root>
+    <Root id="scrollTitle2">
       <Tabs
         selectedIndex={selectedTab}
         onChange={(changedIndex) => {

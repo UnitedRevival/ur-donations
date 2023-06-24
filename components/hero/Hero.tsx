@@ -4,6 +4,43 @@ import Bar from '../accents/Bar';
 import PrimaryButton from '../buttons/PrimaryButton';
 import CheckFilled from '../icons/CheckFilled';
 
+export const Hero2 = () => {
+  const onClick = () => {
+    const elem = document.getElementById('scrollTitle2');
+    elem?.scrollIntoView();
+  };
+
+  return (
+    <Hero2Container>
+      <Hero2Content>
+        <Bar />
+        <Title2>
+          Jesus Marches are Spreading Revival All Over America, but we need YOUR
+          help.
+        </Title2>
+        <Description2>
+          How YOU can turn a small movement into a nationwide revival.
+        </Description2>
+
+        <HeroVideo2>
+          <iframe
+            width="100%"
+            height="100%"
+            src="https://www.youtube.com/embed/0VayRyrzmu0"
+            title="YouTube video player"
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          ></iframe>
+        </HeroVideo2>
+        <CTAButton2 variant="large" width="60%" onClick={onClick}>
+          Partner with Jesus March
+        </CTAButton2>
+      </Hero2Content>
+    </Hero2Container>
+  );
+};
+
 const Hero = () => {
   useEffect(() => {
     // 2. This code loads the IFrame Player API code asynchronously.
@@ -60,6 +97,16 @@ const Hero = () => {
   );
 };
 
+const CTAButton2 = styled(PrimaryButton)`
+  font-weight: 700;
+  margin-top: 6rem;
+
+  font-size: 1.2rem;
+  width: 65%;
+  min-width: 400px;
+  max-width: 800px;
+`;
+
 const HeroContainer = styled.div`
   display: flex;
   justify-content: space-between;
@@ -78,9 +125,18 @@ const HeroContainer = styled.div`
   }
 `;
 
+const Hero2Container = styled(HeroContainer)`
+  flex-direction: column;
+  align-items: center;
+  padding: 0px 2rem;
+  margin-top 20px;
+  margin-bottom: 4rem;
+`;
+
 const Title = styled.h1`
   margin-bottom: 1.4rem;
-  font-size: 3.3rem;
+  font-weight: 700;
+  font-size: 4rem;
   line-height: 1.2;
   letter-spacing: 1.2px;
 
@@ -88,6 +144,16 @@ const Title = styled.h1`
 
   @media (max-width: ${({ theme }) => theme.breakpoints.large}) {
     text-align: center;
+  }
+`;
+
+const Title2 = styled(Title)`
+  text-align: center;
+  font-size: 4rem;
+  font-family: 'Kanit', sans-serif;
+  @media (max-width: ${({ theme }) => theme.breakpoints.large}) {
+    text-align: center;
+    font-size: 3.1rem;
   }
 `;
 
@@ -101,6 +167,11 @@ const Description = styled.p`
   @media (max-width: ${({ theme }) => theme.breakpoints.large}) {
     text-align: center;
   }
+`;
+
+const Description2 = styled(Description)`
+  max-width: 400px;
+  text-align: center;
 `;
 
 const Filler = styled.div`
@@ -147,6 +218,16 @@ const HeroContent = styled.div`
   }
 `;
 
+const Hero2Content = styled(HeroContent)`
+  max-width: 900px;
+
+  justify-content: center;
+  align-items: center;
+  padding: 1rem 0px 0rem 0px;
+  margin-right: 0;
+  border-bottom: none;
+`;
+
 const HeroVideo = styled.div`
   width: 60%;
 
@@ -173,22 +254,37 @@ const HeroVideo = styled.div`
 
     border-radius: ${({ theme }) => theme.borderRadius}px;
   }
+`;
 
-  &::after {
-    content: '';
+const HeroVideo2 = styled(HeroVideo)`
+  margin-top: 0.5rem;
+
+  &::before {
     position: absolute;
-    bottom: -25px;
-    right: -50px;
-    width: 80%;
+    content: '';
+    width: 120%;
+    height: 110%;
+    background-color: ${({ theme }) => theme.colors.light};
+    z-index: -1;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 
-    height: 2px;
-    background-color: ${({ theme }) => theme.colors.black};
     border-radius: ${({ theme }) => theme.borderRadius}px;
   }
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.large}) {
-    width: 400px;
-  }
+  // &::after {
+  //   content: '';
+  //   position: absolute;
+  //   bottom: -25px;
+  //   left: 50%;
+  //   transform: translateX(-50%);
+  //   width: 110%;
+
+  //   height: 2px;
+  //   background-color: ${({ theme }) => theme.colors.darkGray};
+  //   border-radius: ${({ theme }) => theme.borderRadius}px;
+  // }
 `;
 
 export default Hero;

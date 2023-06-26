@@ -32,36 +32,63 @@ export default function Home(props: HomePageProps) {
           </HomeAccents>
 
           <Content>
-            {/* <InfoCard /> */}
             <LetterCopy>
-              Dear fellow Chrisitan
+              Dear <strong>fellow christians</strong>
               <br />
               <br />
-              Ever since starting these marches back in 2020, we have seen
-              thousands of people come to the Lord, and hundreds of healings
-              break out.
+              If you want to see the young generation of Americans
+              <u> set on fire and turn back to the Lord…</u>
+              <br />
+              <br />
+              And you are tired of seeing young men and women lost to
+              <strong>
+                {' '}
+                drugs, sexual confusion, alcohol, and the lusts of the flesh.
+              </strong>
+              <br />
+              <br />
+              Then this will be{' '}
+              <strong>
+                <u>the movement that can change that.</u>
+              </strong>
               <br />
               <br />
               The revival that we have been talking about for generations is
-              happening now!
+              happening through these marches!
               <br />
               <br />
-              However, in order to bring about revival, it takes all of us. So
-              we ask you to partner with us in bringing these marches.
+              In every city, we{' '}
+              <u>
+                witness healings, deliverances, and lives turning to Jesus.
+              </u>{' '}
+              Most importantly, our{' '}
+              <strong>Gen Z generation is coming back to the Lord,</strong>{' '}
+              surrendering, and committing their lives to an evangelistic
+              lifestyle.
               <br />
               <br />
-              Each march costs us upwards of $20,000 and includes at least 20
-              volunteers who come just to serve completely without any pay.
+              However, doing these marches without your support is{' '}
+              <strong>impossible.</strong>
               <br />
               <br />
-              We also believe in honestly stewarding all the funds, and we don't
-              spend any finances unless they are used to promote the Gospel in
-              every way possible.
+              Every march costs over <strong>30 thousand dollars</strong>
+              and requires weeks of preparation.
               <br />
               <br />
-              If it's on your heart and if, like us, you believe that these
-              marches can restore our generation back to the Father, partner
-              with us to promote the Gospel.
+              Not only that, but{' '}
+              <u>
+                each event also requires permits, media equipment, and travel
+                costs.
+              </u>
+              <br />
+              <br />
+              As we prepare for our <strong>next march in Portland</strong>, we
+              ask that you would help meet these needs and partner with us
+              financially.
+              <br />
+              <br />
+              It is your donations, prayers and support that continue to make
+              miraculous encounters happen.
             </LetterCopy>
             <StepContextProvider>
               <Payment />
@@ -91,12 +118,11 @@ export const getStaticProps: GetStaticProps = async (ctx) => {
 const LetterCopy = styled.p`
   font-size: 1.3rem;
   color: ${({ theme }) => theme.colors.black};
-
-  padding: 1rem 0 4rem 0;
+  margin: 1rem 2rem 4rem 2rem;
 `;
 
 const Content = styled.div`
   max-width: 600px;
-  margin: 0 0.5rem;
+
   width: 100%;
 `;

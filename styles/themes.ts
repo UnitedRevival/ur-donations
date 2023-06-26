@@ -15,6 +15,7 @@ export const defaultTheme: DefaultTheme = {
   },
   breakpoints: {
     large: '1060px',
+    medium: '700px',
   },
   transitions: {
     bezier1: 'cubic-bezier(0.22,0.96,0.34,1)',

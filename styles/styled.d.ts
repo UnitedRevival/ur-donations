@@ -19,6 +19,7 @@ declare module 'styled-components' {
     };
     breakpoints: {
       large: string;
+      medium: string;
     };
     borderRadius: string | number;
     boxShadow: string;

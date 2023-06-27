@@ -25,19 +25,19 @@ interface Total {
 export async function getTotalDonationAmount(
   donationType: boolean = true
 ): Promise<Total[]> {
-  let cacheExists: any = null;
+  // let cacheExists: any = null;
 
-  try {
-    cacheExists = await redis?.exists('totals');
-  } catch (err) {
-    console.log('err: ', err);
-  }
+  // try {
+  //   cacheExists = await redis?.exists('totals');
+  // } catch (err) {
+  //   console.log('err: ', err);
+  // }
 
-  if (cacheExists) {
-    const totalsString = (await redis?.get('totals')) as string;
-    const totals = JSON.parse(totalsString);
-    return totals;
-  }
+  // if (cacheExists) {
+  //   const totalsString = (await redis?.get('totals')) as string;
+  //   const totals = JSON.parse(totalsString);
+  //   return totals;
+  // }
 
   await dbConnect();
 
@@ -52,7 +52,7 @@ export async function getTotalDonationAmount(
     },
   ]);
 
-  if (redis) redis.set('totals', JSON.stringify(data));
+  // if (redis) redis.set('totals', JSON.stringify(data));
 
   return data;
 }

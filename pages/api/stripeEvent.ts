@@ -46,7 +46,7 @@ export default async function handler(
       await createPaymentData({
         amount: calculatedAmount,
         dateCreated: created,
-        donationType: 'Jesus March',
+        donationType: 'Jesus March Oregon - 2023',
         name,
         email,
       });

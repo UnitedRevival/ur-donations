@@ -9,6 +9,8 @@ import { StepContextProvider } from '../../contexts/StepContext';
 import styled from 'styled-components';
 import InfoCard from '../../components/infocard/InfoCard';
 import { GetStaticProps } from 'next';
+import FundCounter from '../../components/fundcounter/FundCounter';
+import Card from '../../components/card/Card';
 
 interface HomePageProps {
   amountRaised: number;
@@ -90,6 +92,9 @@ export default function Home(props: HomePageProps) {
               It is your donations, prayers and support that continue to make
               miraculous encounters happen.
             </LetterCopy>
+            <FundCounterCard>
+              <FundCounter />
+            </FundCounterCard>
             <StepContextProvider>
               <Payment />
             </StepContextProvider>
@@ -102,10 +107,17 @@ export default function Home(props: HomePageProps) {
   );
 }
 
+const FundCounterCard = styled(Card)`
+  margin-bottom: 2rem;
+  padding: 1rem;
+`;
+
 export const getStaticProps: GetStaticProps = async (ctx) => {
   const totals = await getTotalDonationAmount();
 
-  const jesusMarchDonations = totals.find((t) => t._id === 'Jesus March');
+  const jesusMarchDonations = totals.find(
+    (t) => t._id === 'Jesus March Oregon - 2023'
+  );
 
   return {
     props: {

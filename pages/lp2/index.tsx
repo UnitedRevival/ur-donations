@@ -11,6 +11,7 @@ import InfoCard from '../../components/infocard/InfoCard';
 import { GetStaticProps } from 'next';
 import FundCounter from '../../components/fundcounter/FundCounter';
 import Card from '../../components/card/Card';
+import { currentCampaign } from '../api/stripeEvent';
 
 interface HomePageProps {
   amountRaised: number;
@@ -114,9 +115,9 @@ const FundCounterCard = styled(Card)`
 
 export const getStaticProps: GetStaticProps = async (ctx) => {
   const totals = await getTotalDonationAmount();
-
+  
   const jesusMarchDonations = totals.find(
-    (t) => t._id === 'Jesus March Oregon - 2023'
+    (t) => t._id === currentCampaign
   );
 
   return {

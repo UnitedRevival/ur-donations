@@ -12,6 +12,8 @@ export const config = {
   },
 };
 
+export const currentCampaign = 'Jesus March Denver - 2023';
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -46,7 +48,7 @@ export default async function handler(
       await createPaymentData({
         amount: calculatedAmount,
         dateCreated: created,
-        donationType: 'Jesus March Oregon - 2023',
+        donationType: currentCampaign,
         name,
         email,
       });

@@ -38,6 +38,7 @@ const PaymentCard = () => {
   const { paymentRequest, prLoading } = usePaymentRequest(amountToDonate);
 
   const source = router?.query?.source as string;
+  const campaign = router?.query?.campaign as string;
 
   useEffect(() => {
     if (paymentRequest && stripe) {
@@ -47,6 +48,7 @@ const PaymentCard = () => {
           amount: amountToDonate,
           email: ev.payerEmail,
           utm: source,
+          campaign
         });
         const { paymentIntent, error: confirmError } =
           await stripe.confirmCardPayment(
@@ -105,6 +107,7 @@ const PaymentCard = () => {
       amount: amountToDonate,
       email: formData.email,
       utm: source,
+      campaign,
     });
 
     const result = await stripe.confirmCardPayment(client_secret!, {
@@ -215,15 +218,18 @@ async function createPaymentIntentClientSecret({
   amount,
   email,
   utm,
+  campaign
 }: {
   amount: number;
   email: string;
   utm?: string;
+  campaign?: string;
 }) {
   const response = await axios.post('/api/paymentIntent', {
     amount: amount * 100,
     email,
     utm,
+    campaign
   });
 
   const client_secret = response.data?.client_secret;

@@ -25,7 +25,7 @@ export default async function handler(
   res: NextApiResponse
 ) {
   if (req.method === 'POST') {
-    const { email, name, address, utm } = req.body;
+    const { email, name, address, utm, campaign } = req.body;
 
     await dbConnect();
 
@@ -69,6 +69,10 @@ export default async function handler(
     try {
       const subscription = await stripe.subscriptions.create({
         customer: customerId,
+        metadata: {
+          utm_source: utm ? utm : 'unknown',
+          campaign: campaign ? campaign : 'unknown'
+        },
         items: [
           {
             price: priceId,

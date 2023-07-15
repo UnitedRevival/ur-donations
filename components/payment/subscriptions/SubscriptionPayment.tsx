@@ -32,6 +32,8 @@ const SubscriptionPayment: React.FC<SubscriptionPaymentProps> = ({
   const router = useRouter();
 
   const source = router?.query?.source as string;
+  const campaign = router?.query?.source as string;
+
 
   const onChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -53,6 +55,7 @@ const SubscriptionPayment: React.FC<SubscriptionPaymentProps> = ({
           country: formData.country,
         },
         utm: source,
+        campaign,
       },
       setError
     );
@@ -159,12 +162,14 @@ async function createSubscriptionURL(
     email,
     address,
     utm,
+    campaign,
   }: {
     priceOption: number;
     name?: string;
     email: string;
     utm?: string;
     address: any;
+    campaign: string
   },
   setError: any
 ) {
@@ -175,6 +180,7 @@ async function createSubscriptionURL(
       email,
       address,
       utm,
+      campaign
     });
 
     const url = response.data?.url;

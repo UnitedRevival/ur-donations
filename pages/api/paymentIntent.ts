@@ -12,7 +12,7 @@ export default async function handler(
   res: NextApiResponse<Data>
 ) {
   if (req.method === 'POST') {
-    const { amount, email, utm } = req.body;
+    const { amount, email, utm, campaign } = req.body;
 
     const intent = await stripe.paymentIntents.create({
       amount,
@@ -21,6 +21,7 @@ export default async function handler(
       metadata: {
         integration_check: 'accept_a_payment',
         utm_source: utm ? utm : 'unknown',
+        campaign: campaign ? campaign : 'unknown',
       },
     });
 

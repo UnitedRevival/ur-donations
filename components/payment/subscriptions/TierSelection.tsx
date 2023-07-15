@@ -47,7 +47,7 @@ const TierSelection: React.FC<TierSelection> = ({
   onContinue,
 }) => {
   const [isYearly, setIsYearly] = useState(false);
-  console.log('STRIPE CUSTOMER: ', STRIPE_CUSTOMER_PORTAL_URL);
+
   return (
     <Tiers>
       {/* <Toggle toggled={isYearly} onClick={() => setIsYearly(!isYearly)} /> */}

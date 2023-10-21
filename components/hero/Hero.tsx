@@ -68,7 +68,7 @@ const Hero = () => {
     <HeroContainer>
       <HeroContent>
         <Bar />
-        <Title>Help Fund Jesus March 2023</Title>
+        <Title>Help Fund Jesus March Sacramento</Title>
         <Description>
           Together, we can fulfill the great commission and see the
           transformative power of God in the cities of America.
@@ -146,6 +146,7 @@ const Title = styled.h1`
 
   @media (max-width: ${({ theme }) => theme.breakpoints.large}) {
     text-align: center;
+    font-size: 2.6rem;
   }
 `;
 
@@ -169,6 +170,7 @@ const Description = styled.p`
 
   @media (max-width: ${({ theme }) => theme.breakpoints.large}) {
     text-align: center;
+    font-size: 1rem;
   }
 `;
 

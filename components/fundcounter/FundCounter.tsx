@@ -24,7 +24,7 @@ const FundCounter = () => {
 
   return (
     <div className={styles.container}>
-      <p className={styles.progressText}>Denver Jesus March Funding</p>
+      <p className={styles.progressText}>Sacramento Jesus March Funding</p>
       <FlexHorizontal>
         <div className={styles.progressBarContainer}>
           <ProgressBar percentage={percentage} />

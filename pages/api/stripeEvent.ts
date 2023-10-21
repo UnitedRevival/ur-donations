@@ -12,7 +12,7 @@ export const config = {
   },
 };
 
-export const currentCampaign = 'Jesus March Denver - 2023';
+export const currentCampaign = 'Jesus March Sacramento - 2023';
 
 export default async function handler(
   req: NextApiRequest,

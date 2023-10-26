@@ -9,12 +9,59 @@ import { StepContextProvider } from '../contexts/StepContext';
 import styled from 'styled-components';
 import InfoCard from '../components/infocard/InfoCard';
 import { GetStaticProps } from 'next';
+import { useEffect, useState } from 'react';
 
 interface HomePageProps {
   amountRaised: number;
 }
 
+const videos = {
+  mobile: '6k4g05k26f',
+  desktop: 'xt8wbk191f',
+};
+
 export default function Home(props: HomePageProps) {
+  const [paymentVisible, setPaymentVisible] = useState(false);
+  const [videoRef, setVideoRef] = useState<any>(null);
+  const [videoId, setVideoId] = useState(videos.mobile);
+
+  useEffect(() => {
+    // @ts-ignore
+    window._wq = window._wq || [];
+
+    // @ts-ignore
+    _wq.push({
+      id: videoId,
+      onReady: function (video) {
+        video.play();
+        setVideoRef(video);
+      },
+    });
+
+    return () => {};
+  }, []);
+
+  useEffect(() => {
+    const video = videoRef;
+
+    if (!video) return;
+
+    const onSecondChange = function (seconds) {
+      if (seconds >= 12) {
+        setPaymentVisible(true);
+        video.unbind(onSecondChange);
+      }
+    };
+
+    if (!paymentVisible) {
+      video.bind('secondchange', onSecondChange);
+
+      return () => {
+        video.unbind(onSecondChange);
+      };
+    }
+  }, [videoRef]);
+
   return (
     <HomePageProvider data={props}>
       <div className={styles.container}>
@@ -28,14 +75,18 @@ export default function Home(props: HomePageProps) {
 
         <main className={styles.main}>
           <HomeAccents>
-            <Hero></Hero>
+            <Hero videoId={videoId} paymentVisible={paymentVisible}></Hero>
           </HomeAccents>
 
           <Content>
-            <InfoCard />
-            <StepContextProvider>
-              <Payment />
-            </StepContextProvider>
+            {paymentVisible && (
+              <>
+                <InfoCard />
+                <StepContextProvider>
+                  <Payment />
+                </StepContextProvider>
+              </>
+            )}
           </Content>
         </main>
 

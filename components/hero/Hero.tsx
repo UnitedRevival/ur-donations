@@ -1,8 +1,7 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import Bar from '../accents/Bar';
 import PrimaryButton from '../buttons/PrimaryButton';
-import CheckFilled from '../icons/CheckFilled';
 
 export const Hero2 = () => {
   const onClick = () => {
@@ -40,25 +39,7 @@ export const Hero2 = () => {
   );
 };
 
-const Hero = () => {
-  useEffect(() => {
-    // 2. This code loads the IFrame Player API code asynchronously.
-    // 3. This function creates an <iframe> (and YouTube player)
-    //    after the API code downloads.
-    // let player = new YT.Player('player', {
-    //   height: '390',
-    //   width: '640',
-    //   videoId: 'M7lc1UVf-VE',
-    //   playerVars: {
-    //     playsinline: 1,
-    //   },
-    //   events: {
-    //     onReady: onPlayerReady,
-    //     onStateChange: onPlayerStateChange,
-    //   },
-    // });
-  });
-
+const Hero = ({ paymentVisible, videoId }) => {
   const onClick = () => {
     const elem = document.getElementById('scrollTitle');
     elem?.scrollIntoView();
@@ -67,34 +48,39 @@ const Hero = () => {
   return (
     <HeroContainer>
       <HeroContent>
-        <Bar />
-        <Title>Help Fund Jesus March Sacramento</Title>
-        <Description>
-          Together, we can fulfill the great commission and see the
-          transformative power of God in the cities of America.
-        </Description>
-        <PrimaryButton variant="large" width="60%" onClick={onClick}>
-          Donate
-        </PrimaryButton>
-        <Filler>
-          <CheckFilled color="#34b233" />
-          <SubText>Registered Non-profit Organization</SubText>
-        </Filler>
+        <Title>Watch 2024 Jesus March Update</Title>
       </HeroContent>
       <HeroVideo>
         <iframe
+          src={`//fast.wistia.net/embed/iframe/${videoId}?seo=true`}
+          allowtransparency="true"
+          frameborder="0"
+          scrolling="no"
+          class="wistia_embed"
+          name="wistia_embed"
+          allowfullscreen
+          mozallowfullscreen
+          webkitallowfullscreen
+          oallowfullscreen
+          msallowfullscreen
           width="100%"
           height="100%"
-          src="https://www.youtube.com/embed/0VayRyrzmu0"
-          title="YouTube video player"
-          frameBorder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
         ></iframe>
       </HeroVideo>
+      <ButtonContainer>
+        {paymentVisible && (
+          <CTAButton variant="large" width="50%" onClick={onClick}>
+            Give Now
+          </CTAButton>
+        )}
+      </ButtonContainer>
     </HeroContainer>
   );
 };
+
+const CTAButton = styled(PrimaryButton)`
+  min-width: 150px;
+`;
 
 const CTAButton2 = styled(PrimaryButton)`
   font-weight: 700;
@@ -109,21 +95,29 @@ const CTAButton2 = styled(PrimaryButton)`
   box-sizing: border-box;
 `;
 
+const ButtonContainer = styled.div`
+  min-height: 150px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
 const HeroContainer = styled.div`
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
+  align-items: center;
+  flex-direction: column;
   width: 100%;
 
-  padding: 0px 4% 0px 6%;
+  padding: 0px 2rem 0px 6%;
 
   margin-bottom: 12rem;
-  margin-top: 100px;
+  margin-top: 12px;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.large}) {
     flex-direction: column;
     align-items: center;
-    padding: 0px 2rem;
   }
 `;
 
@@ -136,16 +130,16 @@ const Hero2Container = styled(HeroContainer)`
 `;
 
 const Title = styled.h1`
-  margin-bottom: 1.4rem;
   font-weight: 700;
-  font-size: 4rem;
+  font-size: 3rem;
   line-height: 1.2;
   letter-spacing: 1.2px;
 
   color: ${({ theme }) => theme.colors.black};
+  text-align: center;
+  margin-bottom: 2rem;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.large}) {
-    text-align: center;
     font-size: 2.6rem;
   }
 `;
@@ -205,19 +199,13 @@ const SubText = styled.p`
 const HeroContent = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
-  max-width: 460px;
+  justify-content: center;
+  align-items: center;
   width: 100%;
   height: 90%;
-  padding: 1.5rem 0px 4rem 0px;
-
-  margin-right: 2rem;
-
-  border-bottom: 1px solid #dedede;
+  padding: 2rem 0px 0rem 0px;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.large}) {
-    justify-content: center;
-    align-items: center;
     padding: 2rem 0px 0rem 0px;
     margin-right: 0;
   }
@@ -240,11 +228,11 @@ const Hero2Content = styled(HeroContent)`
 `;
 
 const HeroVideo = styled.div`
-  width: 60%;
+  width: 100%;
 
   max-width: 1100px;
   background-color: ${({ theme }) => theme.colors.black};
-  height: 500px;
+  height: 700px;
 
   position: relative;
   border-radius: ${({ theme }) => theme.borderRadius}px;
@@ -252,19 +240,6 @@ const HeroVideo = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-
-  &::before {
-    position: absolute;
-    content: '';
-    width: 100%;
-    height: 50%;
-    background-color: ${({ theme }) => theme.colors.primary};
-    z-index: -1;
-    bottom: -80px;
-    right: -150px;
-
-    border-radius: ${({ theme }) => theme.borderRadius}px;
-  }
 `;
 
 const HeroVideo2 = styled(HeroVideo)`
@@ -282,19 +257,6 @@ const HeroVideo2 = styled(HeroVideo)`
     transform: translate(-50%, -50%);
 
     border-radius: ${({ theme }) => theme.borderRadius}px;
-  }
-
-  &::after {
-    // content: '';
-    // position: absolute;
-    // bottom: -25px;
-    // left: 50%;
-    // transform: translateX(-50%);
-    // width: 110%;
-
-    // height: 2px;
-    // background-color: ${({ theme }) => theme.colors.darkGray};
-    // border-radius: ${({ theme }) => theme.borderRadius}px;
   }
 `;
 

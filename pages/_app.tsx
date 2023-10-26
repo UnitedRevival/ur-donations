@@ -44,6 +44,10 @@ export default function App({ Component, pageProps }: AppProps) {
       <GlobalStyles />
       <Header />
       <Script
+        src="https://fast.wistia.com/assets/external/E-v1.js"
+        async
+      ></Script>
+      <Script
         id="fb-pixel"
         strategy="afterInteractive"
         dangerouslySetInnerHTML={{

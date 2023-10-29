@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import Bar from '../accents/Bar';
 import PrimaryButton from '../buttons/PrimaryButton';
+import CheckFilled from '../icons/CheckFilled';
 
 export const Hero2 = () => {
   const onClick = () => {
@@ -39,7 +40,7 @@ export const Hero2 = () => {
   );
 };
 
-const Hero = ({ paymentVisible, videoId }) => {
+const Hero = () => {
   const onClick = () => {
     const elem = document.getElementById('scrollTitle');
     elem?.scrollIntoView();
@@ -48,9 +49,49 @@ const Hero = ({ paymentVisible, videoId }) => {
   return (
     <HeroContainer>
       <HeroContent>
-        <Title>Watch 2024 Jesus March Update</Title>
+        <Bar />
+        <Title>Help Fund Jesus March Sacramento</Title>
+        <Description>
+          Together, we can fulfill the great commission and see the
+          transformative power of God in the cities of America.
+        </Description>
+        <PrimaryButton variant="large" width="60%" onClick={onClick}>
+          Donate
+        </PrimaryButton>
+        <Filler>
+          <CheckFilled color="#34b233" />
+          <SubText>Registered Non-profit Organization</SubText>
+        </Filler>
       </HeroContent>
       <HeroVideo>
+        <iframe
+          width="100%"
+          height="100%"
+          src="https://www.youtube.com/embed/0VayRyrzmu0"
+          title="YouTube video player"
+          frameBorder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        ></iframe>
+      </HeroVideo>
+    </HeroContainer>
+  );
+};
+
+export const HeroWatch = ({ paymentVisible, videoId }) => {
+  const onClick = () => {
+    const elem = document.getElementById('scrollTitle');
+    elem?.scrollIntoView();
+  };
+
+  return (
+    <HeroContainerWatch>
+      <HeroContentWatch>
+        <TitleWatch>
+          Wait! Watch Important Update For Jesus March 2024
+        </TitleWatch>
+      </HeroContentWatch>
+      <HeroVideoWatch>
         <iframe
           src={`//fast.wistia.net/embed/iframe/${videoId}?seo=true`}
           allowtransparency="true"
@@ -66,7 +107,7 @@ const Hero = ({ paymentVisible, videoId }) => {
           width="100%"
           height="100%"
         ></iframe>
-      </HeroVideo>
+      </HeroVideoWatch>
       <ButtonContainer>
         {paymentVisible && (
           <CTAButton variant="large" width="50%" onClick={onClick}>
@@ -74,7 +115,7 @@ const Hero = ({ paymentVisible, videoId }) => {
           </CTAButton>
         )}
       </ButtonContainer>
-    </HeroContainer>
+    </HeroContainerWatch>
   );
 };
 
@@ -106,6 +147,24 @@ const ButtonContainer = styled.div`
 const HeroContainer = styled.div`
   display: flex;
   justify-content: space-between;
+  align-items: flex-end;
+  width: 100%;
+
+  padding: 0px 4% 0px 6%;
+
+  margin-bottom: 12rem;
+  margin-top: 100px;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.large}) {
+    flex-direction: column;
+    align-items: center;
+    padding: 0px 2rem;
+  }
+`;
+
+const HeroContainerWatch = styled.div`
+  display: flex;
+  justify-content: space-between;
   align-items: center;
   flex-direction: column;
   width: 100%;
@@ -130,6 +189,21 @@ const Hero2Container = styled(HeroContainer)`
 `;
 
 const Title = styled.h1`
+  margin-bottom: 1.4rem;
+  font-weight: 700;
+  font-size: 4rem;
+  line-height: 1.2;
+  letter-spacing: 1.2px;
+
+  color: ${({ theme }) => theme.colors.black};
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.large}) {
+    text-align: center;
+    font-size: 2.6rem;
+  }
+`;
+
+const TitleWatch = styled.h1`
   font-weight: 700;
   font-size: 3rem;
   line-height: 1.2;
@@ -199,6 +273,27 @@ const SubText = styled.p`
 const HeroContent = styled.div`
   display: flex;
   flex-direction: column;
+  justify-content: flex-end;
+  max-width: 460px;
+  width: 100%;
+  height: 90%;
+  padding: 1.5rem 0px 4rem 0px;
+
+  margin-right: 2rem;
+
+  border-bottom: 1px solid #dedede;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.large}) {
+    justify-content: center;
+    align-items: center;
+    padding: 2rem 0px 0rem 0px;
+    margin-right: 0;
+  }
+`;
+
+const HeroContentWatch = styled.div`
+  display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   width: 100%;
@@ -227,7 +322,7 @@ const Hero2Content = styled(HeroContent)`
   }
 `;
 
-const HeroVideo = styled.div`
+const HeroVideoWatch = styled.div`
   width: 100%;
 
   max-width: 1100px;
@@ -240,6 +335,34 @@ const HeroVideo = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+`;
+
+const HeroVideo = styled.div`
+  width: 60%;
+
+  max-width: 1100px;
+  background-color: ${({ theme }) => theme.colors.black};
+  height: 500px;
+
+  position: relative;
+  border-radius: ${({ theme }) => theme.borderRadius}px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  &::before {
+    position: absolute;
+    content: '';
+    width: 100%;
+    height: 50%;
+    background-color: ${({ theme }) => theme.colors.primary};
+    z-index: -1;
+    bottom: -80px;
+    right: -150px;
+
+    border-radius: ${({ theme }) => theme.borderRadius}px;
+  }
 `;
 
 const HeroVideo2 = styled(HeroVideo)`

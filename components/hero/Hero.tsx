@@ -94,6 +94,7 @@ export const HeroWatch = ({ paymentVisible, videoId }) => {
       <HeroVideoWatch>
         <iframe
           src={`//fast.wistia.net/embed/iframe/${videoId}?seo=true`}
+          // @ts-ignore
           allowtransparency="true"
           frameborder="0"
           scrolling="no"

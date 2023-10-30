@@ -43,7 +43,6 @@ export default function Home(props: HomePageProps) {
     _wq.push({
       id: videoId.id,
       onReady: function (video) {
-        video.play();
         setVideoRef(video);
       },
     });

@@ -41,15 +41,19 @@ export default function Home(props: HomePageProps) {
 
     // @ts-ignore
     _wq.push({
-      id: videoId,
+      id: videoId.id,
       onReady: function (video) {
         video.play();
         setVideoRef(video);
       },
     });
 
-    return () => {};
-  }, []);
+    return () => {
+      // @ts-ignore
+      _wq.pop();
+      // @ts-ignore
+    };
+  }, [videoId.id]);
 
   useEffect(() => {
     const video = videoRef;

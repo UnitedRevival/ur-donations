@@ -87,23 +87,19 @@ export const HeroWatch = ({ paymentVisible, videoId }) => {
   return (
     <HeroContainerWatch>
       <HeroContentWatch>
-        <TitleWatch>
-          Wait! Watch Important Update For Jesus March 2024
-        </TitleWatch>
+        <TitleWatch>Wait! Watch Important Jesus March Update ⬇️</TitleWatch>
       </HeroContentWatch>
       <HeroVideoWatch>
         <iframe
-          src={`//fast.wistia.net/embed/iframe/${videoId}?seo=true`}
+          src={`//fast.wistia.net/embed/iframe/${videoId.id}?seo=true`}
+          title={videoId.title}
+          allow="autoplay; fullscreen"
           // @ts-ignore
           allowtransparency="true"
           frameborder="0"
           scrolling="no"
           class="wistia_embed"
           name="wistia_embed"
-          allowfullscreen
-          mozallowfullscreen
-          webkitallowfullscreen
-          oallowfullscreen
           msallowfullscreen
           width="100%"
           height="100%"
@@ -206,16 +202,20 @@ const Title = styled.h1`
 
 const TitleWatch = styled.h1`
   font-weight: 700;
-  font-size: 3rem;
   line-height: 1.2;
   letter-spacing: 1.2px;
 
   color: ${({ theme }) => theme.colors.black};
   text-align: center;
   margin-bottom: 2rem;
+  font-size: 1.5rem;
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.large}) {
-    font-size: 2.6rem;
+  @media (min-width: ${({ theme }) => theme.breakpoints.medium}) {
+    font-size: 1.9rem;
+  }
+  @media (min-width: ${({ theme }) => theme.breakpoints.large}) {
+    font-size: 3rem;
+    width: 100%;
   }
 `;
 

@@ -16,8 +16,14 @@ interface HomePageProps {
 }
 
 const videos = {
-  mobile: 'v3jgq60b32',
-  desktop: 'ygquena5g1',
+  mobile: {
+    id: 'v3jgq60b32',
+    title: 'Jesus March Ad 9/16 (Mobile) Video',
+  },
+  desktop: {
+    id: 'ygquena5g1',
+    title: 'Jesus March Ad (Desktop) Video',
+  },
 };
 
 export default function Home(props: HomePageProps) {

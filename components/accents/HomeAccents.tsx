@@ -59,7 +59,7 @@ const HomeAccents = ({ children }) => {
 
   return (
     <Root>
-      <Diamond
+      {/* <Diamond
         position={{ top: 50, right: 50 }}
         width={100}
         height={100}
@@ -70,7 +70,7 @@ const HomeAccents = ({ children }) => {
         width={100}
         height={100}
         color={theme.colors.primary}
-      />
+      /> */}
       {children}
     </Root>
   );

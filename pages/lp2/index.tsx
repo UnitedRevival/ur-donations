@@ -115,10 +115,8 @@ const FundCounterCard = styled(Card)`
 
 export const getStaticProps: GetStaticProps = async (ctx) => {
   const totals = await getTotalDonationAmount();
-  
-  const jesusMarchDonations = totals.find(
-    (t) => t._id === currentCampaign
-  );
+
+  const jesusMarchDonations = totals.find((t) => t._id === currentCampaign);
 
   return {
     props: {

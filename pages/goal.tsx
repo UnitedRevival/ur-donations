@@ -9,6 +9,7 @@ import { StepContextProvider } from '../contexts/StepContext';
 import styled from 'styled-components';
 import InfoCard from '../components/infocard/InfoCard';
 import { GetStaticProps } from 'next';
+import { currentCampaign } from './api/stripeEvent';
 
 interface HomePageProps {
   amountRaised: number;
@@ -48,7 +49,7 @@ export default function Home(props: HomePageProps) {
 export const getStaticProps: GetStaticProps = async (ctx) => {
   const totals = await getTotalDonationAmount();
 
-  const jesusMarchDonations = totals.find((t) => t._id === 'Jesus March');
+  const jesusMarchDonations = totals.find((t) => t._id === currentCampaign);
 
   return {
     props: {

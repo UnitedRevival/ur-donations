@@ -48,7 +48,7 @@ const PaymentCard = () => {
           amount: amountToDonate,
           email: ev.payerEmail,
           utm: source,
-          campaign
+          campaign,
         });
         const { paymentIntent, error: confirmError } =
           await stripe.confirmCardPayment(
@@ -176,7 +176,6 @@ const PaymentCard = () => {
         disabled={loading}
         onChange={onChange}
       />
-      <Label>Card</Label>
       <StyledCard
         focused={cardFocused}
         options={{ disabled: loading }}
@@ -218,7 +217,7 @@ async function createPaymentIntentClientSecret({
   amount,
   email,
   utm,
-  campaign
+  campaign,
 }: {
   amount: number;
   email: string;
@@ -229,7 +228,7 @@ async function createPaymentIntentClientSecret({
     amount: amount * 100,
     email,
     utm,
-    campaign
+    campaign,
   });
 
   const client_secret = response.data?.client_secret;
@@ -248,7 +247,6 @@ export const ErrorText = styled.p`
 `;
 
 export const Title = styled.h2`
-  margin-bottom: 1rem;
   text-align: center;
 `;
 

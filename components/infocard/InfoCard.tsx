@@ -2,6 +2,7 @@ import * as React from 'react';
 import styled from 'styled-components';
 import Card from '../card/Card';
 import CheckFilled from '../icons/CheckFilled';
+import FundCounter from '../fundcounter/FundCounter';
 
 const Root = styled(Card)`
   display: flex;
@@ -12,12 +13,11 @@ const Root = styled(Card)`
 
   overflow: hidden;
   width: 100%;
-  padding-bottom: 2rem;
   margin-bottom: 2rem;
 `;
 
 const Image = styled.img`
-  height: 300px;
+  height: 185px;
   object-fit: cover;
   width: 100%;
   background-color: ${({ theme }) => theme.colors.gray};
@@ -25,11 +25,12 @@ const Image = styled.img`
 
 const Title = styled.h2`
   color: ${({ theme }) => theme.colors.black};
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
+  font-size: 27px;
 `;
 
 const Text = styled.p`
-  color: ${({ theme }) => theme.colors.gray};
+  color: ${({ theme }) => theme.colors.black};
 `;
 
 const TaxText = styled.p`
@@ -38,13 +39,14 @@ const TaxText = styled.p`
 `;
 
 const Content = styled.div`
-  padding: 2rem 2rem 0 2rem;
+  padding: 1rem 1.5rem 0 1.5rem;
+  width: 100%;
 `;
 
 const Flex = styled.div`
   display: flex;
   align-items: center;
-  margin-top: 2rem;
+  margin-top: 1rem;
 `;
 
 const IconContainer = styled.div`
@@ -54,25 +56,41 @@ const IconContainer = styled.div`
   align-items: center;
 `;
 
-const InfoCard = () => {
+interface InfoCardProps {
+  children?: any;
+  hideProgress?: boolean;
+  hideImg?: boolean;
+  hideTxt?: boolean;
+}
+
+const InfoCard: React.FC<InfoCardProps> = ({
+  children,
+  hideProgress,
+  hideImg,
+  hideTxt,
+}) => {
   return (
     <Root noPad>
-      <Image src="/infoPic.jpg" />
+      {!hideImg && <Image src="/infoPic.jpg" />}
       <Content>
-        <Title>Fund Jesus March 2023</Title>
-        <Text>
-          For 2023, we are planning to march through the cities of Dallas,
-          Phoenix, Denver, Tampa, Santa Monica, Portland, Seattle, San
-          Fransisco, and Sacramento. We need your help to cover costs for sound
-          equipment rental, hotel & travel expenses for our team, city permits,
-          and more.
-        </Text>
+        <Title>Help Fund Jesus March 2024</Title>
+        {!hideTxt && (
+          <Text>
+            Partner with the Jesus March by making a donation to help us reach 9
+            cities across America in 2024. Your donation will help cover
+            expenses like sound equipment rental, team travel, hotel
+            accommodations, city permits, and more.
+          </Text>
+        )}
+
+        {!hideProgress && <FundCounter />}
         <Flex>
           <IconContainer>
             <CheckFilled />
           </IconContainer>
           <TaxText id="scrollTitle">Your donation is tax deductible</TaxText>
         </Flex>
+        {children}
       </Content>
     </Root>
   );

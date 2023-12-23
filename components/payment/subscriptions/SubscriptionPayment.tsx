@@ -34,7 +34,6 @@ const SubscriptionPayment: React.FC<SubscriptionPaymentProps> = ({
   const source = router?.query?.source as string;
   const campaign = router?.query?.source as string;
 
-
   const onChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -94,7 +93,7 @@ const SubscriptionPayment: React.FC<SubscriptionPaymentProps> = ({
       <LabeledInput
         inputId={'line1'}
         label="Street Address (Line 1)"
-        placeholder="1234 Jackson St."
+        placeholder="Street Address"
         required
         value={formData.line1}
         disabled={loading}
@@ -118,7 +117,7 @@ const SubscriptionPayment: React.FC<SubscriptionPaymentProps> = ({
         <LabeledInput
           inputId={'state'}
           label="State (Abbrevation)"
-          placeholder="CA, AZ, AR, TX, ..."
+          placeholder="State (CA, AZ...)"
           required
           value={formData.state}
           disabled={loading}
@@ -130,7 +129,7 @@ const SubscriptionPayment: React.FC<SubscriptionPaymentProps> = ({
       <LabeledInput
         inputId={'postal_code'}
         label="Postal Code"
-        placeholder="Postal Code"
+        placeholder="Zip Code"
         required
         value={formData.postal_code}
         disabled={loading}
@@ -169,7 +168,7 @@ async function createSubscriptionURL(
     email: string;
     utm?: string;
     address: any;
-    campaign: string
+    campaign: string;
   },
   setError: any
 ) {
@@ -180,7 +179,7 @@ async function createSubscriptionURL(
       email,
       address,
       utm,
-      campaign
+      campaign,
     });
 
     const url = response.data?.url;

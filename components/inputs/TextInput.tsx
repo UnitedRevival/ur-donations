@@ -8,7 +8,7 @@ const StyledInput = styled.input`
   color: ${({ theme }) => theme.colors.black};
 
   border-radius: ${(props) => props.theme.borderRadius}px;
-  padding: 2rem;
+  padding: 1rem;
 
   border: 1px solid ${({ theme }) => theme.colors.light};
   font-size: 17px;

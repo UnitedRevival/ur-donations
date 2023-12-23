@@ -15,16 +15,14 @@ const ProgressBar = styled.div<ProgressBarProps>`
   height: 100%;
 `;
 
-const goal = 30000;
+const goal = 294570;
 const FundCounter = () => {
   const { amountRaised } = useContext(HomePageContext);
 
   const percentage = Math.floor((amountRaised / goal) * 100);
-  // const percentage = 50;
 
   return (
     <div className={styles.container}>
-      <p className={styles.progressText}>Sacramento Jesus March Funding</p>
       <FlexHorizontal>
         <div className={styles.progressBarContainer}>
           <ProgressBar percentage={percentage} />

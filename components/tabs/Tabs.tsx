@@ -60,7 +60,7 @@ const AnimatedSelectBar = ({ className, selectedIndex }) => {
 const TabsContainer = styled.div<TabsProps>`
   display: grid;
   grid-template-columns: 1fr 1fr;
-  border-bottom: 1px solid ${({ theme }) => theme.colors.light};
+  border-bottom: 1px solid ${({ theme }) => theme.colors.black};
   margin-bottom: 1rem;
   position: relative;
   user-select: none;
@@ -69,7 +69,7 @@ const TabsContainer = styled.div<TabsProps>`
 const TabContainer = styled.div<TabProps>`
   color: ${({ theme, active }) =>
     active ? theme.colors.primary : theme.colors.gray};
-  padding: 2rem;
+  padding: 1rem;
   display: flex;
   justify-content: center;
   align-items: center;

@@ -67,7 +67,6 @@ const ExpandablePanel: React.FC<ExpandablePanelProps> = ({
 
 const Content = styled.div`
   padding-top: 4px;
-  padding-bottom: 4px;
   box-sizing: border-box;
 `;
 

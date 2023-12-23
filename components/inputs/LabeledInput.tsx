@@ -22,7 +22,7 @@ const Container = styled.div<LabeledInputProps>`
   justify-content: flex-start;
 
   flex-direction: column;
-  margin: 1rem 0;
+  margin: 0.5rem 0;
   margin-right: ${({ spaced }) => (spaced ? '1rem' : '0')};
   ${({ fullWidth }) => (fullWidth ? 'width: 100%' : '')}
 `;
@@ -36,7 +36,7 @@ const LabeledInput: React.FC<LabeledInputProps> = ({
   return (
     // @ts-ignore
     <Container {...rest}>
-      <Label htmlFor={inputId}>{label}</Label>
+      {/* <Label htmlFor={inputId}>{label}</Label> */}
       <FormInput id={inputId} type={type} name={inputId} {...rest} />
     </Container>
   );

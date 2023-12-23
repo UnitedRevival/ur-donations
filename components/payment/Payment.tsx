@@ -1,7 +1,6 @@
 import * as React from 'react';
 import styled, { css, keyframes } from 'styled-components';
 import { useStepper } from '../../contexts/StepContext';
-import Card from '../card/Card';
 
 import Tabs, { Tab } from '../tabs/Tabs';
 import { useState, useRef } from 'react';
@@ -9,9 +8,9 @@ import ExpandablePanel from '../panel/ExpandablePanel';
 import Subscription from './Subscription';
 import SinglePayment from './SinglePayment';
 
-const Root = styled(Card)`
-  margin-bottom: 4rem;
-  min-height: 400px;
+const Root = styled.div`
+  margin-bottom: 2rem;
+  // min-height: 400px;
 `;
 
 const Payment = () => {

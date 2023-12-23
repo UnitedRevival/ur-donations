@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-// import SubscriptionTier from './SubscriptionTier';
 import { useState } from 'react';
 import PrimaryButton from '../../buttons/PrimaryButton';
 import QuickPickItem from '../../amountpicker/QuickPickItem';
@@ -46,7 +45,7 @@ const TierSelection: React.FC<TierSelection> = ({
   setTier,
   onContinue,
 }) => {
-  const [isYearly, setIsYearly] = useState(false);
+  // const [isYearly, setIsYearly] = useState(false);
 
   return (
     <Tiers>
@@ -73,7 +72,7 @@ const TierSelection: React.FC<TierSelection> = ({
         ))}
       </QuickPickContainer>
       <PrimaryButton margin="1rem 0 0 0" fullWidth onClick={onContinue}>
-        Continue
+        Give To Jesus March
       </PrimaryButton>
       <Hint>Already have a partnership/subscription?</Hint>
       <StyledLink href={STRIPE_CUSTOMER_PORTAL_URL}>
@@ -85,11 +84,10 @@ const TierSelection: React.FC<TierSelection> = ({
 
 const QuickPickContainer = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
   gap: 1rem;
 
   width: 100%;
-  margin-bottom: 1rem;
 `;
 
 const StyledLink = styled.a`

@@ -10,14 +10,11 @@ const Container = styled.div<ContainerProps>`
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 3rem;
+  padding: 2rem;
   transition: 0.1s all linear;
   border-radius: ${({ theme }) => theme.borderRadius}px;
-  border: ${(props) =>
-    props.selected
-      ? `1px solid ${props.theme.colors.primary}`
-      : `1px solid ${props.theme.colors.light}`};
-
+  border: ${(props) => `1px solid ${props.theme.colors.black}`};
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
   cursor: pointer;
 
   ${(props) =>

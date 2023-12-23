@@ -28,7 +28,7 @@ export default function Home(props: HomePageProps) {
 
         <main className={styles.main}>
           <Content>
-            <InfoCard hideProgress={false}>
+            <InfoCard hideProgress={true}>
               <StepContextProvider>
                 <Payment />
               </StepContextProvider>

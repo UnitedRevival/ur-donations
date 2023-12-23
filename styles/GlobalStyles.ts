@@ -36,7 +36,7 @@ dd {
 }
 
 body {
-  background-color: #fbfbfb;
+  background-color: #f1f1f1;
 }
 
 /* Remove list styles on ul, ol elements with a list role, which suggests default styling will be removed */

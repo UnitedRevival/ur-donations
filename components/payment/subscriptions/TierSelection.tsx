@@ -84,9 +84,8 @@ const TierSelection: React.FC<TierSelection> = ({
 
 const QuickPickContainer = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: repeat(3, minmax(50px, 1fr));
   gap: 1rem;
-
   width: 100%;
 `;
 

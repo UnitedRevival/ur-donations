@@ -88,7 +88,7 @@ const Root = styled.div``;
 
 export const QuickPickContainer = styled.div<{ current?: boolean }>`
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: repeat(3, minmax(50px, 1fr));
   gap: 1rem;
 
   margin-bottom: 1rem;

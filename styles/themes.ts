@@ -11,7 +11,7 @@ export const defaultTheme: DefaultTheme = {
     error: '#eb1c26',
   },
   fonts: {
-    display: `'Nunito', sans-serif`,
+    display: `'Poppins', sans-serif`,
   },
   breakpoints: {
     large: '1060px',

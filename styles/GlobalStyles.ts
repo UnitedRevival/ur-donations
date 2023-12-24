@@ -19,7 +19,7 @@ span {
 }
 
 * {
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Poppins', sans-serif;
 }
 /* Remove default margin */
 body,

@@ -112,7 +112,7 @@ const SubscriptionPayment: React.FC<SubscriptionPaymentProps> = ({
           onChange={onChange}
           autocomplete="city"
           spaced
-          fullWidth
+          halfWidth
         />
         <LabeledInput
           inputId={'state'}
@@ -123,7 +123,7 @@ const SubscriptionPayment: React.FC<SubscriptionPaymentProps> = ({
           disabled={loading}
           onChange={onChange}
           autocomplete="state"
-          fullWidth
+          halfWidth
         />
       </Flex>
       <LabeledInput
@@ -192,6 +192,7 @@ async function createSubscriptionURL(
 
 const Flex = styled.div`
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
 `;

@@ -15,16 +15,19 @@ interface LabeledInputProps {
   fullWidth?: boolean;
   spaced?: boolean;
   autocomplete?: string;
+  halfWidth?: boolean;
 }
 
 const Container = styled.div<LabeledInputProps>`
   display: flex;
   justify-content: flex-start;
-
+  flex-grow: 1;
+  box-sizing: border-box;
   flex-direction: column;
   margin: 0.5rem 0;
   margin-right: ${({ spaced }) => (spaced ? '1rem' : '0')};
-  ${({ fullWidth }) => (fullWidth ? 'width: 100%' : '')}
+  ${({ fullWidth }) => (fullWidth ? 'width: 100%;' : '')}
+  ${({ halfWidth }) => (halfWidth ? 'width: 40%;' : '')}
 `;
 
 const LabeledInput: React.FC<LabeledInputProps> = ({

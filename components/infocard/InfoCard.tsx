@@ -26,7 +26,11 @@ const Image = styled.img`
 const Title = styled.h2`
   color: ${({ theme }) => theme.colors.black};
   margin-bottom: 0.5rem;
-  font-size: 27px;
+  font-size: 21px;
+
+  @media (min-width: ${({ theme }) => theme.breakpoints.small}) {
+    font-size: 24px;
+  }
 `;
 
 const Text = styled.p`

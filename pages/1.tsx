@@ -12,6 +12,7 @@ import { currentCampaign } from './api/stripeEvent';
 
 interface HomePageProps {
   amountRaised: number;
+  goal?: number;
 }
 
 export default function Home(props: HomePageProps) {
@@ -78,11 +79,14 @@ export default function Home(props: HomePageProps) {
 export const getStaticProps: GetStaticProps = async (ctx) => {
   const totals = await getTotalDonationAmount();
 
-  const jesusMarchDonations = totals.find((t) => t._id === currentCampaign);
+  const jesusMarchDonations = totals.find(
+    (t) => t._id === currentCampaign.title
+  );
 
   return {
     props: {
       amountRaised: jesusMarchDonations?.total || 0,
+      goal: currentCampaign.goal,
     },
     revalidate: 60 * 60 * 7,
   };

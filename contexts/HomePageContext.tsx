@@ -3,6 +3,7 @@ import { createContext } from 'react';
 export const HomePageContext = createContext({
   amountRaised: 0,
   amountToDonate: -1,
+  goal: 0,
   setAmountToDonate: (amount) => {},
 });
 
@@ -15,6 +16,7 @@ export const HomePageProvider = ({ children, data }) => {
       value={{
         ...ctxData,
         amountRaised: data?.amountRaised,
+        goal: data?.goal,
         setAmountToDonate: (amount) =>
           setCtxData({
             amountToDonate: amount,

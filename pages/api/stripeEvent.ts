@@ -12,7 +12,22 @@ export const config = {
   },
 };
 
-export const currentCampaign = 'Jesus March 2024';
+// interface ICampaign {
+//   title: string;
+//   goal?: number;
+// }
+const campaigns = {
+  JESUS_MARCH_2024: {
+    title: 'Jesus March 2024',
+    goal: 294570,
+  },
+  PHOENIX_START: {
+    title: 'Phoenix Donations',
+    goal: 25000,
+  },
+};
+
+export const currentCampaign = campaigns.PHOENIX_START;
 
 export default async function handler(
   req: NextApiRequest,
@@ -48,7 +63,7 @@ export default async function handler(
       await createPaymentData({
         amount: calculatedAmount,
         dateCreated: created,
-        donationType: currentCampaign,
+        donationType: currentCampaign.title,
         name,
         email,
       });

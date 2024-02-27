@@ -3,8 +3,13 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import stripe from '../../lib/stripe';
 import { buffer } from 'micro';
 import { createPaymentData } from '../../lib/donations';
+import ablyClient from '../../lib/ably';
+
+const CHANNEL_NAME = 'payments';
 
 const endpointSecret = process.env.STRIPE_HOOK_SECRET as string;
+
+const channel = ablyClient.channels.get(CHANNEL_NAME);
 
 export const config = {
   api: {
@@ -68,6 +73,12 @@ export default async function handler(
         email,
       });
       await res.revalidate('/');
+
+      // TODO: Anonymous users.
+      channel.publish('newPayment', {
+        amount: calculatedAmount,
+        user: name || '',
+      });
 
       break;
     case 'payment_intent.succeeded':

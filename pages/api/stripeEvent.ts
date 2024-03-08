@@ -72,11 +72,12 @@ export default async function handler(
         name,
         email,
       });
+
       await res.revalidate('/');
       await res.revalidate('/live');
 
       // TODO: Anonymous users.
-      channel.publish('newPayment', {
+      await channel.publish('newPayment', {
         amount: calculatedAmount,
         user: name || '',
       });

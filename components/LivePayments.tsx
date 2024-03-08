@@ -64,7 +64,7 @@ const DonationPayments = () => {
 
   // Create a channel called 'get-started' and subscribe to all messages with the name 'first' using the useChannel hook
   const { channel } = useChannel('payments', 'newPayment', (message) => {
-    push({ ...message.data, date: new Date(), life: 5 });
+    push({ ...message.data, date: new Date(), life: 3 });
     setAmountRaised((prev) => {
       return prev + (message.data?.amount || 0);
     });
@@ -159,16 +159,6 @@ const DonationPayments = () => {
           )}
         </AnimatePresence>
       </AnimateContainer>
-
-      {/* <button
-        onClick={async () => {
-          const res = await axios.post('/api/test');
-
-          console.log('OK!', res);
-        }}
-      >
-        Publish
-      </button> */}
     </Root>
   );
 };

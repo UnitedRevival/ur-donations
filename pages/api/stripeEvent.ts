@@ -28,7 +28,7 @@ const campaigns = {
   },
   PHOENIX_START: {
     title: 'Phoenix Donations',
-    goal: 25000,
+    goal: 40000,
   },
 };
 

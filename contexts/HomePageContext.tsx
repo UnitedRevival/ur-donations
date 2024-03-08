@@ -5,17 +5,20 @@ export const HomePageContext = createContext({
   amountToDonate: -1,
   goal: 0,
   setAmountToDonate: (amount) => {},
+  setAmountRaised: (amount) => {},
 });
 
 export const HomePageProvider = ({ children, data }) => {
   const [ctxData, setCtxData] = useState({
     amountToDonate: -1,
   });
+  const [amountRaised, setAmountRaised] = useState(data?.amountRaised || 0);
   return (
     <HomePageContext.Provider
       value={{
         ...ctxData,
-        amountRaised: data?.amountRaised,
+        amountRaised: amountRaised,
+        setAmountRaised,
         goal: data?.goal,
         setAmountToDonate: (amount) =>
           setCtxData({

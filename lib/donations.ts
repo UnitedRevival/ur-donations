@@ -26,5 +26,5 @@ export async function createPaymentData({
 
   await newPayment.save();
 
-  redis?.del('totals');
+  // redis?.del('totals');
 }

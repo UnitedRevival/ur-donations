@@ -22,6 +22,6 @@ function connectRedis() {
   }
 }
 
-connectRedis();
+// connectRedis();
 
 export default redis;

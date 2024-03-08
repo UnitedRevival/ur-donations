@@ -73,6 +73,7 @@ export default async function handler(
         email,
       });
       await res.revalidate('/');
+      await res.revalidate('/live');
 
       // TODO: Anonymous users.
       channel.publish('newPayment', {

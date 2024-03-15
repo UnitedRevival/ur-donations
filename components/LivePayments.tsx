@@ -154,6 +154,12 @@ const DonationPayments = () => {
                     <UserText>{donationQueue[0].user}</UserText>
                   </motion.div>
                 </AnimatePresence>
+                {/* <DotContainer>
+                  {donationQueue.length > 1 &&
+                    donationQueue.map((_, index) => (
+                      <Dot key={index} active={index === 0} />
+                    ))}
+                </DotContainer> */}
               </UserDonation>
             </motion.div>
           )}
@@ -174,7 +180,9 @@ const UserDonation = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-direction: column;
   height: 100%;
+  position: relative;
 `;
 
 const FlexBetween = styled.div`
@@ -255,6 +263,30 @@ const Amount = styled.p`
   font-size: 26px;
   color: white;
   margin-right: 8px;
+`;
+
+interface DotProps {
+  active: boolean;
+}
+
+const DotContainer = styled.div`
+  position: absolute;
+  bottom: -12px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 8px;
+`;
+
+const Dot = styled.div<DotProps>`
+  height: 8px;
+  width: 8px;
+  border-radius: 50%;
+  background-color: white;
+  margin-right: 8px;
+  margin-left: 8px;
+  opacity: ${(props) => (props.active ? 1 : 0.5)};
 `;
 
 export default LivePayments;

@@ -35,7 +35,10 @@ export default function Home(props: HomePageProps) {
             <Flex>
               <InfoContent>
                 <VideoContainer>
-                  <div className="wistia_responsive_padding">
+                  <div
+                    className="wistia_responsive_padding"
+                    style={{ paddingBottom: 0 }}
+                  >
                     <div className="wistia_responsive_wrapper">
                       <iframe
                         src="https://fast.wistia.net/embed/iframe/gvggz847uk?seo=true&videoFoam=true"
@@ -53,13 +56,17 @@ export default function Home(props: HomePageProps) {
                     </div>
                   </div>
                 </VideoContainer>
-                <h2>Join the Movement: 9 Cities, 1 Mission - Revive America</h2>
-                <p>
-                  Partner with the Jesus March by making a donation to help us
-                  reach 9 cities across America in 2024. Your donation will help
-                  cover expenses like sound equipment rental, team travel, hotel
-                  accommodations, city permits, and more.
-                </p>
+                <TextContent>
+                  <h2>
+                    Join the Movement: 9 Cities, 1 Mission - Revive America
+                  </h2>
+                  <p>
+                    Partner with the Jesus March by making a donation to help us
+                    reach 9 cities across America in 2024. Your donation will
+                    help cover expenses like sound equipment rental, team
+                    travel, hotel accommodations, city permits, and more.
+                  </p>
+                </TextContent>
               </InfoContent>
               <SidePaymentContent>
                 <InfoCard hideImg hideTxt hideProgress={false}>
@@ -94,6 +101,13 @@ export const getStaticProps: GetStaticProps = async (ctx) => {
 
 const VideoContainer = styled.div`
   // max-width: 300px;
+`;
+
+// Make a div styled component that hides text when it reaches a mobile breakpoint
+const TextContent = styled.div`
+  @media (max-width: ${({ theme }) => theme.breakpoints.large}) {
+    display: none;
+  }
 `;
 
 const InfoContent = styled.div`

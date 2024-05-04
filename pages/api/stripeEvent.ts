@@ -30,9 +30,13 @@ const campaigns = {
     title: 'Phoenix Donations',
     goal: 40000,
   },
+  MAY_2024: {
+    title: 'May 2024',
+    goal: 60000,
+  }
 };
 
-export const currentCampaign = campaigns.PHOENIX_START;
+export const currentCampaign = campaigns.MAY_2024;
 
 export default async function handler(
   req: NextApiRequest,

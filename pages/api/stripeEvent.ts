@@ -33,10 +33,14 @@ const campaigns = {
   MAY_2024: {
     title: 'May 2024',
     goal: 60000,
-  }
+  },
+  JESUS_MARCH_2024_MINNEAPOLIS: {
+    title: 'Jesus March 2024 - Minneapolis',
+    goal: 15000,
+  },
 };
 
-export const currentCampaign = campaigns.MAY_2024;
+export const currentCampaign = campaigns.JESUS_MARCH_2024_MINNEAPOLIS;
 
 export default async function handler(
   req: NextApiRequest,
@@ -66,8 +70,11 @@ export default async function handler(
 
       const calculatedAmount = amount / 100;
 
-      const name = billing_details?.name;
+      const name: string = billing_details?.name;
       const email = billing_details?.email;
+
+      const split = name?.split(' ');
+      const fName = split?.[0];
 
       await createPaymentData({
         amount: calculatedAmount,
@@ -83,7 +90,7 @@ export default async function handler(
       // TODO: Anonymous users.
       await channel.publish('newPayment', {
         amount: calculatedAmount,
-        user: name || '',
+        user: fName || '',
       });
 
       break;

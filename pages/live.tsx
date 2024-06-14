@@ -1,7 +1,6 @@
 import Head from 'next/head';
-import styles from '../styles/Home.module.css';
+import styles from '../styles/live.module.css';
 import styled from 'styled-components';
-import Navbar from '../components/navbar/Navbar';
 import LivePayments from '../components/LivePayments';
 import { GetStaticProps } from 'next';
 import { getTotalDonationAmount } from './api/donations';

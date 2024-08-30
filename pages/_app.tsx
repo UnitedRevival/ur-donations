@@ -19,9 +19,13 @@ const enableTikTokPixel = async () => {
   TiktokPixel.pageView();
 };
 
+const mappedFeatureImage = {
+  '/dc': '/dcFeature.jpeg',
+}
+
 export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter();
-
+  
   useEffect(() => {
     enableTikTokPixel();
 
@@ -42,7 +46,7 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <>
       <GlobalStyles />
-      <Header />
+      <Header featureImg={mappedFeatureImage[router.route]}/>
       <Script
         src="https://fast.wistia.com/assets/external/E-v1.js"
         async

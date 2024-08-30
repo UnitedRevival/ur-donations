@@ -15,6 +15,11 @@ interface HomePageProps {
 }
 
 const ThanksText = styled.h2`
+  @media (max-width: ${({ theme }) => theme.breakpoints.medium}) {
+
+    margin-top: 16px;
+  }
+  margin-top: 0;
   margin-bottom: 16px;
 `;
 
@@ -37,7 +42,7 @@ export default function DC(props: HomePageProps) {
         <main className={styles.main}>
           <ThanksText>Thanks for Signing Up</ThanksText>
           <Content>
-            <InfoCard hideProgress={true} cardImg='/dc3.jpg' txt={cardText} title="Help Fund the D.C March">
+            <InfoCard hideProgress={true} cardImg='/dc3.jpg' txt={cardText} title="Help Fund One Nation Under God">
               <StepContextProvider>
                 <Payment />
               </StepContextProvider>

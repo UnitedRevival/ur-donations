@@ -24,7 +24,7 @@ const ThanksText = styled.h2`
 `;
 
 
-const cardText = "Join us in a powerful movement of faith as we march for Jesus in Washington D.C.! Your donation will help bring believers together to celebrate His love and spread the message of hope across our nation. Every contribution makes a difference—thank you for supporting this impactful event!"
+const cardText = "As we march and worship Jesus in Washington D.C, just one week before the election, your donation will help bring believers together to proclaim His name and spread a message of hope. This is a crucial moment for our nation, and your support can make this event a powerful witness of faith and unity. Every contribution makes a difference—thank you for helping us shine His light in these pivotal times!"
 
 export default function DC(props: HomePageProps) {
   return (

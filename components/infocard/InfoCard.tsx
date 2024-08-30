@@ -29,7 +29,7 @@ const Title = styled.h2`
   font-size: 21px;
 
   @media (min-width: ${({ theme }) => theme.breakpoints.small}) {
-    font-size: 24px;
+    font-size: 25px;
   }
 `;
 
@@ -65,25 +65,36 @@ interface InfoCardProps {
   hideProgress?: boolean;
   hideImg?: boolean;
   hideTxt?: boolean;
+  cardImg?: string;
+  txt?: string
+  title?: string;
 }
 
+
+const cardTitle =  'Help Fund Jesus March 2024';
 const InfoCard: React.FC<InfoCardProps> = ({
   children,
   hideProgress,
   hideImg,
   hideTxt,
+  cardImg,
+  title,
+  txt
 }) => {
   return (
     <Root noPad>
-      {!hideImg && <Image src="/infoPic.jpg" />}
+      {!hideImg && <Image src={cardImg || "/infoPic.jpg"} />}
       <Content>
-        <Title>Help Fund Jesus March 2024</Title>
+        <Title>{title || cardTitle}</Title>
         {!hideTxt && (
           <Text>
-            Partner with the Jesus March by making a donation to help us reach 9
+            {
+              txt || `Partner with the Jesus March by making a donation to help us reach 9
             cities across America in 2024. Your donation will help cover
             expenses like sound equipment rental, team travel, hotel
-            accommodations, city permits, and more.
+            accommodations, city permits, and more.`
+            }
+            
           </Text>
         )}
 

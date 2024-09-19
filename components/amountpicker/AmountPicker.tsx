@@ -7,7 +7,7 @@ import TextDivider from '../dividers/TextDivider';
 import TextInput from '../inputs/TextInput';
 import QuickPickItem from './QuickPickItem';
 
-const quickPickValues = [50, 100, 200, 1000, 2500, 5000];
+const quickPickValues = [15, 50, 100, 500, 1000, 2500];
 
 const AmountPicker = () => {
   const { setAmountToDonate } = useContext(HomePageContext);

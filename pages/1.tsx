@@ -22,7 +22,7 @@ export default function Home(props: HomePageProps) {
         <Head>
           <meta
             name="description"
-            content="Give to support Jesus Marches in 2024"
+            content="Give to support Jesus Marches in 2025"
           />
           <link rel="icon" href="/favicon.png" />
         </Head>
@@ -31,7 +31,7 @@ export default function Home(props: HomePageProps) {
 
         <main className={styles.main}>
           <Container>
-            <Title>Help Fund Jesus March 2024</Title>
+            <Title>Help Fund Jesus March 2025</Title>
             <Flex>
               <InfoContent>
                 <VideoContainer>
@@ -58,11 +58,11 @@ export default function Home(props: HomePageProps) {
                 </VideoContainer>
                 <TextContent>
                   <h2>
-                    Join the Movement: 9 Cities, 1 Mission - Revive America
+                    Join the Movement: 8 Cities, 1 Mission - Revive America
                   </h2>
                   <p>
                     Partner with the Jesus March by making a donation to help us
-                    reach 9 cities across America in 2024. Your donation will
+                    reach 8 cities across America in 2025. Your donation will
                     help cover expenses like sound equipment rental, team
                     travel, hotel accommodations, city permits, and more.
                   </p>

@@ -16,15 +16,14 @@ interface HomePageProps {
 
 const ThanksText = styled.h2`
   @media (max-width: ${({ theme }) => theme.breakpoints.medium}) {
-
     margin-top: 16px;
   }
   margin-top: 0;
   margin-bottom: 16px;
 `;
 
-
-const cardText = "As we march and worship Jesus in Washington D.C, just one week before the election, your donation will help bring believers together to proclaim His name and spread a message of hope. This is a crucial moment for our nation, and your support can make this event a powerful witness of faith and unity. Every contribution makes a difference—thank you for helping us shine His light in these pivotal times!"
+const cardText =
+  'As we march and worship Jesus in Washington D.C, just one week before the election, your donation will help bring believers together to proclaim His name and spread a message of hope. This is a crucial moment for our nation, and your support can make this event a powerful witness of faith and unity. Every contribution makes a difference—thank you for helping us shine His light in these pivotal times!';
 
 export default function DC(props: HomePageProps) {
   return (
@@ -32,17 +31,19 @@ export default function DC(props: HomePageProps) {
       <Navbar />
       <div>
         <Head>
-          <meta
-            name="description"
-            content="Give to support DC March 2024"
-          />
+          <meta name="description" content="Give to support DC March 2025" />
           <link rel="icon" href="/favicon.png" />
         </Head>
 
         <main className={styles.main}>
           <ThanksText>Thanks for Signing Up</ThanksText>
           <Content>
-            <InfoCard hideProgress={true} cardImg='/dc3.jpg' txt={cardText} title="Help Fund One Nation Under God">
+            <InfoCard
+              hideProgress={true}
+              cardImg="/dc3.jpg"
+              txt={cardText}
+              title="Help Fund One Nation Under God"
+            >
               <StepContextProvider>
                 <Payment />
               </StepContextProvider>

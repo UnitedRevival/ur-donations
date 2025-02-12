@@ -15,7 +15,7 @@ export default function Live(props) {
         <Head>
           <meta
             name="description"
-            content="Give to support Jesus Marches in 2024"
+            content="Give to support Jesus Marches in 2025"
           />
           <link rel="icon" href="/favicon.png" />
         </Head>

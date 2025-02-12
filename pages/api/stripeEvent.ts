@@ -66,9 +66,13 @@ const campaigns = {
     title: 'Jesus March 2024 - Sacramento',
     goal: 12000,
   },
+  JESUS_MARCH_2025: {
+    title: 'Jesus March 2025',
+    goal: 15000,
+  },
 };
 
-export const currentCampaign = campaigns.JESUS_MARCH_2024_SACRAMENTO;
+export const currentCampaign = campaigns.JESUS_MARCH_2025;
 
 export default async function handler(
   req: NextApiRequest,

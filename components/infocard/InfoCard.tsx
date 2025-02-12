@@ -66,12 +66,11 @@ interface InfoCardProps {
   hideImg?: boolean;
   hideTxt?: boolean;
   cardImg?: string;
-  txt?: string
+  txt?: string;
   title?: string;
 }
 
-
-const cardTitle =  'Help Fund Jesus March 2024';
+const cardTitle = 'Help Fund Jesus March 2025';
 const InfoCard: React.FC<InfoCardProps> = ({
   children,
   hideProgress,
@@ -79,22 +78,20 @@ const InfoCard: React.FC<InfoCardProps> = ({
   hideTxt,
   cardImg,
   title,
-  txt
+  txt,
 }) => {
   return (
     <Root noPad>
-      {!hideImg && <Image src={cardImg || "/infoPic.jpg"} />}
+      {!hideImg && <Image src={cardImg || '/infoPic.jpg'} />}
       <Content>
         <Title>{title || cardTitle}</Title>
         {!hideTxt && (
           <Text>
-            {
-              txt || `Partner with the Jesus March by making a donation to help us reach 9
-            cities across America in 2024. Your donation will help cover
+            {txt ||
+              `Partner with the Jesus March by making a donation to help us reach 8
+            cities across America in 2025. Your donation will help cover
             expenses like sound equipment rental, team travel, hotel
-            accommodations, city permits, and more.`
-            }
-            
+            accommodations, city permits, and more.`}
           </Text>
         )}
 

@@ -5,6 +5,7 @@ import { buffer } from 'micro';
 import { createPaymentData } from '../../lib/donations';
 import ablyClient from '../../lib/ably';
 
+import { useRouter } from 'next/router';
 const CHANNEL_NAME = 'payments';
 
 const endpointSecret = process.env.STRIPE_HOOK_SECRET as string;
@@ -70,14 +71,59 @@ const campaigns = {
     title: 'Jesus March 2025',
     goal: 25000,
   },
+  JESUS_MARCH_2025_MIAMI: {
+    title: 'Jesus March 2025 - Miami',
+    goal: 12500,
+  },
+  JESUS_MARCH_2025_BOSTON: {
+    title: 'Jesus March 2025 - Boston',
+    goal: 12500,
+  },
+  JESUS_MARCH_2025_NYC: {
+    title: 'Jesus March 2025 - New York City',    
+    goal: 12500,    
+  },
+  JESUS_MARCH_2025_ATL: {
+    title: 'Jesus March 2025 - Atlanta',
+    goal: 12500,
+  },
+  JESUS_MARCH_2025_DENVER: {
+    title: 'Jesus March 2025 - Denver',
+    goal: 12500,
+  },
+  JESUS_MARCH_2025_HOUSTON: {    
+    title: 'Jesus March 2025 - Houston',        
+    goal: 12500,    
+  },
+  JESUS_MARCH_2025_HUNTINGTON_BEACH: {
+    title: 'Jesus March 2025 - Huntington Beach',    
+    goal: 12500,
+  },
+  JESUS_MARCH_2025_SACRAMENTO: { 
+    title: 'Jesus March 2025 - Sacramento',    
+    goal: 12500,    
+  },
+  JESUS_MARCH_2025_WASHINGTON_DC: {
+    title: 'Jesus March 2025 - Washington DC',
+    goal: 12500,
+  },
 };
 
-export const currentCampaign = campaigns.JESUS_MARCH_2025;
+export const currentCampaign = campaigns.JESUS_MARCH_2025_MIAMI ;
+export const currentCampaigns = campaigns;
+
 
 export default async function handler(
+  
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+
+  const router = useRouter();
+  const { campaignId } = router.query;
+
+  // Log the campaignId when it changes 
+  
   let event = req.body;
 
   if (endpointSecret) {

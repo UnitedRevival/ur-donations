@@ -61,7 +61,9 @@ export const getStaticProps: GetStaticProps<HomePageProps> = async (ctx) => {
     props: {
       amountRaised: jesusMarchDonations?.total || 0,
       goal: currentCampaigns.JESUS_MARCH_2025_NYC.goal,
-      cardTitle: 'Thanks for signing-up for jesus march New York City 2025', // Pass it through props
+      cardTitle: 'Thanks For Signing-Up For Jesus March New York City 2025', 
+      
+      // Pass it through props
       // Or use currentCampaign.title if you want it dynamic:
       // cardTitle: currentCampaign.title || 'Help Fund Jesus March 2025',
     },

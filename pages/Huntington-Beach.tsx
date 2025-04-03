@@ -15,13 +15,14 @@ interface HomePageProps {
   amountRaised: number;
   goal: number;
   cardTitle: string; // Add cardTitle to props
+  cardImg: string;
 }
 
 const Content = styled.div`
   max-width: 615px;
 `;
 
-export default function Home({ amountRaised, goal, cardTitle }: HomePageProps) {
+export default function Home({ amountRaised, goal, cardTitle , cardImg}: HomePageProps) {
   return (
     <HomePageProvider data={{ amountRaised, goal }}>
       <Navbar />
@@ -39,6 +40,7 @@ export default function Home({ amountRaised, goal, cardTitle }: HomePageProps) {
             <InfoCard 
               hideProgress={false}
               title={cardTitle} // Pass the cardTitle prop
+              cardImg={cardImg}
             >
               <StepContextProvider>
                 <Payment />
@@ -61,7 +63,9 @@ export const getStaticProps: GetStaticProps<HomePageProps> = async (ctx) => {
     props: {
       amountRaised: jesusMarchDonations?.total || 0,
       goal: currentCampaigns.JESUS_MARCH_2025_HUNTINGTON_BEACH.goal,
-      cardTitle: 'Thanks for signing-up for jesus march Huntington Beach 2025', // Pass it through props
+      cardTitle: 'Thanks For Signing-Up For Jesus March Huntington Beach 2025', 
+      cardImg: './Huntington.jpg',
+      // Pass it through props
       // Or use currentCampaign.title if you want it dynamic:
       // cardTitle: currentCampaign.title || 'Help Fund Jesus March 2025',
     },

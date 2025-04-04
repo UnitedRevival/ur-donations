@@ -22,7 +22,7 @@ const Content = styled.div`
   max-width: 615px;
 `;
 
-export default function Home({ amountRaised, goal, cardTitle , cardImg}: HomePageProps) {
+export default function HuntingtonBeach({ amountRaised, goal, cardTitle , cardImg}: HomePageProps) {
   return (
     <HomePageProvider data={{ amountRaised, goal }}>
       <Navbar />

@@ -14,7 +14,7 @@ interface HomePageProps {
   amountRaised: number;
 }
 
-export default function Home(props: HomePageProps) {
+export default function Miami(props: HomePageProps) {
   return (
     <HomePageProvider data={props}>
       <Navbar />

@@ -23,7 +23,7 @@ const Content = styled.div`
 `;
 
 
-export default function Home({ amountRaised, goal, cardTitle ,cardImg}: HomePageProps) {
+export default function HuntingtonBeachEvent({ amountRaised, goal, cardTitle ,cardImg}: HomePageProps) {
   return (
     <HomePageProvider data={{ amountRaised, goal }}>
       <Navbar />

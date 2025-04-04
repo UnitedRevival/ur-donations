@@ -22,7 +22,7 @@ const Content = styled.div`
 `;
 
 
-export default function Home({ amountRaised, goal, cardTitle }: HomePageProps) {
+export default function DenverEvent({ amountRaised, goal, cardTitle }: HomePageProps) {
   return (
     <HomePageProvider data={{ amountRaised, goal }}>
       <Navbar />

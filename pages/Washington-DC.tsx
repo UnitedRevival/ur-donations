@@ -8,7 +8,7 @@ import styled from 'styled-components';
 import InfoCard from '../components/infocard/InfoCard';
 import { GetStaticProps } from 'next';
 import Navbar from '../components/navbar/Navbar';
-import { currentCampaign, currentCampaigns } from './api/stripeEvent';
+import { currentCampaign, current_Diffrent_campaigns } from './api/stripeEvent';
 
 // Define the props interface
 interface HomePageProps {
@@ -54,13 +54,13 @@ export default function WashingtonDC({ amountRaised, goal, cardTitle }: HomePage
 export const getStaticProps: GetStaticProps<HomePageProps> = async (ctx) => {
   const totals = await getTotalDonationAmount();
   const jesusMarchDonations = totals.find(
-    (t) => t._id === currentCampaigns.JESUS_MARCH_2025_WASHINGTON_DC.title
+    (t) => t._id === current_Diffrent_campaigns.JESUS_MARCH_2025_WASHINGTON_DC.title
   );
 
   return {
     props: {
       amountRaised: jesusMarchDonations?.total || 0,
-      goal: currentCampaigns.JESUS_MARCH_2025_WASHINGTON_DC.goal,
+      goal: current_Diffrent_campaigns.JESUS_MARCH_2025_WASHINGTON_DC.goal,
       cardTitle: 'Thanks For Signing-Up For Jesus March Washington DC 2025',
       
       // Pass it through props

@@ -8,7 +8,7 @@ import styled from 'styled-components';
 import InfoCard from '../components/infocard/InfoCard';
 import { GetStaticProps } from 'next';
 import Navbar from '../components/navbar/Navbar';
-import { currentCampaign ,currentCampaigns} from './api/stripeEvent';
+import { currentCampaign ,current_Diffrent_campaigns} from './api/stripeEvent';
 
 // Define the props interface
 interface HomePageProps {
@@ -57,13 +57,13 @@ export default function HuntingtonBeachEvent({ amountRaised, goal, cardTitle ,ca
 export const getStaticProps: GetStaticProps<HomePageProps> = async (ctx) => {
   const totals = await getTotalDonationAmount();
   const jesusMarchDonations = totals.find(
-    (t) => t._id === currentCampaigns.JESUS_MARCH_2025_HUNTINGTON_BEACH.title
+    (t) => t._id === current_Diffrent_campaigns.JESUS_MARCH_2025_HUNTINGTON_BEACH_EVENT.title
   );
-  console.log('currentCampaign', currentCampaigns.JESUS_MARCH_2025_HUNTINGTON_BEACH);
+ 
   return {
     props: {
       amountRaised: jesusMarchDonations?.total || 0,
-      goal: currentCampaigns.JESUS_MARCH_2025_HUNTINGTON_BEACH.goal,
+      goal: current_Diffrent_campaigns.JESUS_MARCH_2025_HUNTINGTON_BEACH_EVENT.goal,
       cardTitle: 'Help Fund Jesus March Huntington Beach 2025', 
       cardImg : '/Huntington.jpg',
       // Pass it through props

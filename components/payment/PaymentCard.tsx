@@ -47,27 +47,27 @@ const PaymentCard = () => {
   const campaigns = {
     JESUS_MARCH_2025_MIAMI: {
       title: "Jesus March 2025 - Miami",
-      goal: 12500,
+      goal: 20000,
     },
     JESUS_MARCH_2025_BOSTON: {
       title: "Jesus March 2025 - Boston",
-      goal: 12500,
+      goal: 20000,
     },
     JESUS_MARCH_2025_NYC: {
       title: "Jesus March 2025 - New York City",
-      goal: 12500,
+      goal: 20000,
     },
     JESUS_MARCH_2025_ATL: {
       title: "Jesus March 2025 - Atlanta",
-      goal: 12500,
+      goal: 20000,
     },
     JESUS_MARCH_2025_DENVER: {
       title: "Jesus March 2025 - Denver",
-      goal: 12500,
+      goal: 20000,
     },
     JESUS_MARCH_2025_HOUSTON: {
       title: "Jesus March 2025 - Houston",
-      goal: 12500,
+      goal: 20000,
     },
     JESUS_MARCH_2025_HUNTINGTON_BEACH: {
       title: "Jesus March 2025 - Huntington Beach",

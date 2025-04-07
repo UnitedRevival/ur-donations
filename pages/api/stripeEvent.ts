@@ -5,6 +5,7 @@ import { buffer } from 'micro';
 import { createPaymentData } from '../../lib/donations';
 import ablyClient from '../../lib/ably';
 
+import { useRouter } from 'next/router';
 const CHANNEL_NAME = 'payments';
 
 const endpointSecret = process.env.STRIPE_HOOK_SECRET as string;
@@ -71,17 +72,90 @@ const campaigns = {
     goal: 25000,
   },
   JESUS_MARCH_2025_MIAMI: {
-    title: 'Jesus March 2025 - Miami',
+    title: 'Jesus March 2025 - Miami- new',
     goal: 12500,
-  }
+  },
+  JESUS_MARCH_2025_BOSTON: {
+    title: 'Jesus March 2025 - Boston',
+    goal: 12500,
+  },
+  JESUS_MARCH_2025_NYC: {
+    title: 'Jesus March 2025 - New York City',
+    goal: 12500,
+  },
+  JESUS_MARCH_2025_ATL: {
+    title: 'Jesus March 2025 - Atlanta',
+    goal: 12500,
+  },
+  JESUS_MARCH_2025_DENVER: {
+    title: 'Jesus March 2025 - Denver',
+    goal: 12500,
+  },
+  JESUS_MARCH_2025_HOUSTON: {
+    title: 'Jesus March 2025 - Houston',
+    goal: 12500,
+  },
+  JESUS_MARCH_2025_HUNTINGTON_BEACH: {
+    title: 'Jesus March 2025 - Huntington Beach',
+    goal: 12500,
+  },
+  JESUS_MARCH_2025_SACRAMENTO: {
+    title: 'Jesus March 2025 - Sacramento',
+    goal: 12500,
+  },
+  JESUS_MARCH_2025_WASHINGTON_DC: {
+    title: 'Jesus March 2025 - Washington DC',
+    goal: 12500,
+  },
+  JESUS_MARCH_2025_BOSTON_EVENT: {
+    title: "Jesus March 2025 - Boston-Event",
+    goal: 12500,
+  },
+  JESUS_MARCH_2025_NYC_EVENT: {
+    title: "Jesus March 2025 - New York City-Event",
+    goal: 12500,
+  },
+  JESUS_MARCH_2025_ATL_EVENT: {
+    title: "Jesus March 2025 - Atlanta-Event",
+    goal: 12500,
+  },
+  JESUS_MARCH_2025_DENVER_EVENT: {
+    title: "Jesus March 2025 - Denver-Event",
+    goal: 12500,
+  },
+  JESUS_MARCH_2025_HOUSTON_EVENT: {
+    title: "Jesus March 2025 - Houston-Event",
+    goal: 12500,
+  },
+  JESUS_MARCH_2025_HUNTINGTON_BEACH_EVENT: {
+    title: "Jesus March 2025 - Huntington Beach-Event",
+    goal: 12500,
+  },
+  JESUS_MARCH_2025_SACRAMENTO_EVENT: {
+    title: "Jesus March 2025 - Sacramento-Event",
+    goal: 12500,
+  },
+  JESUS_MARCH_2025_WASHINGTON_DC_EVENT: {
+    title: "Jesus March 2025 - Washington DC-Event",
+    goal: 12500,
+  },
 };
 
 export const currentCampaign = campaigns.JESUS_MARCH_2025_MIAMI;
+export const current_Diffrent_campaigns = campaigns;
+
 
 export default async function handler(
+
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+
+  const router = useRouter();
+  const { campaignId } = router.query;
+
+  // Log the campaignId when it changes 
+
   let event = req.body;
 
   if (endpointSecret) {

@@ -56,7 +56,6 @@ export const getStaticProps: GetStaticProps<HomePageProps> = async (ctx) => {
   const jesusMarchDonations = totals.find(
     (t) => t._id === current_Diffrent_campaigns.JESUS_MARCH_2025_ATL.title
   );
-  console.log('jesusMarchDonations', totals);
 
   return {
     props: {

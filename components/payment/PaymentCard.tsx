@@ -44,6 +44,8 @@ const PaymentCard = () => {
   const campaign = router?.query?.campaign as string;
   const currentCampaignroute = router.pathname;
   const routeCity = currentCampaignroute.split("/").pop()?.toLowerCase() || "";
+  // Raise the goal from 12,500 to 20,000.
+
   const campaigns = {
     JESUS_MARCH_2025_MIAMI: {
       title: "Jesus March 2025 - Miami",

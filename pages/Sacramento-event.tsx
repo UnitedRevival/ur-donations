@@ -54,13 +54,13 @@ export default function SacramentoEvent({ amountRaised, goal, cardTitle }: HomeP
 export const getStaticProps: GetStaticProps<HomePageProps> = async (ctx) => {
   const totals = await getTotalDonationAmount();
     const jesusMarchDonations = totals.find(
-      (t) => t._id === current_Diffrent_campaigns.JESUS_MARCH_2025_SACRAMENTO_EVENT.title
+      (t) => t._id === current_Diffrent_campaigns.JESUS_MARCH_2025_SACRAMENTO.title
     );
   
     return {
       props: {
         amountRaised: jesusMarchDonations?.total || 0,
-        goal: current_Diffrent_campaigns.JESUS_MARCH_2025_SACRAMENTO_EVENT.goal,
+        goal: current_Diffrent_campaigns.JESUS_MARCH_2025_SACRAMENTO.goal,
       cardTitle: 'Help Fund Jesus March Sacramento 2025', // Pass it through props
       // Or use currentCampaign.title if you want it dynamic:
       // cardTitle: currentCampaign.title || 'Help Fund Jesus March 2025',

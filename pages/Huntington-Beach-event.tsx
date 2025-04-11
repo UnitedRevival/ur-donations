@@ -57,13 +57,13 @@ export default function HuntingtonBeachEvent({ amountRaised, goal, cardTitle ,ca
 export const getStaticProps: GetStaticProps<HomePageProps> = async (ctx) => {
   const totals = await getTotalDonationAmount();
   const jesusMarchDonations = totals.find(
-    (t) => t._id === current_Diffrent_campaigns.JESUS_MARCH_2025_HUNTINGTON_BEACH_EVENT.title
+    (t) => t._id === current_Diffrent_campaigns.JESUS_MARCH_2025_HUNTINGTON_BEACH.title
   );
  
   return {
     props: {
       amountRaised: jesusMarchDonations?.total || 0,
-      goal: current_Diffrent_campaigns.JESUS_MARCH_2025_HUNTINGTON_BEACH_EVENT.goal,
+      goal: current_Diffrent_campaigns.JESUS_MARCH_2025_HUNTINGTON_BEACH.goal,
       cardTitle: 'Help Fund Jesus March Huntington Beach 2025', 
       cardImg : '/Huntington.jpg',
       // Pass it through props

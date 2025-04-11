@@ -54,13 +54,13 @@ export default function AtlantaEvent({ amountRaised, goal, cardTitle }: HomePage
 export const getStaticProps: GetStaticProps<HomePageProps> = async (ctx) => {
   const totals = await getTotalDonationAmount();
   const jesusMarchDonations = totals.find(
-    (t) => t._id === current_Diffrent_campaigns.JESUS_MARCH_2025_ATL_EVENT.title
+    (t) => t._id === current_Diffrent_campaigns.JESUS_MARCH_2025_ATL.title
   );
 
   return {
     props: {
       amountRaised: jesusMarchDonations?.total || 0,
-      goal: current_Diffrent_campaigns.JESUS_MARCH_2025_ATL_EVENT.goal,
+      goal: current_Diffrent_campaigns.JESUS_MARCH_2025_ATL.goal,
       cardTitle: 'Help Fund Jesus March Atlanta 2025', // Pass it through props
       // Or use currentCampaign.title if you want it dynamic:
       // cardTitle: currentCampaign.title || 'Help Fund Jesus March 2025',

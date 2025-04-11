@@ -83,73 +83,28 @@ const PaymentCard = () => {
       title: "Jesus March 2025 - Washington DC",
       goal: 20000,
     },
-    JESUS_MARCH_2025_BOSTON_EVENT: {
-      title: "Jesus March 2025 - Boston-Event",
-      goal: 20000,
-    },
-    JESUS_MARCH_2025_NYC_EVENT: {
-      title: "Jesus March 2025 - New York City-Event",
-      goal: 20000,
-    },
-    JESUS_MARCH_2025_ATL_EVENT: {
-      title: "Jesus March 2025 - Atlanta-Event",
-      goal: 20000,
-    },
-    JESUS_MARCH_2025_DENVER_EVENT: {
-      title: "Jesus March 2025 - Denver-Event",
-      goal: 20000,
-    },
-    JESUS_MARCH_2025_HOUSTON_EVENT: {
-      title: "Jesus March 2025 - Houston-Event",
-      goal: 20000,
-    },
-    JESUS_MARCH_2025_HUNTINGTON_BEACH_EVENT: {
-      title: "Jesus March 2025 - Huntington Beach-Event",
-      goal: 20000,
-    },
-    JESUS_MARCH_2025_SACRAMENTO_EVENT: {
-      title: "Jesus March 2025 - Sacramento-Event",
-      goal: 20000,
-    },
-    JESUS_MARCH_2025_WASHINGTON_DC_EVENT: {
-      title: "Jesus March 2025 - Washington DC-Event",
-      goal: 20000,
-    },
   };
- const donationTypeCampaign = Object.keys(campaigns).reduce(
-   (result: string | null, key: string) => {
-     const campaign = campaigns[key];
-     // If routeCity is undefined or empty, return null immediately
-     if (!routeCity || typeof routeCity !== "string") {
-       return null;
-     }
+  const donationTypeCampaign = Object.keys(campaigns).reduce(
+    (result: string | null, key: string) => {
+      const campaign = campaigns[key];
+      // If routeCity is undefined or empty, return null immediately
+      if (!routeCity || typeof routeCity !== "string") {
+        return null;
+      }
+  
+      const normalizedTitle = campaign.title.toLowerCase().replace(/[\s-]/g, '');
+      // Remove "-event" or "event" from routeCity before normalizing
+      const cleanedRouteCity = routeCity.replace(/[-]?event$/i, '');
+      const normalizedRouteCity = cleanedRouteCity.toLowerCase().replace(/[\s-]/g, '');
+  
+      if (normalizedTitle.includes(normalizedRouteCity)) {
+        return campaign.title;
+      }
+      return result;
+    },
+    null
+  );
  
-     const normalizedTitle = campaign.title.toLowerCase().replace(/[\s-]/g, '');
-     const normalizedRouteCity = routeCity.toLowerCase().replace(/[\s-]/g, '');
- 
-     if (normalizedTitle.includes(normalizedRouteCity)) {
-       // Ensure result is a string before calling toLowerCase
-       if (result && !result.toLowerCase().includes("event")) {
-         return result;
-       }
-       if (
-         routeCity.toLowerCase().includes("event") &&
-         campaign.title.toLowerCase().includes("event")
-       ) {
-         return campaign.title;
-       }
-       if (
-         !routeCity.toLowerCase().includes("event") &&
-         !campaign.title.toLowerCase().includes("event")
-       ) {
-         return campaign.title;
-       }
-       return campaign.title;
-     }
-     return result;
-   },
-   null
- );
  
  useEffect(() => {
    setFormData((prev) => ({

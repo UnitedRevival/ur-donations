@@ -106,39 +106,7 @@ const campaigns = {
   JESUS_MARCH_2025_WASHINGTON_DC: {
     title: 'Jesus March 2025 - Washington DC',
     goal: 20000,
-  },
-  JESUS_MARCH_2025_BOSTON_EVENT: {
-    title: "Jesus March 2025 - Boston-Event",
-    goal: 20000,
-  },
-  JESUS_MARCH_2025_NYC_EVENT: {
-    title: "Jesus March 2025 - New York City-Event",
-    goal: 20000,
-  },
-  JESUS_MARCH_2025_ATL_EVENT: {
-    title: "Jesus March 2025 - Atlanta-Event",
-    goal: 20000,
-  },
-  JESUS_MARCH_2025_DENVER_EVENT: {
-    title: "Jesus March 2025 - Denver-Event",
-    goal: 20000,
-  },
-  JESUS_MARCH_2025_HOUSTON_EVENT: {
-    title: "Jesus March 2025 - Houston-Event",
-    goal: 20000,
-  },
-  JESUS_MARCH_2025_HUNTINGTON_BEACH_EVENT: {
-    title: "Jesus March 2025 - Huntington Beach-Event",
-    goal: 20000,
-  },
-  JESUS_MARCH_2025_SACRAMENTO_EVENT: {
-    title: "Jesus March 2025 - Sacramento-Event",
-    goal: 20000,
-  },
-  JESUS_MARCH_2025_WASHINGTON_DC_EVENT: {
-    title: "Jesus March 2025 - Washington DC-Event",
-    goal: 20000,
-  },
+  }
 };
 
 export const currentCampaign = campaigns.JESUS_MARCH_2025_MIAMI;

@@ -16,7 +16,6 @@ const LivePayments = () => {
   // Get the Ably API key from environment variable and fix any escaping issues
   const ablyApiKey = process.env.NEXT_PUBLIC_ABLY_API_KEY?.replace(/\\(_|\.)/g, '$1');
 
-  console.log('Using Ably API key (first few chars):', ablyApiKey?.substring(0, 10) + '...');
 
   const [ablyClient] = useState(
     new Ably.Realtime.Promise({
@@ -67,7 +66,6 @@ const DonationPayments = () => {
       // Use the specific date (06/05/2025) for filtering
       const date = '2025-05-06';
       const response = await axios.get(`/api/recentDonations?date=${date}`);
-      console.log('API Response:', response.data);
 
       const donationData = response.data as DonationResponse;
 
@@ -116,7 +114,6 @@ const DonationPayments = () => {
   }, []);
 
   useEffect(() => {
-    console.log('DonationPayments mounted');
     const id = setInterval(() => {
       if (donationQueue.length > 0) {
         const current = donationQueue[0];
@@ -143,7 +140,6 @@ const DonationPayments = () => {
   }, [donationQueue.length]);
 
   const push = (donation: LiveDonationData) => {
-    console.log('Pushing donation:', donation);
     setDonationQueue((prev) => [...prev, donation]);
     setShowThankYou(true);
 
@@ -161,12 +157,10 @@ const DonationPayments = () => {
   };
 
   useConnectionStateListener('connected', () => {
-    console.log('Connected to Ably!');
   });
 
   // Create a channel called 'get-started' and subscribe to all messages with the name 'first' using the useChannel hook
   const { channel } = useChannel('payments', 'newPayment', (message) => {
-    console.log('Received Ably message:', message);
     push({ ...message.data, date: new Date(), life: 4 });
 
     // Get the donation amount
@@ -193,7 +187,6 @@ const DonationPayments = () => {
   });
 
   const percentage = Math.floor((amountRaised / goal) * 100);
-  console.log('Current progress:', { amountRaised, goal, percentage, recentTotal });
   const progressVisible = true;
 
   return (

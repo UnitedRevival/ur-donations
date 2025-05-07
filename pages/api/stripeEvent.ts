@@ -7,6 +7,7 @@ import ablyClient from '../../lib/ably';
 import type { Stripe } from 'stripe';
 import PaymentModel from '../../db/models/payment.model';
 import dbConnect from '../../db/connect';
+import { processSubscriptionChange } from '../../lib/subscription';
 
 const CHANNEL_NAME = 'payments';
 
@@ -168,15 +169,27 @@ export default async function handler(
         });
         break;
 
-      case 'checkout.session.completed':
+      case 'customer.subscription.created':
+        const createdSubscription = event.data.object as Stripe.Subscription;
+        // console.log('Processing subscription.created event:', {
+        //   id: createdSubscription.id,
+        //   status: createdSubscription.status,
+        //   customer: createdSubscription.customer
+        // });
+
+        // Track the subscription in our database
+        await processSubscriptionChange(createdSubscription);
+
+        // The rest of the function can remain the same
+        // as it processes the checkout session
         const session = event.data.object as Stripe.Checkout.Session;
-        console.log('Processing checkout.session.completed event:', {
-          id: session.id,
-          customerId: session.customer,
-          amount_total: session.amount_total,
-          payment_status: session.payment_status,
-          subscription: session.subscription
-        });
+        // console.log('Processing checkout.session.completed event:', {
+        //   id: session.id,
+        //   customerId: session.customer,
+        //   amount_total: session.amount_total,
+        //   payment_status: session.payment_status,
+        //   subscription: session.subscription
+        // });
 
         // Only process completed subscription checkouts
         if (session.subscription && session.payment_status === 'paid') {
@@ -185,19 +198,19 @@ export default async function handler(
             const subscription = await stripe.subscriptions.retrieve(subscriptionId);
             const checkoutAmount = (session.amount_total || 0) / 100;
 
-            console.log('Retrieved subscription details:', {
-              subscriptionId,
-              status: subscription.status,
-              metadata: subscription.metadata
-            });
+            // console.log('Retrieved subscription details:', {
+            //   subscriptionId,
+            //   status: subscription.status,
+            //   metadata: subscription.metadata
+            // });
 
             // Get customer details
             const customer = await stripe.customers.retrieve(session.customer as string) as Stripe.Customer;
-            console.log('Retrieved customer details:', {
-              customerId: customer.id,
-              email: customer.email,
-              name: customer.name
-            });
+            // console.log('Retrieved customer details:', {
+            //   customerId: customer.id,
+            //   email: customer.email,
+            //   name: customer.name
+            // });
 
             // Get donation campaign information
             let donationType = subscription.metadata.campaign_title;
@@ -214,19 +227,19 @@ export default async function handler(
               donationType = current_Diffrent_campaigns.JESUS_MARCH_2025_MIAMI.title;
             }
 
-            console.log('Using donation type for session payment:', donationType);
+            // console.log('Using donation type for session payment:', donationType);
 
             // Connect to database
             await dbConnect();
-            console.log('Database connected');
+            // console.log('Database connected');
 
             // Always store the payment - no need to check for duplicates
-            console.log('Saving checkout session payment:', {
-              amount: checkoutAmount,
-              donationType,
-              customer: customer.email,
-              referenceId: session.id
-            });
+            // console.log('Saving checkout session payment:', {
+            //   amount: checkoutAmount,
+            //   donationType,
+            //   customer: customer.email,
+            //   referenceId: session.id
+            // });
 
             // Store the payment with session ID as reference
             try {
@@ -240,7 +253,7 @@ export default async function handler(
               };
 
               const savedPayment = await createPaymentData(paymentData);
-              console.log('Payment successfully created in database:', savedPayment ? savedPayment._id : 'unknown');
+              // console.log('Payment successfully created in database:', savedPayment ? savedPayment._id : 'unknown');
 
               const customerName = customer.name || 'Anonymous';
               const firstName = customerName.split(' ')[0];
@@ -256,7 +269,7 @@ export default async function handler(
               console.error('Error creating payment in database:', createError);
             }
 
-            console.log('Checkout payment successfully stored in database');
+            // console.log('Checkout payment successfully stored in database');
 
             await res.revalidate('/');
             await res.revalidate('/live');
@@ -268,45 +281,55 @@ export default async function handler(
         }
         break;
 
-      case 'invoice.paid':
-        const invoice = event.data.object as Stripe.Invoice;
-        console.log('Processing invoice.paid event:', {
-          id: invoice.id,
-          subscription: invoice.subscription,
-          amount_paid: invoice.amount_paid,
-          customer: invoice.customer,
-          status: invoice.status
-        });
+      case 'customer.subscription.updated':
+        const updatedSubscription = event.data.object as Stripe.Subscription;
+        // console.log('Processing subscription.updated event:', {
+        //   id: updatedSubscription.id,
+        //   status: updatedSubscription.status,
+        //   current_period_start: updatedSubscription.current_period_start,
+        //   current_period_end: updatedSubscription.current_period_end
+        // });
 
-        // Check if this is a subscription invoice that we should process
-        if (invoice.subscription && invoice.status === 'paid') {
+        // Update subscription status in our database
+        await processSubscriptionChange(updatedSubscription);
+        break;
+
+      case 'customer.subscription.deleted':
+        const deletedSubscription = event.data.object as Stripe.Subscription;
+        // console.log('Processing subscription.deleted event:', {
+        //   id: deletedSubscription.id,
+        //   status: deletedSubscription.status,
+        //   canceled_at: deletedSubscription.canceled_at
+        // });
+
+        // Update subscription status in our database
+        await processSubscriptionChange(deletedSubscription);
+        break;
+
+      case 'invoice.created':
+        const createdInvoice = event.data.object as Stripe.Invoice;
+        // console.log('Processing invoice.created event:', {
+        //   id: createdInvoice.id,
+        //   subscription: createdInvoice.subscription,
+        //   amount_due: createdInvoice.amount_due,
+        //   customer: createdInvoice.customer,
+        //   status: createdInvoice.status
+        // });
+
+        // If we want to store invoice information in the database when it's created,
+        // even before it's paid, we can do that here
+        if (createdInvoice.subscription) {
           try {
-            console.log('Retrieving subscription details...');
-            const subscriptionId = typeof invoice.subscription === 'string'
-              ? invoice.subscription
-              : invoice.subscription.id;
+            // console.log('Retrieving subscription details for invoice.created...');
+            const subscriptionId = typeof createdInvoice.subscription === 'string'
+              ? createdInvoice.subscription
+              : createdInvoice.subscription.id;
 
             const subscription = await stripe.subscriptions.retrieve(subscriptionId);
-            const subscriptionAmount = invoice.amount_paid / 100;
-            const customer = await stripe.customers.retrieve(invoice.customer as string) as Stripe.Customer;
+            const invoiceAmount = createdInvoice.amount_due / 100;
+            const customer = await stripe.customers.retrieve(createdInvoice.customer as string) as Stripe.Customer;
 
-            console.log('Retrieved subscription details:', {
-              subscriptionId,
-              status: subscription.status,
-              currentPeriodStart: subscription.current_period_start,
-              currentPeriodEnd: subscription.current_period_end
-            });
-
-            console.log('Retrieved customer details:', {
-              customerId: customer.id,
-              email: customer.email,
-              name: customer.name
-            });
-
-            // Get campaign from subscription metadata
-            console.log('Subscription metadata:', subscription.metadata);
-
-            // Get either the campaign_title from metadata (new approach) or look up by campaign key (old approach)
+            // Get donation campaign information from subscription metadata
             let donationType = subscription.metadata.campaign_title;
 
             // If not found, try to get from campaign key (backward compatibility)
@@ -321,50 +344,132 @@ export default async function handler(
               donationType = current_Diffrent_campaigns.JESUS_MARCH_2025_MIAMI.title;
             }
 
-            console.log('Using campaign title for donation:', donationType);
-
             // Connect to database
             await dbConnect();
-            console.log('Database connected for invoice payment');
 
+            // Store the invoice creation with reference ID
             const paymentData = {
-              amount: subscriptionAmount,
-              dateCreated: invoice.created,
+              amount: invoiceAmount,
+              dateCreated: createdInvoice.created,
               donationType: donationType,
               name: customer.name || undefined,
               email: customer.email || undefined,
-              referenceId: invoice.id,
+              referenceId: createdInvoice.id,
             };
 
-            console.log('Saving new payment with details:', paymentData);
+            // Store in database only if the invoice is not already paid
+            // This ensures we don't create duplicate entries when an invoice is immediately paid
+            if (createdInvoice.status !== 'paid') {
+              // console.log('Saving invoice creation record:', paymentData);
+              try {
+                const savedPayment = await createPaymentData(paymentData);
+                // console.log('Invoice creation record stored in database:', savedPayment?._id);
+              } catch (saveError) {
+                console.error('Error saving invoice creation record:', saveError);
+              }
+            } else {
+              console.log('Skipping invoice creation record since invoice is already paid');
+            }
+          } catch (error) {
+            console.error('Error processing invoice creation:', error);
+          }
+        }
+        break;
 
-            // Store the payment with reference ID
-            try {
-              const savedPayment = await createPaymentData(paymentData);
-              console.log('Subscription payment successfully stored in database:', savedPayment._id);
+      case 'invoice.paid':
+      case 'invoice.payment_succeeded':
+        const paidInvoice = event.data.object as Stripe.Invoice;
+        // console.log('Processing invoice payment event:', {
+        //   id: paidInvoice.id,
+        //   subscription: paidInvoice.subscription,
+        //   amount_paid: paidInvoice.amount_paid,
+        //   customer: paidInvoice.customer,
+        //   status: paidInvoice.status
+        // });
 
-              const customerName = customer.name || 'Anonymous';
-              const firstName = customerName.split(' ')[0];
+        // Check if this is a subscription invoice that we should process
+        if (paidInvoice.subscription && paidInvoice.status === 'paid') {
+          try {
+            // console.log('Retrieving subscription details...');
+            const subscriptionId = typeof paidInvoice.subscription === 'string'
+              ? paidInvoice.subscription
+              : paidInvoice.subscription.id;
 
-              await channel.publish('newPayment', {
+            const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+            const subscriptionAmount = paidInvoice.amount_paid / 100;
+            const customer = await stripe.customers.retrieve(paidInvoice.customer as string) as Stripe.Customer;
+
+            // console.log('Retrieved subscription details:', {
+            //   subscriptionId,
+            //   status: subscription.status,
+            //   currentPeriodStart: subscription.current_period_start,
+            //   currentPeriodEnd: subscription.current_period_end
+            // });
+
+            // Get campaign from subscription metadata
+            let donationType = subscription.metadata.campaign_title;
+
+            // If not found, try to get from campaign key (backward compatibility)
+            if (!donationType && subscription.metadata.campaign) {
+              const campaignKey = subscription.metadata.campaign;
+              const campaignData = current_Diffrent_campaigns[campaignKey];
+              donationType = campaignData ? campaignData.title : 'Unknown Campaign';
+            }
+
+            // Fallback to default if we still don't have a campaign
+            if (!donationType) {
+              donationType = current_Diffrent_campaigns.JESUS_MARCH_2025_MIAMI.title;
+            }
+
+            // Connect to database
+            await dbConnect();
+
+            // Check if we already have a payment for this invoice
+            const existingPayment = await PaymentModel.findOne({
+              referenceId: paidInvoice.id
+            });
+
+            if (existingPayment) {
+              // console.log(`Payment for invoice ${paidInvoice.id} already exists, updating status`);
+            } else {
+              // Create a new payment record for the paid invoice
+              const paymentData = {
                 amount: subscriptionAmount,
-                user: firstName,
-                timestamp: new Date().toISOString(),
+                dateCreated: paidInvoice.created,
                 donationType: donationType,
-                isSubscription: true
-              });
+                name: customer.name || undefined,
+                email: customer.email || undefined,
+                referenceId: paidInvoice.id,
+              };
 
-              console.log('Payment event published to channel');
-            } catch (saveError) {
-              console.error('Error saving invoice payment to database:', saveError);
+              // console.log('Saving new payment for paid invoice:', paymentData);
+
+              // Store the payment with reference ID
+              try {
+                const savedPayment = await createPaymentData(paymentData);
+                // console.log('Subscription payment successfully stored in database:', savedPayment?._id);
+
+                const customerName = customer.name || 'Anonymous';
+                const firstName = customerName.split(' ')[0];
+
+                await channel.publish('newPayment', {
+                  amount: subscriptionAmount,
+                  user: firstName,
+                  timestamp: new Date().toISOString(),
+                  donationType: donationType,
+                  isSubscription: true
+                });
+
+                // console.log('Payment event published to channel');
+              } catch (saveError) {
+                console.error('Error saving invoice payment to database:', saveError);
+              }
             }
 
             await res.revalidate('/');
             await res.revalidate('/live');
-            console.log('Pages revalidated');
           } catch (error) {
             console.error('Error processing subscription payment:', error);
-            // Don't throw here, continue processing
           }
         } else {
           console.log('Skipping non-subscription or non-paid invoice');
@@ -387,13 +492,13 @@ export default async function handler(
           try {
             // Check if payment intent has already been processed
             await dbConnect();
-            console.log('Database connected for payment intent');
+            // console.log('Database connected for payment intent');
 
             const existingPIPayment = await PaymentModel.findOne({
               referenceId: paymentIntent.id
             });
 
-            console.log('Existing payment intent check result:', existingPIPayment ? 'Found' : 'Not found');
+            // console.log('Existing payment intent check result:', existingPIPayment ? 'Found' : 'Not found');
 
             if (existingPIPayment) {
               console.log(`Payment intent ${paymentIntent.id} already processed. Skipping.`);
@@ -406,11 +511,11 @@ export default async function handler(
                 const customer = await stripe.customers.retrieve(paymentIntent.customer as string) as Stripe.Customer;
                 customerName = customer.name;
                 customerEmail = customer.email;
-                console.log('Retrieved customer details:', {
-                  customerId: customer.id,
-                  email: customerEmail,
-                  name: customerName
-                });
+                // console.log('Retrieved customer details:', {
+                //   customerId: customer.id,
+                //   email: customerEmail,
+                //   name: customerName
+                // });
               }
 
               // Determine campaign/donation type from metadata
@@ -423,7 +528,7 @@ export default async function handler(
                 }
               }
 
-              console.log('Using donation type for payment intent:', donationType);
+              // console.log('Using donation type for payment intent:', donationType);
 
               const paymentData = {
                 amount: paymentIntent.amount / 100,
@@ -434,12 +539,12 @@ export default async function handler(
                 referenceId: paymentIntent.id
               };
 
-              console.log('Saving payment intent payment:', paymentData);
+              // console.log('Saving payment intent payment:', paymentData);
 
               // Store the payment
               try {
                 const savedPayment = await createPaymentData(paymentData);
-                console.log('Payment intent payment successfully stored in database:', savedPayment ? savedPayment._id : 'unknown');
+                // console.log('Payment intent payment successfully stored in database:', savedPayment ? savedPayment._id : 'unknown');
 
                 const displayName = customerName || 'Anonymous';
                 const firstName = displayName.split(' ')[0];
@@ -451,7 +556,7 @@ export default async function handler(
                   donationType
                 });
 
-                console.log('Payment event published to channel');
+                // console.log('Payment event published to channel');
 
                 await res.revalidate('/');
                 await res.revalidate('/live');

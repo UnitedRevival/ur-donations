@@ -20,55 +20,54 @@ export default async function handler(
       const { email, name, address, utm, campaign, priceId, donationType } = req.body;
 
       // Log request data for debugging
+      console.log('Creating subscription with data:', {
+        email,
+        name,
+        campaign,
+        priceId,
+        donationType
+      });
 
       // Get campaign details - with intelligent matching or use the provided donationType directly
       let campaignTitle = '';
       let campaignKey = '';
 
-      // First try: Use the campaign key directly if exists in current_Diffrent_campaigns
       if (campaign && current_Diffrent_campaigns[campaign]) {
+        // Use provided campaign key if it exists
         campaignKey = campaign;
         campaignTitle = current_Diffrent_campaigns[campaign].title;
-      }
-      // Second try: If donationType is provided, use it directly
-      else if (donationType) {
+        console.log(`Using provided campaign key: ${campaignKey}, title: ${campaignTitle}`);
+      } else if (donationType) {
+        // Use the provided donationType directly
         campaignTitle = donationType;
-        campaignKey = 'CUSTOM_CAMPAIGN';
-      }
-      // Third try: Find closest match by title
-      else if (campaign) {
-        // Try to find the closest campaign by fuzzy matching
-        const allCampaigns = Object.entries(current_Diffrent_campaigns);
 
-        // First check if there's a campaign whose title contains our campaign string
-        for (const [key, value] of allCampaigns) {
-          if (value.title.toLowerCase().includes((campaign || '').toLowerCase().replace(/_/g, ' ').replace(/-/g, ' '))) {
+        // Try to find a matching campaign key for backward compatibility
+        for (const [key, value] of Object.entries(current_Diffrent_campaigns)) {
+          if (value.title === donationType) {
             campaignKey = key;
-            campaignTitle = value.title;
             break;
           }
         }
 
-        // If still not found, use the campaign string as a title
-        if (!campaignTitle) {
-          campaignTitle = campaign.replace(/_/g, ' ').replace(/-/g, ' '); // Convert to readable format
-          campaignKey = 'CUSTOM_CAMPAIGN';
+        if (!campaignKey) {
+          campaignKey = 'custom'; // Fallback if no matching key found
         }
-      }
-      // Default: Use Miami campaign as fallback
-      else {
+
+        console.log(`Using provided donationType: ${campaignTitle}, mapped to key: ${campaignKey}`);
+      } else {
+        // Fallback to default campaign
         campaignKey = 'JESUS_MARCH_2025_MIAMI';
-        campaignTitle = current_Diffrent_campaigns[campaignKey].title;
+        campaignTitle = current_Diffrent_campaigns.JESUS_MARCH_2025_MIAMI.title;
+        console.log(`Using default campaign: ${campaignTitle}`);
       }
 
-     
-
+      // Connect to database
       await dbConnect();
 
-      // Find or create customer
+      // Check if customer exists first
+      let customerId;
       const foundCustomer = await CustomerModel.findOne({ email });
 
-      let customerId: any = null;
       if (foundCustomer) {
         customerId = foundCustomer?.stripeCustomer;
       } else {
@@ -76,6 +75,11 @@ export default async function handler(
           email,
           name,
           address,
+          metadata: {
+            utm_source: utm ? utm : 'unknown',
+            campaign: campaignKey,
+            campaign_title: campaignTitle
+          }
         });
 
         if (!customer) {
@@ -109,10 +113,7 @@ export default async function handler(
         });
       }
 
-    
-
       try {
-
         const subscription = await stripe.subscriptions.create({
           customer: customerId,
           metadata: {
@@ -125,6 +126,8 @@ export default async function handler(
               price: selectedPrice.id,
               metadata: {
                 utm_source: utm ? utm : 'unknown',
+                campaign: campaignKey,
+                campaign_title: campaignTitle
               },
             },
           ],
@@ -137,29 +140,8 @@ export default async function handler(
           };
         };
 
-
-        // Store the payment directly like one-time payments
-        const amount = (selectedPrice.unit_amount || 0) / 100;
-
-        // Store the payment in the database
-        await createPaymentData({
-          amount,
-          dateCreated: Date.now(),
-          donationType: campaignTitle,
-          name: name || undefined,
-          email: email || undefined,
-          referenceId: subscription.latest_invoice.id,
-        });
-
-        // Publish payment to channel
-        const firstName = name ? name.split(' ')[0] : 'Anonymous';
-        await channel.publish('newPayment', {
-          amount,
-          user: firstName,
-          timestamp: new Date().toISOString(),
-          donationType: campaignTitle,
-          isSubscription: true
-        });
+        // Note: The initial payment will be captured by the webhook via invoice.paid event
+        // So we don't need to store the payment here
 
         // Send the invoice URL to client
         res.send({
@@ -170,10 +152,11 @@ export default async function handler(
         return res.status(400).send({ error: { message: error.message } });
       }
     } catch (error: any) {
-      console.error('API handler error:', error);
-      return res.status(500).send({ error: { message: error.message || 'Unknown error occurred' } });
+      console.error('Subscription creation error:', error);
+      return res.status(500).json({ error: 'Internal server error' });
     }
   } else {
-    throw new Error(`${req.method} is not supported for this route`);
+    res.setHeader('Allow', 'POST');
+    res.status(405).end('Method Not Allowed');
   }
 }

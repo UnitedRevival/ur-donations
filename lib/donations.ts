@@ -8,23 +8,36 @@ export async function createPaymentData({
   dateCreated,
   name,
   email,
+  referenceId,
 }: Payment) {
-  await dbConnect();
+  try {
 
-  if (!amount) throw new Error('amount is a required field in the body');
-  if (!donationType)
-    throw new Error('donationType is a required field in the body');
+    await dbConnect();
 
-  const newPayment = new PaymentModel({
-    amount,
-    email,
-    name,
-    donationType,
-    anonymous: !name && !email,
-    dateCreated,
-  });
+    if (!amount) throw new Error('amount is a required field');
+    if (!donationType) throw new Error('donationType is a required field');
 
-  await newPayment.save();
+    // Create and save the payment
+    const newPayment = new PaymentModel({
+      amount,
+      email,
+      name,
+      donationType,
+      anonymous: !name && !email,
+      dateCreated: dateCreated || Date.now(),
+      referenceId,
+    });
 
-  // redis?.del('totals');
+    const savedPayment = await newPayment.save();
+
+    // Clear cache if using redis
+    if (redis) {
+      await redis.del('totals');
+    }
+
+    return savedPayment;
+  } catch (error) {
+    console.error('Error in createPaymentData:', error);
+    throw error;
+  }
 }

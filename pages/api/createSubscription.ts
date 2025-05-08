@@ -56,8 +56,8 @@ export default async function handler(
         console.log(`Using provided donationType: ${campaignTitle}, mapped to key: ${campaignKey}`);
       } else {
         // Fallback to default campaign
-        campaignKey = 'JESUS_MARCH_2025_MIAMI';
-        campaignTitle = current_Diffrent_campaigns.JESUS_MARCH_2025_MIAMI.title;
+        campaignKey = 'JESUS_MARCH_2025';
+        campaignTitle = current_Diffrent_campaigns.JESUS_MARCH_2025.title;
         console.log(`Using default campaign: ${campaignTitle}`);
       }
 

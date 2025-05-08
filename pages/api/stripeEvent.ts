@@ -169,409 +169,402 @@ export default async function handler(
         });
         break;
 
-      case 'customer.subscription.created':
-        const createdSubscription = event.data.object as Stripe.Subscription;
-        // console.log('Processing subscription.created event:', {
-        //   id: createdSubscription.id,
-        //   status: createdSubscription.status,
-        //   customer: createdSubscription.customer
-        // });
+      // case 'payment_intent.created':
+      //   const createdPaymentIntent = event.data.object as Stripe.PaymentIntent;
+      //   console.log('Processing payment_intent.created event:', {
+      //     id: createdPaymentIntent.id,
+      //     amount: createdPaymentIntent.amount,
+      //     customer: createdPaymentIntent.customer,
+      //     metadata: createdPaymentIntent.metadata
+      //   });
 
-        // Track the subscription in our database
-        await processSubscriptionChange(createdSubscription);
+      //   // We don't need to store anything in the database at this point,
+      //   // as this is just the initial creation of the payment intent.
+      //   // The payment_intent.succeeded event will handle actually storing the payment.
+      //   break;
 
-        // The rest of the function can remain the same
-        // as it processes the checkout session
-        const session = event.data.object as Stripe.Checkout.Session;
-        // console.log('Processing checkout.session.completed event:', {
-        //   id: session.id,
-        //   customerId: session.customer,
-        //   amount_total: session.amount_total,
-        //   payment_status: session.payment_status,
-        //   subscription: session.subscription
-        // });
+      // case 'customer.subscription.created':
+      //   const createdSubscription = event.data.object as Stripe.Subscription;
+      //   console.log('Processing subscription.created event:', {
+      //     id: createdSubscription.id,
+      //     status: createdSubscription.status,
+      //     customer: createdSubscription.customer
+      //   });
 
-        // Only process completed subscription checkouts
-        if (session.subscription && session.payment_status === 'paid') {
-          try {
-            const subscriptionId = session.subscription as string;
-            const subscription = await stripe.subscriptions.retrieve(subscriptionId);
-            const checkoutAmount = (session.amount_total || 0) / 100;
+      //   // Track the subscription in our database - this only tracks the subscription status,
+      //   // not the payment which will be handled by invoice.paid events
+      //   await processSubscriptionChange(createdSubscription);
 
-            // console.log('Retrieved subscription details:', {
-            //   subscriptionId,
-            //   status: subscription.status,
-            //   metadata: subscription.metadata
-            // });
+      //   // NOTE: We don't need to store a payment record here, as the payment will be 
+      //   // handled by the invoice.paid or invoice.payment_succeeded events
 
-            // Get customer details
-            const customer = await stripe.customers.retrieve(session.customer as string) as Stripe.Customer;
-            // console.log('Retrieved customer details:', {
-            //   customerId: customer.id,
-            //   email: customer.email,
-            //   name: customer.name
-            // });
+      //   // Uncomment the following if you need to extract subscription metadata or details,
+      //   // but DO NOT create a payment record at this point
+      //   /*
+      //   if (createdSubscription && createdSubscription.customer) {
+      //     try {
+      //       const customer = await stripe.customers.retrieve(createdSubscription.customer as string) as Stripe.Customer;
+      //       console.log('Retrieved customer details for subscription.created:', {
+      //         customerId: customer.id,
+      //         email: customer.email,
+      //         name: customer.name
+      //       });
+      //     } catch (error) {
+      //       console.error('Error retrieving customer details:', error);
+      //     }
+      //   }
+      //   */
 
-            // Get donation campaign information
-            let donationType = subscription.metadata.campaign_title;
+      //   break;
 
-            // If not found, try to get from campaign key (backward compatibility)
-            if (!donationType && subscription.metadata.campaign) {
-              const campaignKey = subscription.metadata.campaign;
-              const campaignData = current_Diffrent_campaigns[campaignKey];
-              donationType = campaignData ? campaignData.title : 'Unknown Campaign';
-            }
+      // case 'customer.subscription.updated':
+      //   const updatedSubscription = event.data.object as Stripe.Subscription;
+      //   // console.log('Processing subscription.updated event:', {
+      //   //   id: updatedSubscription.id,
+      //   //   status: updatedSubscription.status,
+      //   //   current_period_start: updatedSubscription.current_period_start,
+      //   //   current_period_end: updatedSubscription.current_period_end
+      //   // });
 
-            // Fallback to default if we still don't have a campaign
-            if (!donationType) {
-              donationType = current_Diffrent_campaigns.JESUS_MARCH_2025_MIAMI.title;
-            }
+      //   // Update subscription status in our database
+      //   await processSubscriptionChange(updatedSubscription);
+      //   break;
 
-            // console.log('Using donation type for session payment:', donationType);
+      // case 'customer.subscription.deleted':
+      //   const deletedSubscription = event.data.object as Stripe.Subscription;
+      //   // console.log('Processing subscription.deleted event:', {
+      //   //   id: deletedSubscription.id,
+      //   //   status: deletedSubscription.status,
+      //   //   canceled_at: deletedSubscription.canceled_at
+      //   // });
 
-            // Connect to database
-            await dbConnect();
-            // console.log('Database connected');
+      //   // Update subscription status in our database
+      //   await processSubscriptionChange(deletedSubscription);
+      //   break;
 
-            // Always store the payment - no need to check for duplicates
-            // console.log('Saving checkout session payment:', {
-            //   amount: checkoutAmount,
-            //   donationType,
-            //   customer: customer.email,
-            //   referenceId: session.id
-            // });
+      // case 'invoice.created':
+      //   const createdInvoice = event.data.object as Stripe.Invoice;
+      //   // console.log('Processing invoice.created event:', {
+      //   //   id: createdInvoice.id,
+      //   //   subscription: createdInvoice.subscription,
+      //   //   amount_due: createdInvoice.amount_due,
+      //   //   customer: createdInvoice.customer,
+      //   //   status: createdInvoice.status
+      //   // });
 
-            // Store the payment with session ID as reference
-            try {
-              const paymentData = {
-                amount: checkoutAmount,
-                dateCreated: session.created,
-                donationType,
-                name: customer.name || undefined,
-                email: customer.email || undefined,
-                referenceId: session.id,
-              };
+      //   // If we want to store invoice information in the database when it's created,
+      //   // even before it's paid, we can do that here
+      //   if (createdInvoice.subscription) {
+      //     try {
+      //       // console.log('Retrieving subscription details for invoice.created...');
+      //       const subscriptionId = typeof createdInvoice.subscription === 'string'
+      //         ? createdInvoice.subscription
+      //         : createdInvoice.subscription.id;
 
-              const savedPayment = await createPaymentData(paymentData);
-              // console.log('Payment successfully created in database:', savedPayment ? savedPayment._id : 'unknown');
+      //       const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+      //       const invoiceAmount = createdInvoice.amount_due / 100;
+      //       const customer = await stripe.customers.retrieve(createdInvoice.customer as string) as Stripe.Customer;
 
-              const customerName = customer.name || 'Anonymous';
-              const firstName = customerName.split(' ')[0];
+      //       // Get donation campaign information from subscription metadata
+      //       let donationType = subscription.metadata.campaign_title;
 
-              await channel.publish('newPayment', {
-                amount: checkoutAmount,
-                user: firstName,
-                timestamp: new Date().toISOString(),
-                donationType,
-                isSubscription: true
-              });
-            } catch (createError) {
-              console.error('Error creating payment in database:', createError);
-            }
+      //       // If not found, try to get from campaign key (backward compatibility)
+      //       if (!donationType && subscription.metadata.campaign) {
+      //         const campaignKey = subscription.metadata.campaign;
+      //         const campaignData = current_Diffrent_campaigns[campaignKey];
+      //         donationType = campaignData ? campaignData.title : 'Unknown Campaign';
+      //       }
 
-            // console.log('Checkout payment successfully stored in database');
+      //       // Fallback to default if we still don't have a campaign
+      //       if (!donationType) {
+      //         donationType = current_Diffrent_campaigns.JESUS_MARCH_2025_MIAMI.title;
+      //       }
 
-            await res.revalidate('/');
-            await res.revalidate('/live');
-          } catch (error) {
-            console.error('Error processing checkout session payment:', error);
-          }
-        } else {
-          console.log('Skipping non-paid or non-subscription checkout session');
-        }
-        break;
+      //       // Connect to database
+      //       await dbConnect();
 
-      case 'customer.subscription.updated':
-        const updatedSubscription = event.data.object as Stripe.Subscription;
-        // console.log('Processing subscription.updated event:', {
-        //   id: updatedSubscription.id,
-        //   status: updatedSubscription.status,
-        //   current_period_start: updatedSubscription.current_period_start,
-        //   current_period_end: updatedSubscription.current_period_end
-        // });
+      //       // Store the invoice creation with reference ID
+      //       const paymentData = {
+      //         amount: invoiceAmount,
+      //         dateCreated: createdInvoice.created,
+      //         donationType: donationType,
+      //         name: customer.name || undefined,
+      //         email: customer.email || undefined,
+      //         referenceId: createdInvoice.id,
+      //       };
 
-        // Update subscription status in our database
-        await processSubscriptionChange(updatedSubscription);
-        break;
+      //       // Store in database only if the invoice is not already paid
+      //       // This ensures we don't create duplicate entries when an invoice is immediately paid
+      //       if (createdInvoice.status !== 'paid') {
+      //         // console.log('Saving invoice creation record:', paymentData);
+      //         try {
+      //           const savedPayment = await createPaymentData(paymentData);
+      //           // console.log('Invoice creation record stored in database:', savedPayment?._id);
+      //         } catch (saveError) {
+      //           console.error('Error saving invoice creation record:', saveError);
+      //         }
+      //       } else {
+      //         console.log('Skipping invoice creation record since invoice is already paid');
+      //       }
+      //     } catch (error) {
+      //       console.error('Error processing invoice creation:', error);
+      //     }
+      //   }
+      //   break;
 
-      case 'customer.subscription.deleted':
-        const deletedSubscription = event.data.object as Stripe.Subscription;
-        // console.log('Processing subscription.deleted event:', {
-        //   id: deletedSubscription.id,
-        //   status: deletedSubscription.status,
-        //   canceled_at: deletedSubscription.canceled_at
-        // });
+      // case 'invoice.updated':
+      //   const updatedInvoice = event.data.object as Stripe.Invoice;
+      //   console.log('Processing invoice.updated event:', {
+      //     id: updatedInvoice.id,
+      //     subscription: updatedInvoice.subscription,
+      //     status: updatedInvoice.status,
+      //     paid: updatedInvoice.paid
+      //   });
 
-        // Update subscription status in our database
-        await processSubscriptionChange(deletedSubscription);
-        break;
+      //   // No special action needed, just acknowledge the event
+      //   // The invoice.paid event will handle payment recording if needed
+      //   break;
 
-      case 'invoice.created':
-        const createdInvoice = event.data.object as Stripe.Invoice;
-        // console.log('Processing invoice.created event:', {
-        //   id: createdInvoice.id,
-        //   subscription: createdInvoice.subscription,
-        //   amount_due: createdInvoice.amount_due,
-        //   customer: createdInvoice.customer,
-        //   status: createdInvoice.status
-        // });
+      // case 'invoice.finalized':
+      //   const finalizedInvoice = event.data.object as Stripe.Invoice;
+      //   console.log('Processing invoice.finalized event:', {
+      //     id: finalizedInvoice.id,
+      //     subscription: finalizedInvoice.subscription,
+      //     amount_due: finalizedInvoice.amount_due,
+      //     customer: finalizedInvoice.customer,
+      //     status: finalizedInvoice.status
+      //   });
 
-        // If we want to store invoice information in the database when it's created,
-        // even before it's paid, we can do that here
-        if (createdInvoice.subscription) {
-          try {
-            // console.log('Retrieving subscription details for invoice.created...');
-            const subscriptionId = typeof createdInvoice.subscription === 'string'
-              ? createdInvoice.subscription
-              : createdInvoice.subscription.id;
+      //   // We don't need to take any special action here because the invoice.paid
+      //   // or invoice.payment_succeeded events will handle storing the payment record.
+      //   // This handler is just to log and acknowledge the event.
+      //   break;
 
-            const subscription = await stripe.subscriptions.retrieve(subscriptionId);
-            const invoiceAmount = createdInvoice.amount_due / 100;
-            const customer = await stripe.customers.retrieve(createdInvoice.customer as string) as Stripe.Customer;
+      // case 'invoice.paid':
+      // case 'invoice.payment_succeeded':
+      //   const paidInvoice = event.data.object as Stripe.Invoice;
+      //   console.log('Processing invoice payment event:', {
+      //     id: paidInvoice.id,
+      //     type: event.type,
+      //     subscription: paidInvoice.subscription,
+      //     amount_paid: paidInvoice.amount_paid,
+      //     customer: paidInvoice.customer,
+      //     status: paidInvoice.status
+      //   });
 
-            // Get donation campaign information from subscription metadata
-            let donationType = subscription.metadata.campaign_title;
+      //   // Check if this is a subscription invoice that we should process
+      //   if (paidInvoice.subscription && paidInvoice.status === 'paid') {
+      //     try {
+      //       // Connect to database first to check for existing payment
+      //       await dbConnect();
 
-            // If not found, try to get from campaign key (backward compatibility)
-            if (!donationType && subscription.metadata.campaign) {
-              const campaignKey = subscription.metadata.campaign;
-              const campaignData = current_Diffrent_campaigns[campaignKey];
-              donationType = campaignData ? campaignData.title : 'Unknown Campaign';
-            }
+      //       // Check for duplicate payment in multiple ways:
+      //       // 1. Direct match on invoice ID
+      //       // 2. Or check for payments with the same amount, date, and customer
+      //       const existingPaymentByInvoice = await PaymentModel.findOne({
+      //         referenceId: paidInvoice.id
+      //       });
 
-            // Fallback to default if we still don't have a campaign
-            if (!donationType) {
-              donationType = current_Diffrent_campaigns.JESUS_MARCH_2025_MIAMI.title;
-            }
+      //       // Also check for existing payment by payment intent
+      //       let existingPaymentByIntent = null;
+      //       if (paidInvoice.payment_intent) {
+      //         const paymentIntentId = typeof paidInvoice.payment_intent === 'string'
+      //           ? paidInvoice.payment_intent
+      //           : paidInvoice.payment_intent.id;
 
-            // Connect to database
-            await dbConnect();
+      //         existingPaymentByIntent = await PaymentModel.findOne({
+      //           referenceId: paymentIntentId
+      //         });
+      //       }
 
-            // Store the invoice creation with reference ID
-            const paymentData = {
-              amount: invoiceAmount,
-              dateCreated: createdInvoice.created,
-              donationType: donationType,
-              name: customer.name || undefined,
-              email: customer.email || undefined,
-              referenceId: createdInvoice.id,
-            };
+      //       // Check if there's any existing payment
+      //       if (existingPaymentByInvoice || existingPaymentByIntent) {
+      //         console.log(`Payment for invoice ${paidInvoice.id} already exists in database (found by ${existingPaymentByInvoice ? 'invoice ID' : 'payment intent ID'}), skipping`);
+      //         break; // Skip the rest of the processing
+      //       }
 
-            // Store in database only if the invoice is not already paid
-            // This ensures we don't create duplicate entries when an invoice is immediately paid
-            if (createdInvoice.status !== 'paid') {
-              // console.log('Saving invoice creation record:', paymentData);
-              try {
-                const savedPayment = await createPaymentData(paymentData);
-                // console.log('Invoice creation record stored in database:', savedPayment?._id);
-              } catch (saveError) {
-                console.error('Error saving invoice creation record:', saveError);
-              }
-            } else {
-              console.log('Skipping invoice creation record since invoice is already paid');
-            }
-          } catch (error) {
-            console.error('Error processing invoice creation:', error);
-          }
-        }
-        break;
+      //       // Continue processing only if no existing payment was found
+      //       console.log('Retrieving subscription details...');
+      //       const subscriptionId = typeof paidInvoice.subscription === 'string'
+      //         ? paidInvoice.subscription
+      //         : paidInvoice.subscription.id;
 
-      case 'invoice.paid':
-      case 'invoice.payment_succeeded':
-        const paidInvoice = event.data.object as Stripe.Invoice;
-        // console.log('Processing invoice payment event:', {
-        //   id: paidInvoice.id,
-        //   subscription: paidInvoice.subscription,
-        //   amount_paid: paidInvoice.amount_paid,
-        //   customer: paidInvoice.customer,
-        //   status: paidInvoice.status
-        // });
+      //       const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+      //       const subscriptionAmount = paidInvoice.amount_paid / 100;
+      //       const customer = await stripe.customers.retrieve(paidInvoice.customer as string) as Stripe.Customer;
 
-        // Check if this is a subscription invoice that we should process
-        if (paidInvoice.subscription && paidInvoice.status === 'paid') {
-          try {
-            // console.log('Retrieving subscription details...');
-            const subscriptionId = typeof paidInvoice.subscription === 'string'
-              ? paidInvoice.subscription
-              : paidInvoice.subscription.id;
+      //       console.log('Retrieved subscription details:', {
+      //         subscriptionId,
+      //         status: subscription.status,
+      //         currentPeriodStart: subscription.current_period_start,
+      //         currentPeriodEnd: subscription.current_period_end
+      //       });
 
-            const subscription = await stripe.subscriptions.retrieve(subscriptionId);
-            const subscriptionAmount = paidInvoice.amount_paid / 100;
-            const customer = await stripe.customers.retrieve(paidInvoice.customer as string) as Stripe.Customer;
+      //       // Get campaign from subscription metadata
+      //       let donationType = subscription.metadata.campaign_title;
 
-            // console.log('Retrieved subscription details:', {
-            //   subscriptionId,
-            //   status: subscription.status,
-            //   currentPeriodStart: subscription.current_period_start,
-            //   currentPeriodEnd: subscription.current_period_end
-            // });
+      //       // If not found, try to get from campaign key (backward compatibility)
+      //       if (!donationType && subscription.metadata.campaign) {
+      //         const campaignKey = subscription.metadata.campaign;
+      //         const campaignData = current_Diffrent_campaigns[campaignKey];
+      //         donationType = campaignData ? campaignData.title : 'Unknown Campaign';
+      //       }
 
-            // Get campaign from subscription metadata
-            let donationType = subscription.metadata.campaign_title;
+      //       // Fallback to default if we still don't have a campaign
+      //       if (!donationType) {
+      //         donationType = current_Diffrent_campaigns.JESUS_MARCH_2025_MIAMI.title;
+      //       }
 
-            // If not found, try to get from campaign key (backward compatibility)
-            if (!donationType && subscription.metadata.campaign) {
-              const campaignKey = subscription.metadata.campaign;
-              const campaignData = current_Diffrent_campaigns[campaignKey];
-              donationType = campaignData ? campaignData.title : 'Unknown Campaign';
-            }
+      //       // Create a new payment record for the paid invoice
+      //       const paymentData = {
+      //         amount: subscriptionAmount,
+      //         dateCreated: paidInvoice.created,
+      //         donationType: donationType,
+      //         name: customer.name || undefined,
+      //         email: customer.email || undefined,
+      //         referenceId: paidInvoice.id, // Using invoice ID as reference for deduplication
+      //       };
 
-            // Fallback to default if we still don't have a campaign
-            if (!donationType) {
-              donationType = current_Diffrent_campaigns.JESUS_MARCH_2025_MIAMI.title;
-            }
+      //       console.log('Saving new payment for paid invoice:', paymentData);
 
-            // Connect to database
-            await dbConnect();
+      //       // Store the payment with reference ID
+      //       try {
+      //         const savedPayment = await createPaymentData(paymentData);
+      //         console.log('Subscription payment successfully stored in database:', savedPayment?._id);
 
-            // Check if we already have a payment for this invoice
-            const existingPayment = await PaymentModel.findOne({
-              referenceId: paidInvoice.id
-            });
+      //         const customerName = customer.name || 'Anonymous';
+      //         const firstName = customerName.split(' ')[0];
 
-            if (existingPayment) {
-              // console.log(`Payment for invoice ${paidInvoice.id} already exists, updating status`);
-            } else {
-              // Create a new payment record for the paid invoice
-              const paymentData = {
-                amount: subscriptionAmount,
-                dateCreated: paidInvoice.created,
-                donationType: donationType,
-                name: customer.name || undefined,
-                email: customer.email || undefined,
-                referenceId: paidInvoice.id,
-              };
+      //         await channel.publish('newPayment', {
+      //           amount: subscriptionAmount,
+      //           user: firstName,
+      //           timestamp: new Date().toISOString(),
+      //           donationType: donationType,
+      //           isSubscription: true
+      //         });
 
-              // console.log('Saving new payment for paid invoice:', paymentData);
+      //         console.log('Payment event published to channel');
+      //       } catch (saveError) {
+      //         console.error('Error saving invoice payment to database:', saveError);
+      //       }
 
-              // Store the payment with reference ID
-              try {
-                const savedPayment = await createPaymentData(paymentData);
-                // console.log('Subscription payment successfully stored in database:', savedPayment?._id);
+      //       await res.revalidate('/');
+      //       await res.revalidate('/live');
+      //     } catch (error) {
+      //       console.error('Error processing subscription payment:', error);
+      //     }
+      //   } else {
+      //     console.log('Skipping non-subscription or non-paid invoice');
+      //   }
+      //   break;
 
-                const customerName = customer.name || 'Anonymous';
-                const firstName = customerName.split(' ')[0];
+      // case 'payment_method.attached':
+      //   const paymentMethod = event.data.object as Stripe.PaymentMethod;
+      //   console.log('Processing payment_method.attached event:', {
+      //     id: paymentMethod.id,
+      //     type: paymentMethod.type,
+      //     customer: paymentMethod.customer
+      //   });
 
-                await channel.publish('newPayment', {
-                  amount: subscriptionAmount,
-                  user: firstName,
-                  timestamp: new Date().toISOString(),
-                  donationType: donationType,
-                  isSubscription: true
-                });
+      //   // No need to store anything for this event, just acknowledge receipt
+      //   break;
 
-                // console.log('Payment event published to channel');
-              } catch (saveError) {
-                console.error('Error saving invoice payment to database:', saveError);
-              }
-            }
+      // case 'payment_intent.succeeded':
+      //   const paymentIntent = event.data.object as Stripe.PaymentIntent;
+      //   console.log('Processing payment_intent.succeeded event:', {
+      //     id: paymentIntent.id,
+      //     amount: paymentIntent.amount,
+      //     invoice: paymentIntent.invoice,
+      //     metadata: paymentIntent.metadata,
+      //     customerId: paymentIntent.customer
+      //   });
 
-            await res.revalidate('/');
-            await res.revalidate('/live');
-          } catch (error) {
-            console.error('Error processing subscription payment:', error);
-          }
-        } else {
-          console.log('Skipping non-subscription or non-paid invoice');
-        }
-        break;
+      //   // Only process payment intents that are not already associated with invoices
+      //   // (invoices are handled by the invoice.paid handler)
+      //   if (!paymentIntent.invoice) {
+      //     try {
+      //       // Check if payment intent has already been processed
+      //       await dbConnect();
+      //       // console.log('Database connected for payment intent');
 
-      case 'payment_intent.succeeded':
-        const paymentIntent = event.data.object as Stripe.PaymentIntent;
-        console.log('Processing payment_intent.succeeded event:', {
-          id: paymentIntent.id,
-          amount: paymentIntent.amount,
-          invoice: paymentIntent.invoice,
-          metadata: paymentIntent.metadata,
-          customerId: paymentIntent.customer
-        });
+      //       const existingPIPayment = await PaymentModel.findOne({
+      //         referenceId: paymentIntent.id
+      //       });
 
-        // Only process payment intents that are not already associated with invoices
-        // (invoices are handled by the invoice.paid handler)
-        if (!paymentIntent.invoice) {
-          try {
-            // Check if payment intent has already been processed
-            await dbConnect();
-            // console.log('Database connected for payment intent');
+      //       // console.log('Existing payment intent check result:', existingPIPayment ? 'Found' : 'Not found');
 
-            const existingPIPayment = await PaymentModel.findOne({
-              referenceId: paymentIntent.id
-            });
+      //       if (existingPIPayment) {
+      //         console.log(`Payment intent ${paymentIntent.id} already processed. Skipping.`);
+      //       } else {
+      //         // Get customer info if available
+      //         let customerName;
+      //         let customerEmail;
 
-            // console.log('Existing payment intent check result:', existingPIPayment ? 'Found' : 'Not found');
+      //         if (paymentIntent.customer) {
+      //           const customer = await stripe.customers.retrieve(paymentIntent.customer as string) as Stripe.Customer;
+      //           customerName = customer.name;
+      //           customerEmail = customer.email;
+      //           // console.log('Retrieved customer details:', {
+      //           //   customerId: customer.id,
+      //           //   email: customerEmail,
+      //           //   name: customerName
+      //           // });
+      //         }
 
-            if (existingPIPayment) {
-              console.log(`Payment intent ${paymentIntent.id} already processed. Skipping.`);
-            } else {
-              // Get customer info if available
-              let customerName;
-              let customerEmail;
+      //         // Determine campaign/donation type from metadata
+      //         let donationType = currentCampaign.title;
+      //         if (paymentIntent.metadata.campaign && paymentIntent.metadata.campaign !== 'unknown') {
+      //           const campaignKey = paymentIntent.metadata.campaign;
+      //           const campaignData = current_Diffrent_campaigns[campaignKey];
+      //           if (campaignData) {
+      //             donationType = campaignData.title;
+      //           }
+      //         }
 
-              if (paymentIntent.customer) {
-                const customer = await stripe.customers.retrieve(paymentIntent.customer as string) as Stripe.Customer;
-                customerName = customer.name;
-                customerEmail = customer.email;
-                // console.log('Retrieved customer details:', {
-                //   customerId: customer.id,
-                //   email: customerEmail,
-                //   name: customerName
-                // });
-              }
+      //         // console.log('Using donation type for payment intent:', donationType);
 
-              // Determine campaign/donation type from metadata
-              let donationType = currentCampaign.title;
-              if (paymentIntent.metadata.campaign && paymentIntent.metadata.campaign !== 'unknown') {
-                const campaignKey = paymentIntent.metadata.campaign;
-                const campaignData = current_Diffrent_campaigns[campaignKey];
-                if (campaignData) {
-                  donationType = campaignData.title;
-                }
-              }
+      //         const paymentData = {
+      //           amount: paymentIntent.amount / 100,
+      //           dateCreated: paymentIntent.created,
+      //           donationType,
+      //           name: customerName || undefined,
+      //           email: customerEmail || undefined,
+      //           referenceId: paymentIntent.id
+      //         };
 
-              // console.log('Using donation type for payment intent:', donationType);
+      //         // console.log('Saving payment intent payment:', paymentData);
 
-              const paymentData = {
-                amount: paymentIntent.amount / 100,
-                dateCreated: paymentIntent.created,
-                donationType,
-                name: customerName || undefined,
-                email: customerEmail || undefined,
-                referenceId: paymentIntent.id
-              };
+      //         // Store the payment
+      //         try {
+      //           const savedPayment = await createPaymentData(paymentData);
+      //           // console.log('Payment intent payment successfully stored in database:', savedPayment ? savedPayment._id : 'unknown');
 
-              // console.log('Saving payment intent payment:', paymentData);
+      //           const displayName = customerName || 'Anonymous';
+      //           const firstName = displayName.split(' ')[0];
 
-              // Store the payment
-              try {
-                const savedPayment = await createPaymentData(paymentData);
-                // console.log('Payment intent payment successfully stored in database:', savedPayment ? savedPayment._id : 'unknown');
+      //           await channel.publish('newPayment', {
+      //             amount: paymentIntent.amount / 100,
+      //             user: firstName,
+      //             timestamp: new Date().toISOString(),
+      //             donationType
+      //           });
 
-                const displayName = customerName || 'Anonymous';
-                const firstName = displayName.split(' ')[0];
+      //           // console.log('Payment event published to channel');
 
-                await channel.publish('newPayment', {
-                  amount: paymentIntent.amount / 100,
-                  user: firstName,
-                  timestamp: new Date().toISOString(),
-                  donationType
-                });
-
-                // console.log('Payment event published to channel');
-
-                await res.revalidate('/');
-                await res.revalidate('/live');
-                console.log('Pages revalidated');
-              } catch (saveError) {
-                console.error('Error saving payment intent to database:', saveError);
-              }
-            }
-          } catch (error) {
-            console.error('Error processing payment intent payment:', error);
-          }
-        } else {
-          console.log('Skipping payment intent with invoice (handled by invoice.paid event)');
-        }
-        break;
+      //           await res.revalidate('/');
+      //           await res.revalidate('/live');
+      //           console.log('Pages revalidated');
+      //         } catch (saveError) {
+      //           console.error('Error saving payment intent to database:', saveError);
+      //         }
+      //       }
+      //     } catch (error) {
+      //       console.error('Error processing payment intent payment:', error);
+      //     }
+      //   } else {
+      //     console.log('Skipping payment intent with invoice (handled by invoice.paid event)');
+      //   }
+      //   break;
 
       default:
         console.log(`Unhandled event type: ${event.type}`);

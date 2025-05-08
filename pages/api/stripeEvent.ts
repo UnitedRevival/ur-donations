@@ -312,18 +312,32 @@ export default async function handler(
             console.log('Invoice paid event: Using campaign title:', donationType);
 
             // Store the payment
+            let name = paidInvoice.customer_name || undefined;
+            let email = paidInvoice.customer_email || undefined;
+
+            // If we don't have a name but have an email, generate a name from email
+            if (!name && email && email.includes('@')) {
+              // Generate a name from the email prefix
+              const emailPrefix = email.split('@')[0];
+              // Capitalize the first letter of each part
+              name = emailPrefix
+                .split(/[._-]/)
+                .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+                .join(' ');
+            }
+
             await createPaymentData({
               amount: paidInvoice.amount_paid / 100,
-              email: paidInvoice.customer_email || undefined,
-              name: paidInvoice.customer_name || undefined,
+              email,
+              name,
               donationType,
               dateCreated: new Date(paidInvoice.created * 1000),
-              anonymous: !paidInvoice.customer_name || paidInvoice.customer_name.trim() === '',
+              anonymous: !name || name.trim() === '',
             });
 
             await channel.publish('newPayment', {
               amount: paidInvoice.amount_paid / 100,
-              user: paidInvoice.customer_name ? paidInvoice.customer_name.split(' ')[0] : 'Anonymous',
+              user: name ? name.split(' ')[0] : 'Anonymous',
               timestamp: new Date().toISOString(),
               donationType,
               isSubscription: true

@@ -91,12 +91,12 @@ const PaymentCard = () => {
       if (!routeCity || typeof routeCity !== "string") {
         return null;
       }
-  
+
       const normalizedTitle = campaign.title.toLowerCase().replace(/[\s-]/g, '');
       // Remove "-event" or "event" from routeCity before normalizing
       const cleanedRouteCity = routeCity.replace(/[-]?event$/i, '');
       const normalizedRouteCity = cleanedRouteCity.toLowerCase().replace(/[\s-]/g, '');
-  
+
       if (normalizedTitle.includes(normalizedRouteCity)) {
         return campaign.title;
       }
@@ -104,16 +104,16 @@ const PaymentCard = () => {
     },
     null
   );
- 
- 
- useEffect(() => {
-   setFormData((prev) => ({
-     ...prev,
-     donationType: donationTypeCampaign || "Jesus March 2024",
-   }));
- }, [donationTypeCampaign]);
+
+
   useEffect(() => {
-    
+    setFormData((prev) => ({
+      ...prev,
+      donationType: donationTypeCampaign || "Jesus March 2025 - Miami- new",
+    }));
+  }, [donationTypeCampaign]);
+  useEffect(() => {
+
     if (paymentRequest && stripe) {
       const paymentMethodHandler = async function (ev) {
         // Confirm the PaymentIntent without handling potential next actions (yet).
@@ -121,7 +121,7 @@ const PaymentCard = () => {
           amount: amountToDonate,
           email: ev.payerEmail,
           utm: source,
-          campaign,
+          campaign: donationTypeCampaign || campaign,
         });
         const { paymentIntent, error: confirmError } =
           await stripe.confirmCardPayment(
@@ -151,7 +151,7 @@ const PaymentCard = () => {
               return;
             }
           }
-         
+
           handleSuccess();
         }
       };
@@ -180,9 +180,9 @@ const PaymentCard = () => {
       amount: amountToDonate,
       email: formData.email,
       utm: source,
-      campaign,
+      campaign: donationTypeCampaign || campaign,
     });
-  
+
 
     const result = await stripe.confirmCardPayment(client_secret!, {
       payment_method: {
@@ -193,7 +193,7 @@ const PaymentCard = () => {
         },
       },
     });
- 
+
     if (result.error) {
       console.log(result.error);
       setError("Failed to charge card: " + result.error.message);
@@ -301,7 +301,7 @@ async function createPaymentIntentClientSecret({
     utm,
     campaign,
   });
- 
+
   const client_secret = response.data?.client_secret;
   return client_secret as string;
 }
@@ -321,7 +321,7 @@ export const Title = styled.h2`
   text-align: center;
 `;
 
-export const StyledCard = styled(CardElement)<{ focused: boolean }>`
+export const StyledCard = styled(CardElement) <{ focused: boolean }>`
   margin-top: 0.5rem;
   margin-bottom: 2rem;
 
@@ -337,7 +337,7 @@ export const StyledCard = styled(CardElement)<{ focused: boolean }>`
   transition: 0.1s all linear;
   border: 1px solid
     ${({ theme, focused }) =>
-      focused ? theme.colors.primary : theme.colors.light};
+    focused ? theme.colors.primary : theme.colors.light};
 
   ${({ theme, focused }) =>
     focused ? `outline: 3px solid ${theme.colors.primary}66;` : ""};

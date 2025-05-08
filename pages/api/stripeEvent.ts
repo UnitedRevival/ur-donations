@@ -154,11 +154,10 @@ export default async function handler(
         } = charge;
         const calculatedAmount = amount / 100;
 
-   
-
         // Initialize name and email from billing_details
         let name = billing_details?.name || undefined;
         let email = billing_details?.email || undefined;
+        let donationType = currentCampaign.title; // Default campaign
 
         // Try to get customer info from different sources
         if (customerId) {
@@ -204,7 +203,7 @@ export default async function handler(
         }
 
         // If we have a payment intent ID, try to get more info from there
-        if (paymentIntentId && (!name || !email)) {
+        if (paymentIntentId) {
           try {
             const piId = typeof paymentIntentId === 'string'
               ? paymentIntentId
@@ -220,6 +219,16 @@ export default async function handler(
             // Check shipping info
             if (!name && paymentIntent.shipping && paymentIntent.shipping.name) {
               name = paymentIntent.shipping.name;
+            }
+
+            // Get the campaign from metadata
+            if (paymentIntent.metadata && paymentIntent.metadata.campaign) {
+              const campaignValue = paymentIntent.metadata.campaign;
+              // If the campaign value is a direct match with any campaign title, use it
+              const matchingCampaign = Object.values(campaigns).find(c => c.title === campaignValue);
+              if (matchingCampaign) {
+                donationType = matchingCampaign.title;
+              }
             }
 
           } catch (error) {
@@ -247,7 +256,7 @@ export default async function handler(
           amount: calculatedAmount,
           email,
           name,
-          donationType: currentCampaign.title,
+          donationType: donationType,
           dateCreated: Date.now(),
           anonymous: !name || name.trim() === '',
         });
@@ -259,7 +268,7 @@ export default async function handler(
           amount: calculatedAmount,
           user: fName,
           timestamp: new Date().toISOString(),
-          donationType: currentCampaign.title
+          donationType: donationType
         });
         break;
 

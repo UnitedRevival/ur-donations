@@ -9,7 +9,8 @@ export async function createPaymentData({
   name,
   email,
   referenceId,
-}: Payment) {
+  anonymous: explicitAnonymous,
+}: Payment & { anonymous?: boolean }) {
   try {
 
     await dbConnect();
@@ -17,14 +18,16 @@ export async function createPaymentData({
     if (!amount) throw new Error('amount is a required field');
     if (!donationType) throw new Error('donationType is a required field');
 
+    console.log('name ==', name,"email==", email,"amount==", amount)
+
     // Create and save the payment
     const newPayment = new PaymentModel({
       amount,
       email,
       name,
       donationType,
-      anonymous: !name && !email,
-      dateCreated: dateCreated || Date.now(),
+      anonymous: explicitAnonymous !== undefined ? explicitAnonymous : !name || name.trim() === '',
+      dateCreated: Date.now(),
       referenceId,
     });
 

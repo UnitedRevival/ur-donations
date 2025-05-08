@@ -144,18 +144,112 @@ export default async function handler(
     switch (event.type) {
       case 'charge.succeeded':
         const charge = event.data.object as Stripe.Charge;
-        const { amount, created, billing_details } = charge;
+        const {
+          amount,
+          created,
+          billing_details,
+          customer: customerId,
+          invoice: invoiceId,
+          payment_intent: paymentIntentId
+        } = charge;
         const calculatedAmount = amount / 100;
-        const name = billing_details?.name || undefined;
-        const email = billing_details?.email || undefined;
+
+   
+
+        // Initialize name and email from billing_details
+        let name = billing_details?.name || undefined;
+        let email = billing_details?.email || undefined;
+
+        // Try to get customer info from different sources
+        if (customerId) {
+          try {
+            const customer = await stripe.customers.retrieve(customerId as string) as Stripe.Customer;
+
+            // Only use these values if not already set from billing_details
+            if (!email) email = customer.email || undefined;
+            if (!name) name = customer.name || undefined;
+
+            // If metadata has user info, use that as a last resort
+            if (!name && customer.metadata && customer.metadata.name) {
+              name = customer.metadata.name;
+            }
+
+          } catch (error) {
+            console.error('Error retrieving customer info:', error);
+          }
+        }
+
+        // If we have an invoice ID, try to get more info from there
+        if (invoiceId && (!name || !email)) {
+          try {
+            const invoice = await stripe.invoices.retrieve(invoiceId as string);
+
+            // Look for customer name in invoice metadata or customer name
+            if (!name) {
+              if (invoice.metadata && invoice.metadata.name) {
+                name = invoice.metadata.name;
+              } else if (invoice.customer_name) {
+                name = invoice.customer_name;
+              }
+            }
+
+            // Look for customer email
+            if (!email && invoice.customer_email) {
+              email = invoice.customer_email;
+            }
+
+          } catch (error) {
+            console.error('Error retrieving invoice info:', error);
+          }
+        }
+
+        // If we have a payment intent ID, try to get more info from there
+        if (paymentIntentId && (!name || !email)) {
+          try {
+            const piId = typeof paymentIntentId === 'string'
+              ? paymentIntentId
+              : paymentIntentId.id;
+
+            const paymentIntent = await stripe.paymentIntents.retrieve(piId);
+
+            // Check payment intent metadata
+            if (!name && paymentIntent.metadata && paymentIntent.metadata.name) {
+              name = paymentIntent.metadata.name;
+            }
+
+            // Check shipping info
+            if (!name && paymentIntent.shipping && paymentIntent.shipping.name) {
+              name = paymentIntent.shipping.name;
+            }
+
+          } catch (error) {
+            console.error('Error retrieving payment intent info:', error);
+          }
+        }
+
+        // Extract just the first name for display
         const fName = name ? name.split(' ')[0] : 'Anonymous';
+
+        // Fix: For Stripe subscriptions created via the Subscription UI, try to extract
+        // name from the email address since the name wasn't provided
+        if (!name && email && email.includes('@')) {
+          // Generate a name from the email prefix
+          const emailPrefix = email.split('@')[0];
+          // Capitalize the first letter of each part
+          name = emailPrefix
+            .split(/[._-]/)
+            .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+            .join(' ');
+
+        }
 
         await createPaymentData({
           amount: calculatedAmount,
-          dateCreated: created,
-          donationType: currentCampaign.title,
-          name,
           email,
+          name,
+          donationType: currentCampaign.title,
+          dateCreated: Date.now(),
+          anonymous: !name || name.trim() === '',
         });
 
         await res.revalidate('/');

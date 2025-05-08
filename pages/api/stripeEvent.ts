@@ -160,8 +160,10 @@ export default async function handler(
         if (paymentIntentId) {
           try {
             const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId as string);
-            if (paymentIntent.metadata?.campaign) {
-              donationType = paymentIntent.metadata.campaign_title || paymentIntent.metadata.campaign;
+            if (paymentIntent.metadata?.campaign_title) {
+              donationType = paymentIntent.metadata.campaign_title;
+            } else if (paymentIntent.metadata?.campaign) {
+              donationType = paymentIntent.metadata.campaign;
             }
           } catch (error) {
             console.error('Error retrieving payment intent info:', error);
@@ -180,6 +182,8 @@ export default async function handler(
             // Get campaign from customer metadata
             if (customer.metadata?.campaign_title) {
               donationType = customer.metadata.campaign_title;
+            } else if (customer.metadata?.campaign) {
+              donationType = customer.metadata.campaign;
             }
 
             // If metadata has user info, use that as a last resort
@@ -228,7 +232,35 @@ export default async function handler(
 
         // If we still don't have a campaign, use default
         if (!donationType) {
-          donationType = currentCampaign.title;
+          // Get the campaign from the payment intent's source_url if available
+          try {
+            const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId as string);
+            const sourceUrl = paymentIntent.metadata?.source_url;
+            if (sourceUrl) {
+              const url = new URL(sourceUrl);
+              const path = url.pathname;
+              if (path === '/' || path === '/index') {
+                donationType = currentCampaign.title;
+              } else {
+                // Extract city from path and format it
+                const city = path.split('/').pop()?.replace(/-event$/i, '');
+                if (city) {
+                  const formattedCity = city
+                    .split('-')
+                    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+                    .join(' ');
+                  donationType = `Jesus March 2025 - ${formattedCity}`;
+                } else {
+                  donationType = currentCampaign.title;
+                }
+              }
+            } else {
+              donationType = currentCampaign.title;
+            }
+          } catch (error) {
+            console.error('Error getting campaign from source_url:', error);
+            donationType = currentCampaign.title;
+          }
         }
 
         // Extract just the first name for display

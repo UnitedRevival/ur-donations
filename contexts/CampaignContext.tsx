@@ -26,6 +26,14 @@ export function CampaignProvider({ children }: { children: React.ReactNode }) {
         const path = router.pathname;
         const pathSegments = path.split('/').filter(Boolean);
 
+        // If we're on the home page, reset to default campaign
+        if (path === '/' || path === '/index' || pathSegments.length === 0) {
+            setCurrentCampaign('Jesus March 2025 - Miami- new');
+            localStorage.removeItem('currentCampaign');
+            return;
+        }
+
+        // For other pages, set the campaign based on the URL
         if (pathSegments.length > 0) {
             const lastSegment = pathSegments[pathSegments.length - 1];
             if (lastSegment && lastSegment !== 'index') {
@@ -41,6 +49,7 @@ export function CampaignProvider({ children }: { children: React.ReactNode }) {
                 // Format like "Jesus March 2025 - City Name"
                 const campaignTitle = `Jesus March 2025 - ${cleanTitle}`;
                 setCurrentCampaign(campaignTitle);
+                localStorage.setItem('currentCampaign', campaignTitle);
             }
         }
     }, [router.pathname]);

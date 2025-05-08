@@ -32,12 +32,7 @@ export default async function handler(
       let campaignTitle = '';
       let campaignKey = '';
 
-      if (campaign && current_Diffrent_campaigns[campaign]) {
-        // Use provided campaign key if it exists
-        campaignKey = campaign;
-        campaignTitle = current_Diffrent_campaigns[campaign].title;
-        console.log(`Using provided campaign key: ${campaignKey}, title: ${campaignTitle}`);
-      } else if (donationType) {
+      if (donationType) {
         // Use the provided donationType directly
         campaignTitle = donationType;
 
@@ -50,10 +45,27 @@ export default async function handler(
         }
 
         if (!campaignKey) {
+          // If no exact match found, try to find a partial match
+          for (const [key, value] of Object.entries(current_Diffrent_campaigns)) {
+            if (value.title.toLowerCase().includes(donationType.toLowerCase()) ||
+              donationType.toLowerCase().includes(value.title.toLowerCase())) {
+              campaignKey = key;
+              campaignTitle = value.title; // Use the exact campaign title from our list
+              break;
+            }
+          }
+        }
+
+        if (!campaignKey) {
           campaignKey = 'custom'; // Fallback if no matching key found
         }
 
         console.log(`Using provided donationType: ${campaignTitle}, mapped to key: ${campaignKey}`);
+      } else if (campaign && current_Diffrent_campaigns[campaign]) {
+        // Use provided campaign key if it exists
+        campaignKey = campaign;
+        campaignTitle = current_Diffrent_campaigns[campaign].title;
+        console.log(`Using provided campaign key: ${campaignKey}, title: ${campaignTitle}`);
       } else {
         // Fallback to default campaign
         campaignKey = 'JESUS_MARCH_2025_MIAMI';
@@ -70,6 +82,15 @@ export default async function handler(
 
       if (foundCustomer) {
         customerId = foundCustomer?.stripeCustomer;
+        // Update customer metadata if needed
+        await stripe.customers.update(customerId, {
+          metadata: {
+            utm_source: utm ? utm : 'unknown',
+            campaign: campaignKey,
+            campaign_title: campaignTitle,
+            source_url: req.headers.referer || req.headers.origin || 'unknown'
+          }
+        });
       } else {
         const customer = await stripe.customers.create({
           email,
@@ -78,7 +99,8 @@ export default async function handler(
           metadata: {
             utm_source: utm ? utm : 'unknown',
             campaign: campaignKey,
-            campaign_title: campaignTitle
+            campaign_title: campaignTitle,
+            source_url: req.headers.referer || req.headers.origin || 'unknown'
           }
         });
 
@@ -119,7 +141,8 @@ export default async function handler(
           metadata: {
             utm_source: utm ? utm : 'unknown',
             campaign: campaignKey,
-            campaign_title: campaignTitle
+            campaign_title: campaignTitle,
+            source_url: req.headers.referer || req.headers.origin || 'unknown'
           },
           items: [
             {
@@ -127,7 +150,8 @@ export default async function handler(
               metadata: {
                 utm_source: utm ? utm : 'unknown',
                 campaign: campaignKey,
-                campaign_title: campaignTitle
+                campaign_title: campaignTitle,
+                source_url: req.headers.referer || req.headers.origin || 'unknown'
               },
             },
           ],
@@ -140,8 +164,17 @@ export default async function handler(
           };
         };
 
-        // Note: The initial payment will be captured by the webhook via invoice.paid event
-        // So we don't need to store the payment here
+        // Add campaign information to the payment intent
+        if (subscription.latest_invoice?.payment_intent) {
+          await stripe.paymentIntents.update(subscription.latest_invoice.payment_intent.id, {
+            metadata: {
+              utm_source: utm ? utm : 'unknown',
+              campaign: campaignKey,
+              campaign_title: campaignTitle,
+              source_url: req.headers.referer || req.headers.origin || 'unknown'
+            }
+          });
+        }
 
         // Send the invoice URL to client
         res.send({

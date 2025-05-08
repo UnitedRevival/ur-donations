@@ -16,23 +16,17 @@ import axios from "axios";
 import Label from "../inputs/Label";
 import LabeledInput from "../inputs/LabeledInput";
 import usePaymentRequest from "../../hooks/usePaymentRequest";
-import usePaymentSuccess from "../../hooks/usePaymentSuccess";
+import { usePaymentSuccess } from "../../hooks/usePaymentSuccess";
 import CenteredLoader from "../loaders/CenteredLoader";
 import { useRouter } from "next/router";
+import { useCampaign } from '../../contexts/CampaignContext';
 
 const PaymentCard = () => {
   const stripe = useStripe();
   const elements = useElements();
   const { setStep } = useStepper();
   const { amountToDonate } = useContext(HomePageContext);
-
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    donationType: "",
-    amount: amountToDonate,
-  });
-  const handleSuccess = usePaymentSuccess(formData);
+  const { currentCampaign } = useCampaign();
 
   const router = useRouter();
   const [error, setError] = useState<any>(null);
@@ -44,76 +38,41 @@ const PaymentCard = () => {
   const campaign = router?.query?.campaign as string;
   const currentCampaignroute = router.pathname;
   const routeCity = currentCampaignroute.split("/").pop()?.toLowerCase() || "";
-  // Raise the goal from 12,500 to 20,000.
 
-  const campaigns = {
-    JESUS_MARCH_2025_MIAMI: {
-      title: "Jesus March 2025 - Miami",
-      goal: 20000,
-    },
-    JESUS_MARCH_2025_BOSTON: {
-      title: "Jesus March 2025 - Boston",
-      goal: 20000,
-    },
-    JESUS_MARCH_2025_NYC: {
-      title: "Jesus March 2025 - New York City",
-      goal: 20000,
-    },
-    JESUS_MARCH_2025_ATL: {
-      title: "Jesus March 2025 - Atlanta",
-      goal: 20000,
-    },
-    JESUS_MARCH_2025_DENVER: {
-      title: "Jesus March 2025 - Denver",
-      goal: 20000,
-    },
-    JESUS_MARCH_2025_HOUSTON: {
-      title: "Jesus March 2025 - Houston",
-      goal: 20000,
-    },
-    JESUS_MARCH_2025_HUNTINGTON_BEACH: {
-      title: "Jesus March 2025 - Huntington Beach",
-      goal: 20000,
-    },
-    JESUS_MARCH_2025_SACRAMENTO: {
-      title: "Jesus March 2025 - Sacramento",
-      goal: 20000,
-    },
-    JESUS_MARCH_2025_WASHINGTON_DC: {
-      title: "Jesus March 2025 - Washington DC",
-      goal: 20000,
-    },
+  // Get the correct campaign title based on the URL
+  const getCampaignTitle = () => {
+    if (!routeCity || routeCity === 'index') {
+      return "Jesus March 2025 - Miami- new";
+    }
+
+    // Remove "-event" suffix if present
+    const cleanRouteCity = routeCity.replace(/-event$/i, '');
+
+    // Convert to title case
+    const formattedCity = cleanRouteCity
+      .split('-')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
+
+    return `Jesus March 2025 - ${formattedCity}`;
   };
-  const donationTypeCampaign = Object.keys(campaigns).reduce(
-    (result: string | null, key: string) => {
-      const campaign = campaigns[key];
-      // If routeCity is undefined or empty, return null immediately
-      if (!routeCity || typeof routeCity !== "string") {
-        return null;
-      }
 
-      const normalizedTitle = campaign.title.toLowerCase().replace(/[\s-]/g, '');
-      // Remove "-event" or "event" from routeCity before normalizing
-      const cleanedRouteCity = routeCity.replace(/[-]?event$/i, '');
-      const normalizedRouteCity = cleanedRouteCity.toLowerCase().replace(/[\s-]/g, '');
-
-      if (normalizedTitle.includes(normalizedRouteCity)) {
-        return campaign.title;
-      }
-      return result;
-    },
-    null
-  );
-
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    donationType: getCampaignTitle(),
+    amount: amountToDonate,
+  });
+  const handleSuccess = usePaymentSuccess(formData);
 
   useEffect(() => {
-    setFormData((prev) => ({
+    setFormData(prev => ({
       ...prev,
-      donationType: donationTypeCampaign || "Jesus March 2025 - Miami- new",
+      donationType: getCampaignTitle()
     }));
-  }, [donationTypeCampaign]);
-  useEffect(() => {
+  }, [routeCity]);
 
+  useEffect(() => {
     if (paymentRequest && stripe) {
       const paymentMethodHandler = async function (ev) {
         // Confirm the PaymentIntent without handling potential next actions (yet).
@@ -121,7 +80,7 @@ const PaymentCard = () => {
           amount: amountToDonate,
           email: ev.payerEmail,
           utm: source,
-          campaign: donationTypeCampaign || campaign,
+          campaign: getCampaignTitle(),
         });
         const { paymentIntent, error: confirmError } =
           await stripe.confirmCardPayment(
@@ -180,9 +139,8 @@ const PaymentCard = () => {
       amount: amountToDonate,
       email: formData.email,
       utm: source,
-      campaign: donationTypeCampaign || campaign,
+      campaign: getCampaignTitle(),
     });
-
 
     const result = await stripe.confirmCardPayment(client_secret!, {
       payment_method: {
@@ -201,7 +159,6 @@ const PaymentCard = () => {
       // The payment has been processed!
 
       if (result.paymentIntent.status === "succeeded") {
-
         handleSuccess();
       } else {
         console.error(

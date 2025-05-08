@@ -7,6 +7,7 @@ import SecondaryButton from '../../buttons/SecondaryButton';
 import { Title } from '../PaymentCard';
 import { useRouter } from 'next/router';
 import axios, { AxiosError } from 'axios';
+import { useCampaign } from '../../../contexts/CampaignContext';
 
 interface SubscriptionPaymentProps {
   tier: { index: number, priceId: string };
@@ -30,6 +31,7 @@ const SubscriptionPayment: React.FC<SubscriptionPaymentProps> = ({
 
   const [error, setError] = useState('');
   const router = useRouter();
+  const { currentCampaign } = useCampaign();
 
   // Get UTM source
   const source = router?.query?.source as string;
@@ -61,18 +63,14 @@ const SubscriptionPayment: React.FC<SubscriptionPaymentProps> = ({
           .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
           .join(' ');
 
-        if (formattedTitle.includes('Event')) {
-          // Format like "Jesus March 2025 - City Name"
-          const cityName = formattedTitle.replace(' Event', '');
-          setCampaignTitle(`Jesus March 2025 - ${cityName}`);
-        } else {
-          setCampaignTitle(`Jesus March 2025 - ${formattedTitle}`);
-        }
+        // Remove "Event" suffix if present
+        const cleanTitle = formattedTitle.replace(/ Event$/i, '');
+
+        // Format like "Jesus March 2025 - City Name"
+        setCampaignTitle(`Jesus March 2025 - ${cleanTitle}`);
       }
     }
   }, [router.pathname, router.query]);
-
-
 
   const onChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -84,7 +82,6 @@ const SubscriptionPayment: React.FC<SubscriptionPaymentProps> = ({
     setError(''); // Clear any previous errors
 
     try {
-
       const url = await createSubscriptionURL(
         {
           priceId: tier.priceId,
@@ -98,8 +95,8 @@ const SubscriptionPayment: React.FC<SubscriptionPaymentProps> = ({
             country: formData.country,
           },
           utm: source,
-          campaign: campaign, // Send campaign key if provided
-          donationType: campaignTitle, // Send detected title directly
+          campaign: campaign,
+          donationType: currentCampaign, // Use the campaign from context
         },
         setError
       );

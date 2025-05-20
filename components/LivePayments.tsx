@@ -59,6 +59,7 @@ const DonationPayments = () => {
   const [recentDonations, setRecentDonations] = useState<PaymentData[]>([]);
   const [recentTotal, setRecentTotal] = useState(0);
   const [latestDonation, setLatestDonation] = useState<PaymentData | null>(null);
+  const [loading, setLoading] = useState(true);
 
   // Function to fetch recent donations
   const fetchRecentDonations = async () => {
@@ -99,8 +100,10 @@ const DonationPayments = () => {
         setAmountRaised(0);
         setLatestDonation(null);
       }
+      setLoading(false);
     } catch (error) {
       console.error('Error fetching donations:', error);
+      setLoading(false);
     }
   };
 
@@ -196,89 +199,95 @@ const DonationPayments = () => {
 
   return (
     <Root>
-      <ConfettiContainer>
-        <AnimatePresence initial={true}>
-          {confetti.map((c, index) => (
-            <Confetti key={index} mKey={index}>
-              {c.content}
-            </Confetti>
-          ))}
-        </AnimatePresence>
-      </ConfettiContainer>
+      {loading ? (
+        <div style={{ color: 'white', fontSize: 24, marginTop: 40 }}>Loading...</div>
+      ) : (
+        <>
+          <ConfettiContainer>
+            <AnimatePresence initial={true}>
+              {confetti.map((c, index) => (
+                <Confetti key={index} mKey={index}>
+                  {c.content}
+                </Confetti>
+              ))}
+            </AnimatePresence>
+          </ConfettiContainer>
 
-      <ThankYouContainer>
-        <AnimatePresence mode="wait">
-          {showThankYou && donationQueue.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.5 }}
-            >
-              <Amount>🎉 💵 ${donationQueue[0].amount.toLocaleString()} 💵 🎉</Amount>
-              <UserText>✨ {donationQueue[0].user} ✨</UserText>
-              <ThankYouMessage>
-                🎈 Thank you {donationQueue[0].user} for donating ${donationQueue[0].amount.toLocaleString()}! 🎈
-              </ThankYouMessage>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </ThankYouContainer>
+          <ThankYouContainer>
+            <AnimatePresence mode="wait">
+              {showThankYou && donationQueue.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <Amount>🎉 💵 ${donationQueue[0].amount.toLocaleString()} 💵 🎉</Amount>
+                  <UserText>✨ {donationQueue[0].user} ✨</UserText>
+                  <ThankYouMessage>
+                    🎈 Thank you {donationQueue[0].user} for donating ${donationQueue[0].amount.toLocaleString()}! 🎈
+                  </ThankYouMessage>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </ThankYouContainer>
 
-      <AnimateContainer>
-        <AnimatePresence mode="wait">
-          {progressVisible && (
-            <motion.div
-              style={{ width: '100%' }}
-              key={'progressBar'}
-              initial={{ opacity: 0, y: -30 }}
-              animate={{
-                opacity: 1,
-                y: 0,
-              }}
-              transition={{
-                duration: 0.3,
-                delay: 0.1,
-              }}
-              exit={{
-                opacity: 0,
-                y: -30,
-              }}
-            >
-              <ProgressBarContainer>
-                <FlexBetween>
-                  <div>
-                    <AnimatedNumber
-                      value={amountRaised}
-                      style={{ color: 'white', fontSize: 26 }}
-                      prefix={'$'}
-                    />
-                    <GoalText>/${goal}</GoalText>
-                  </div>
-                  <PercentText>{percentage}%</PercentText>
-                </FlexBetween>
-                <ProgressBar>
-                  <StyledProgress percentage={percentage} />
-                </ProgressBar>
-              </ProgressBarContainer>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </AnimateContainer>
+          <AnimateContainer>
+            <AnimatePresence mode="wait">
+              {progressVisible && (
+                <motion.div
+                  style={{ width: '100%' }}
+                  key={'progressBar'}
+                  initial={{ opacity: 0, y: -30 }}
+                  animate={{
+                    opacity: 1,
+                    y: 0,
+                  }}
+                  transition={{
+                    duration: 0.3,
+                    delay: 0.1,
+                  }}
+                  exit={{
+                    opacity: 0,
+                    y: -30,
+                  }}
+                >
+                  <ProgressBarContainer>
+                    <FlexBetween>
+                      <div>
+                        <AnimatedNumber
+                          value={amountRaised}
+                          style={{ color: 'white', fontSize: 26 }}
+                          prefix={'$'}
+                        />
+                        <GoalText>/${goal}</GoalText>
+                      </div>
+                      <PercentText>{percentage}%</PercentText>
+                    </FlexBetween>
+                    <ProgressBar>
+                      <StyledProgress percentage={percentage} />
+                    </ProgressBar>
+                  </ProgressBarContainer>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </AnimateContainer>
 
-      <DonationsContainer>
-        <RecentDonationsLabel>Latest Donation</RecentDonationsLabel>
-        <RecentDonationsList>
-          {latestDonation && (
-            <DonationItem key={latestDonation._id}>
-              <DonorName>
-                {latestDonation.name ? latestDonation.name.split(' ')[0] : 'Anonymous'}
-              </DonorName>
-              <DonationAmount>${latestDonation.amount.toLocaleString()}</DonationAmount>
-            </DonationItem>
-          )}
-        </RecentDonationsList>
-      </DonationsContainer>
+          <DonationsContainer>
+            <RecentDonationsLabel>Latest Donation</RecentDonationsLabel>
+            <RecentDonationsList>
+              {latestDonation && (
+                <DonationItem key={latestDonation._id}>
+                  <DonorName>
+                    {latestDonation.name ? latestDonation.name.split(' ')[0] : 'Anonymous'}
+                  </DonorName>
+                  <DonationAmount>${latestDonation.amount.toLocaleString()}</DonationAmount>
+                </DonationItem>
+              )}
+            </RecentDonationsList>
+          </DonationsContainer>
+        </>
+      )}
     </Root>
   );
 };

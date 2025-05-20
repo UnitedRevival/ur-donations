@@ -11,7 +11,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const { db } = await connectToDatabase();
 
         // Set start date to 2025-05-06
-        const startDate = new Date('2025-05-06T00:00:00.000Z');
+        const startDate = new Date('2025-05-20T00:00:00.000Z');
 
         // Fetch all donations from start date onwards
         const donations = await db
@@ -19,7 +19,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             .find({
                 dateCreated: {
                     $gte: startDate
-                }
+                },
+                donationType:"Jesus March 2025 - Boston"
             })
             .sort({ dateCreated: -1 })
             .toArray();

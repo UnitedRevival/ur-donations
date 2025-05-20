@@ -93,6 +93,11 @@ const DonationPayments = () => {
             life: 4
           });
         }
+      } else {
+        setRecentDonations([]);
+        setRecentTotal(0);
+        setAmountRaised(0);
+        setLatestDonation(null);
       }
     } catch (error) {
       console.error('Error fetching donations:', error);

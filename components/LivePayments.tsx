@@ -53,7 +53,7 @@ interface DonationResponse {
 const DonationPayments = () => {
   const { amountRaised, goal: contextGoal, setAmountRaised } = useContext(HomePageContext);
   // Override goal to ensure it's 10000
-  const goal = 10000;
+  const goal = 15000;
   const [currentDonation, setCurrentDonation] = useState<LiveDonationData | null>(null);
   const [showThankYou, setShowThankYou] = useState(false);
   const [confetti, setConfetti] = useState<ConfettiData[]>([]);
@@ -67,7 +67,7 @@ const DonationPayments = () => {
     try {
       // Use the specific date (06/05/2025) for filtering
       const date = '2025-05-06';
-      const response = await axios.get(`/api/recentDonations?date=${date}&donationType=Jesus March 2025 - Boston`);
+      const response = await axios.get(`/api/recentDonations?date=${date}&donationType=Jesus March 2025 - Denver`);
 
       const donationData = response.data as DonationResponse;
 

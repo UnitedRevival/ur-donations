@@ -6,7 +6,7 @@ import Payment from '../components/payment/Payment';
 import { StepContextProvider } from '../contexts/StepContext';
 import styled from 'styled-components';
 import InfoCard from '../components/infocard/InfoCard';
-import { GetStaticProps } from 'next';
+import { GetServerSideProps } from 'next';
 import Navbar from '../components/navbar/Navbar';
 import { currentCampaign, current_Diffrent_campaigns } from './api/stripeEvent';
 
@@ -22,7 +22,7 @@ const Content = styled.div`
   max-width: 615px;
 `;
 
-export default function HuntingtonBeach({ amountRaised, goal, cardTitle , cardImg}: HomePageProps) {
+export default function HuntingtonBeach({ amountRaised, goal, cardTitle, cardImg }: HomePageProps) {
   return (
     <HomePageProvider data={{ amountRaised, goal }}>
       <Navbar />
@@ -37,7 +37,7 @@ export default function HuntingtonBeach({ amountRaised, goal, cardTitle , cardIm
 
         <main className={styles.main}>
           <Content>
-            <InfoCard 
+            <InfoCard
               hideProgress={false}
               title={cardTitle} // Pass the cardTitle prop
               cardImg={cardImg}
@@ -53,7 +53,7 @@ export default function HuntingtonBeach({ amountRaised, goal, cardTitle , cardIm
   );
 }
 
-export const getStaticProps: GetStaticProps<HomePageProps> = async (ctx) => {
+export const getServerSideProps: GetServerSideProps<HomePageProps> = async (ctx) => {
   const totals = await getTotalDonationAmount();
   const jesusMarchDonations = totals.find(
     (t) => t._id === current_Diffrent_campaigns.JESUS_MARCH_2025_HUNTINGTON_BEACH.title
@@ -63,12 +63,11 @@ export const getStaticProps: GetStaticProps<HomePageProps> = async (ctx) => {
     props: {
       amountRaised: jesusMarchDonations?.total || 0,
       goal: current_Diffrent_campaigns.JESUS_MARCH_2025_HUNTINGTON_BEACH.goal,
-      cardTitle: 'Thanks For Signing-Up For Jesus March Huntington Beach 2025', 
+      cardTitle: 'Thanks For Signing-Up For Jesus March Huntington Beach 2025',
       cardImg: './Huntington.jpg',
       // Pass it through props
       // Or use currentCampaign.title if you want it dynamic:
       // cardTitle: currentCampaign.title || 'Help Fund Jesus March 2025',
     },
-    revalidate: 60 * 60 * 7,
   };
 };

@@ -6,7 +6,7 @@ import Payment from '../components/payment/Payment';
 import { StepContextProvider } from '../contexts/StepContext';
 import styled from 'styled-components';
 import InfoCard from '../components/infocard/InfoCard';
-import { GetStaticProps } from 'next';
+import { GetServerSideProps } from 'next';
 import Navbar from '../components/navbar/Navbar';
 import { currentCampaign, current_Diffrent_campaigns } from './api/stripeEvent';
 
@@ -51,7 +51,7 @@ export default function NewYorkCityEvent({ amountRaised, goal, cardTitle }: Home
   );
 }
 
-export const getStaticProps: GetStaticProps<HomePageProps> = async (ctx) => {
+export const getServerSideProps: GetServerSideProps<HomePageProps> = async (ctx) => {
   const totals = await getTotalDonationAmount();
   const jesusMarchDonations = totals.find(
     (t) => t._id === current_Diffrent_campaigns.JESUS_MARCH_2025_NYC.title
@@ -64,7 +64,6 @@ export const getStaticProps: GetStaticProps<HomePageProps> = async (ctx) => {
       cardTitle: 'Help Fund Jesus March New york 2025', // Pass it through props
       // Or use currentCampaign.title if you want it dynamic:
       // cardTitle: currentCampaign.title || 'Help Fund Jesus March 2025',
-    },
-    revalidate: 60 * 60 * 7,
+    }
   };
 };

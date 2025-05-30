@@ -4,8 +4,8 @@ import stripe from '../../lib/stripe';
 import { buffer } from 'micro';
 import { createPaymentData } from '../../lib/donations';
 import ablyClient from '../../lib/ably';
+import type { Stripe } from 'stripe';
 
-import { useRouter } from 'next/router';
 const CHANNEL_NAME = 'payments';
 
 const endpointSecret = process.env.STRIPE_HOOK_SECRET as string;
@@ -77,7 +77,7 @@ const campaigns = {
   },
   JESUS_MARCH_2025_BOSTON: {
     title: 'Jesus March 2025 - Boston',
-    goal: 20000,
+    goal: 10000,
   },
   JESUS_MARCH_2025_NYC: {
     title: 'Jesus March 2025 - New York City',
@@ -112,78 +112,318 @@ const campaigns = {
 export const currentCampaign = campaigns.JESUS_MARCH_2025_MIAMI;
 export const current_Diffrent_campaigns = campaigns;
 
-
 export default async function handler(
-
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
 
-  const router = useRouter();
-  const { campaignId } = router.query;
+  let event: Stripe.Event;
 
-  // Log the campaignId when it changes 
-
-  let event = req.body;
-
-  if (endpointSecret) {
-    // Get the signature sent by Stripe
-    const signature: any = req.headers['stripe-signature'];
+  try {
     const buf = await buffer(req);
-    try {
-      event = stripe.webhooks.constructEvent(buf, signature, endpointSecret);
-    } catch (err: any) {
-      console.log(`⚠️  Webhook signature verification failed.`, err.message);
-      return res.status(400).send({
-        message: 'Webhook signature verification failed.',
-      });
+    const signature = req.headers['stripe-signature'];
+
+    if (!signature || !endpointSecret) {
+      throw new Error('Missing stripe signature or endpoint secret');
     }
+
+    event = stripe.webhooks.constructEvent(buf, signature, endpointSecret);
+    console.log('Received Stripe webhook event:', event.type);
+  } catch (err: any) {
+    console.error('⚠️ Webhook signature verification failed:', err.message);
+    return res.status(400).json({ error: 'Webhook signature verification failed' });
   }
 
-  switch (event.type) {
-    case 'charge.succeeded':
-      const charge = event.data.object;
+  try {
+    switch (event.type) {
+      case 'charge.succeeded':
+        const charge = event.data.object as Stripe.Charge;
+        const {
+          amount,
+          created,
+          billing_details,
+          customer: customerId,
+          invoice: invoiceId,
+          payment_intent: paymentIntentId
+        } = charge;
+        const calculatedAmount = amount / 100;
 
-      const { amount, created, billing_details } = charge;
+        // Initialize name and email from billing_details
+        let name = billing_details?.name || undefined;
+        let email = billing_details?.email || undefined;
+        let donationType: string | undefined = undefined;
 
-      const calculatedAmount = amount / 100;
+        // First check payment intent metadata for campaign information
+        if (paymentIntentId) {
+          try {
+            const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId as string);
+            if (paymentIntent.metadata?.campaign_title) {
+              donationType = paymentIntent.metadata.campaign_title;
+            } else if (paymentIntent.metadata?.campaign) {
+              donationType = paymentIntent.metadata.campaign;
+            }
 
-      const name: string = billing_details?.name;
-      const email = billing_details?.email;
+            // Also check for name in payment intent metadata
+            if (!name && paymentIntent.metadata?.name) {
+              name = paymentIntent.metadata.name;
+            }
+          } catch (error) {
+            console.error('Error retrieving payment intent info:', error);
+          }
+        }
 
-      const split = name?.split(' ');
-      const fName = split?.[0];
+        // Try to get customer info from different sources if we still don't have campaign info
+        if (customerId && !donationType) {
+          try {
+            const customer = await stripe.customers.retrieve(customerId as string) as Stripe.Customer;
 
-      await createPaymentData({
-        amount: calculatedAmount,
-        dateCreated: created,
-        donationType: currentCampaign.title,
-        name,
-        email,
-      });
+            // Only use these values if not already set from billing_details
+            if (!email) email = customer.email || undefined;
+            if (!name) name = customer.name || undefined;
 
-      await res.revalidate('/');
-      await res.revalidate('/live');
+            // Get campaign from customer metadata
+            if (customer.metadata?.campaign_title) {
+              donationType = customer.metadata.campaign_title;
+            } else if (customer.metadata?.campaign) {
+              donationType = customer.metadata.campaign;
+            }
 
-      // TODO: Anonymous users.
-      await channel.publish('newPayment', {
-        amount: calculatedAmount,
-        user: fName || '',
-      });
+            // If metadata has user info, use that as a last resort
+            if (!name && customer.metadata && customer.metadata.name) {
+              name = customer.metadata.name;
+            }
+          } catch (error) {
+            console.error('Error retrieving customer info:', error);
+          }
+        }
 
-      break;
-    case 'payment_intent.succeeded':
-      break;
-    // case 'payment_method.attached':
-    //   const paymentMethod = event.data.object;
-    //   console.log('Payment attached: ', paymentMethod);
-    //   // Then define and call a method to handle the successful attachment of a PaymentMethod.
-    //   // handlePaymentMethodAttached(paymentMethod);
-    //   break;
-    default:
-      // Unexpected event type
-      console.log(`Unhandled event type ${event.type}.`);
+        // If we have an invoice ID, this is likely a subscription payment
+        // Let's skip processing here if it's a subscription, as it will be handled by invoice.paid
+        if (invoiceId) {
+          try {
+            const invoice = await stripe.invoices.retrieve(invoiceId as string);
+
+            // If this is a subscription invoice, skip processing as it will be handled by invoice.paid
+            if (invoice.subscription) {
+              console.log('Skipping charge.succeeded for subscription payment, will be handled by invoice.paid');
+              break;
+            }
+
+            // If not a subscription, look for customer name in invoice metadata or customer name
+            if (!name) {
+              if (invoice.metadata && invoice.metadata.name) {
+                name = invoice.metadata.name;
+              } else if (invoice.customer_name) {
+                name = invoice.customer_name;
+              }
+            }
+
+            // Look for customer email
+            if (!email && invoice.customer_email) {
+              email = invoice.customer_email;
+            }
+
+            // Get campaign from invoice metadata
+            if (!donationType && invoice.metadata?.campaign_title) {
+              donationType = invoice.metadata.campaign_title;
+            }
+          } catch (error) {
+            console.error('Error retrieving invoice info:', error);
+          }
+        }
+
+        // If we still don't have a campaign, use default
+        if (!donationType) {
+          // Get the campaign from the payment intent's source_url if available
+          try {
+            const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId as string);
+            const sourceUrl = paymentIntent.metadata?.source_url;
+            if (sourceUrl) {
+              const url = new URL(sourceUrl);
+              const path = url.pathname;
+              if (path === '/' || path === '/index') {
+                donationType = currentCampaign.title;
+              } else {
+                // Extract city from path and format it
+                const city = path.split('/').pop()?.replace(/-event$/i, '');
+                if (city) {
+                  const formattedCity = city
+                    .split('-')
+                    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+                    .join(' ');
+                  donationType = `Jesus March 2025 - ${formattedCity}`;
+                } else {
+                  donationType = currentCampaign.title;
+                }
+              }
+            } else {
+              donationType = currentCampaign.title;
+            }
+          } catch (error) {
+            console.error('Error getting campaign from source_url:', error);
+            donationType = currentCampaign.title;
+          }
+        }
+
+        // Extract just the first name for display
+        const fName = name ? name.split(' ')[0] : 'Anonymous';
+
+        // No need to extract name from email if we already have it
+        // Only do this if name is still missing
+        if (!name && email && email.includes('@')) {
+          // Generate a name from the email prefix
+          const emailPrefix = email.split('@')[0];
+          // Capitalize the first letter of each part
+          name = emailPrefix
+            .split(/[._-]/)
+            .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+            .join(' ');
+        }
+
+        // Store the payment in database
+        await createPaymentData({
+          amount: calculatedAmount,
+          email,
+          name,
+          donationType,
+          dateCreated: Date.now(),
+          anonymous: !name || name.trim() === '',
+        });
+
+        // try {
+        //   await res.revalidate('/');
+        //   await res.revalidate('/live');
+        //   console.log('Successfully revalidated pages after charge.succeeded');
+        // } catch (revalidateError) {
+        //   console.error('Error revalidating pages after charge.succeeded:', revalidateError);
+        //   // Continue processing even if revalidation fails
+        // }
+
+        await channel.publish('newPayment', {
+          amount: calculatedAmount,
+          user: fName,
+          timestamp: new Date().toISOString(),
+          donationType
+        });
+        break;
+
+      case 'invoice.paid':
+        const paidInvoice = event.data.object as Stripe.Invoice;
+
+        // Only process if this is a subscription invoice
+        if (paidInvoice.subscription && paidInvoice.status === 'paid') {
+          try {
+            const subscription = await stripe.subscriptions.retrieve(
+              typeof paidInvoice.subscription === 'string' ? paidInvoice.subscription : paidInvoice.subscription.id
+            );
+
+            // Get campaign from subscription metadata (first priority)
+            let donationType = subscription.metadata?.campaign_title;
+
+            // If not found in subscription metadata and there's a payment intent, check there
+            if (!donationType && paidInvoice.payment_intent) {
+              const paymentIntentId = typeof paidInvoice.payment_intent === 'string'
+                ? paidInvoice.payment_intent
+                : paidInvoice.payment_intent.id;
+
+              const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+              if (paymentIntent.metadata?.campaign_title) {
+                donationType = paymentIntent.metadata.campaign_title;
+              } else if (paymentIntent.metadata?.campaign) {
+                donationType = paymentIntent.metadata.campaign;
+              }
+            }
+
+            // If not found in payment intent, try customer metadata
+            if (!donationType && paidInvoice.customer) {
+              const customer = await stripe.customers.retrieve(paidInvoice.customer as string) as Stripe.Customer;
+              if (customer.metadata?.campaign_title) {
+                donationType = customer.metadata.campaign_title;
+              } else if (customer.metadata?.campaign) {
+                donationType = customer.metadata.campaign;
+              }
+            }
+
+            // If still no campaign found, use default
+            if (!donationType) {
+              donationType = currentCampaign.title;
+            }
+
+            console.log('Invoice paid event: Using campaign title:', donationType);
+
+            // Store the payment
+            // Check for name in subscription metadata first, then fallback to invoice customer name
+            let name = subscription.metadata?.name || paidInvoice.customer_name || undefined;
+
+            // If still no name, check payment intent metadata (if available)
+            if (!name && paidInvoice.payment_intent) {
+              try {
+                const paymentIntentId = typeof paidInvoice.payment_intent === 'string'
+                  ? paidInvoice.payment_intent
+                  : paidInvoice.payment_intent.id;
+
+                const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+                name = paymentIntent.metadata?.name || undefined;
+              } catch (error) {
+                console.error('Error retrieving payment intent for name:', error);
+              }
+            }
+
+            let email = paidInvoice.customer_email || undefined;
+
+            // No need to extract name from email if we already have it
+            // Only do this if name is still missing
+            if (!name && email && email.includes('@')) {
+              // Generate a name from the email prefix
+              const emailPrefix = email.split('@')[0];
+              // Capitalize the first letter of each part
+              name = emailPrefix
+                .split(/[._-]/)
+                .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+                .join(' ');
+            }
+
+            await createPaymentData({
+              amount: paidInvoice.amount_paid / 100,
+              email,
+              name,
+              donationType,
+              dateCreated: new Date(paidInvoice.created * 1000),
+              anonymous: !name || name.trim() === '',
+            });
+
+            try {
+              await res.revalidate('/');
+              await res.revalidate('/live');
+              console.log('Successfully revalidated pages after invoice.paid');
+            } catch (revalidateError) {
+              console.error('Error revalidating pages after invoice.paid:', revalidateError);
+              // Continue processing even if revalidation fails
+            }
+
+            await channel.publish('newPayment', {
+              amount: paidInvoice.amount_paid / 100,
+              user: name ? name.split(' ')[0] : 'Anonymous',
+              timestamp: new Date().toISOString(),
+              donationType,
+              isSubscription: true
+            });
+          } catch (error) {
+            console.error('Error processing subscription payment:', error);
+          }
+        }
+        break;
+
+      default:
+        console.log(`Unhandled event type: ${event.type}`);
+    }
+
+    return res.json({ received: true });
+  } catch (err: any) {
+    console.error('Error processing webhook:', err);
+    return res.status(500).json({ error: 'Error processing webhook' });
   }
-  // Return a 200 response to acknowledge receipt of the event
-  res.send({});
 }

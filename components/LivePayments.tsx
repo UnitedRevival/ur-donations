@@ -5,19 +5,21 @@ import {
   useChannel,
   useConnectionStateListener,
 } from 'ably/react';
-// import axios from 'axios';
 import styled from 'styled-components';
 import { HomePageContext } from '../contexts/HomePageContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import PrimaryButton from './buttons/PrimaryButton';
-import SecondaryButton from './buttons/SecondaryButton';
 import Confetti from './confetti/Confetti';
 import AnimatedNumber from './animated/AnimatedNumber';
+import axios from 'axios';
 
 const LivePayments = () => {
+  // Get the Ably API key from environment variable and fix any escaping issues
+  const ablyApiKey = process.env.NEXT_PUBLIC_ABLY_API_KEY?.replace(/\\(_|\.)/g, '$1');
+
+
   const [ablyClient] = useState(
     new Ably.Realtime.Promise({
-      key: process.env.NEXT_PUBLIC_ABLY_API_KEY,
+      key: ablyApiKey,
     })
   );
   return (
@@ -31,272 +33,273 @@ interface LiveDonationData {
   amount: number;
   user: string;
   date: Date;
-  life: number;
+}
+
+interface PaymentData {
+  _id: string;
+  amount: number;
+  name: string;
+  dateCreated: string;
+  anonymous: boolean;
+  donationType?: string;
+}
+
+interface DonationResponse {
+  donations: PaymentData[];
+  totalCount: number;
+  totalAmount: number;
 }
 
 const DonationPayments = () => {
-  const [donationQueue, setDonationQueue] = useState<LiveDonationData[]>([]);
-  const { amountRaised, goal, setAmountRaised } = useContext(HomePageContext);
+  const { amountRaised, goal: contextGoal, setAmountRaised } = useContext(HomePageContext);
+  // Override goal to ensure it's 10000
+  const goal = 10000;
+  const [currentDonation, setCurrentDonation] = useState<LiveDonationData | null>(null);
+  const [showThankYou, setShowThankYou] = useState(false);
+  const [confetti, setConfetti] = useState<ConfettiData[]>([]);
+  const [recentDonations, setRecentDonations] = useState<PaymentData[]>([]);
+  const [recentTotal, setRecentTotal] = useState(0);
+  const [latestDonation, setLatestDonation] = useState<PaymentData | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  // const [confetti, setConfetti] = useState<ConfettiData[]>([]);
+  // Function to fetch recent donations
+  const fetchRecentDonations = async () => {
+    try {
+      // Use the specific date (06/05/2025) for filtering
+      const date = '2025-05-06';
+      const response = await axios.get(`/api/recentDonations?date=${date}&donationType=Jesus March 2025 - Boston`);
 
-  useEffect(() => {
-    const id = setInterval(() => {
-      if (donationQueue.length > 0) {
-        const current = donationQueue[0];
-        if (current.life <= 0) {
-          donationQueue.shift();
-          setDonationQueue([...donationQueue]);
-          // setConfetti((prev) => {
-          //   const newConfetti: ConfettiData = { content: '🔥', lifetime: 1 };
-          //   return [...prev, newConfetti];
-          // });
-          return;
+      const donationData = response.data as DonationResponse;
+
+      if (donationData && donationData.donations && donationData.donations.length > 0) {
+        setRecentDonations(donationData.donations);
+
+        // Calculate total from recent donations
+        const recentSum = donationData.donations.reduce((total, donation) =>
+          total + donation.amount, 0);
+        setRecentTotal(recentSum);
+        setAmountRaised(recentSum);
+
+        // Set the latest donation
+        const latest = donationData.donations[0];
+        if (!latestDonation || latest._id !== latestDonation._id) {
+          setLatestDonation(latest);
         }
-
-        donationQueue[0].life -= 1;
-        setDonationQueue([...donationQueue]);
+      } else {
+        setRecentDonations([]);
+        setRecentTotal(0);
+        setAmountRaised(0);
+        setLatestDonation(null);
       }
-    }, 1000);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching donations:', error);
+      setLoading(false);
+    }
+  };
+
+  // Initial fetch when component mounts
+  useEffect(() => {
+    fetchRecentDonations();
+  }, []);
+
+  // Set up polling every 30 seconds
+  useEffect(() => {
+    const pollInterval = setInterval(() => {
+      fetchRecentDonations();
+    }, 30000); // Poll every 30 seconds
+
+    return () => clearInterval(pollInterval);
+  }, []);
+
+  // Handle showing thank you message for 3 seconds
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+
+    if (showThankYou) {
+      timer = setTimeout(() => {
+        setShowThankYou(false);
+        setCurrentDonation(null);
+      }, 3000); // Show thank you for 3 seconds
+    }
 
     return () => {
-      clearInterval(id);
+      if (timer) clearTimeout(timer);
     };
-  }, [donationQueue.length]);
+  }, [showThankYou]);
 
-  const push = (donation: LiveDonationData) => {
-    setDonationQueue((prev) => [...prev, donation]);
+  const showDonation = (donation: LiveDonationData) => {
+    setCurrentDonation(donation);
+    setShowThankYou(true);
+
+    // Add confetti effects
+    setConfetti((prev) => {
+      const newConfetti: ConfettiData[] = [
+        // { content: '🎉', lifetime: 1 },
+        // { content: '🎈', lifetime: 1 },
+        // { content: '✨', lifetime: 1 },
+        // { content: '🎊', lifetime: 1 },
+        // { content: '🌟', lifetime: 1 }
+      ];
+      return [...prev, ...newConfetti];
+    });
   };
 
   useConnectionStateListener('connected', () => {
-    console.log('Connected to Ably!');
   });
 
   // Create a channel called 'get-started' and subscribe to all messages with the name 'first' using the useChannel hook
   const { channel } = useChannel('payments', 'newPayment', (message) => {
-    push({ ...message.data, date: new Date(), life: 2 });
-    setAmountRaised((prev) => {
-      return prev + (message.data?.amount || 0);
-    });
+    // Check if the donation is for the specific event type before showing the thank you message
+    // If no donationType is specified or it matches "Jesus March 2025 - Boston", show it
+    const donationType = message.data?.donationType;
+    const isTargetEvent = !donationType || donationType === "Jesus March 2025 - Boston";
+
+    if (isTargetEvent) {
+      // Get the donation amount
+      const newAmount = message.data?.amount || 0;
+
+      // Show the donation
+      showDonation({
+        amount: newAmount,
+        user: message.data?.user || 'Anonymous',
+        date: new Date()
+      });
+
+      // Update the amount raised based on recent total
+      setAmountRaised(prev => {
+        const updated = prev + newAmount;
+        return updated;
+      });
+
+      // Update the recent total
+      setRecentTotal(prev => prev + newAmount);
+
+      // Add to recent donations
+      if (message.data) {
+        const newDonation: PaymentData = {
+          _id: new Date().getTime().toString(),
+          amount: newAmount,
+          name: message.data.user || 'Anonymous',
+          dateCreated: new Date().toISOString(),
+          anonymous: !message.data.user,
+          donationType: message.data.donationType
+        };
+
+        setRecentDonations(prev => [newDonation, ...prev.slice(0, 9)]); // Keep only 10 most recent
+      }
+    }
   });
 
   const percentage = Math.floor((amountRaised / goal) * 100);
-  // const progressVisible = donationQueue.length === 0;
-  const progressVisible = true;
 
   return (
     <Root>
-      {/* <ConfettiContainer> */}
-      {/* <AnimatePresence initial={true}> */}
-      {/* {confetti.map((c, index) => (
-          <Confetti key={index} mKey={index}>
-            {c.content}
-          </Confetti>
-        ))} */}
-      {/* </AnimatePresence> */}
-      {/* </ConfettiContainer> */}
-      <AnimateContainer>
-        <AnimatePresence mode="wait">
-          {progressVisible && (
-            <motion.div
-              style={{ width: '100%' }}
-              key={'progressBar'}
-              initial={{ opacity: 0, y: -30 }}
-              animate={{
-                opacity: 1,
-                y: 0,
-              }}
-              transition={{
-                duration: 0.3,
-                delay: 0.1,
-              }}
-              exit={{
-                opacity: 0,
-                y: -30,
-              }}
-            >
-              <ProgressBarContainer>
-                <FlexBetween>
-                  <div>
-                    <AnimatedNumber
-                      value={amountRaised}
-                      style={{ color: 'white', fontSize: 26 }}
-                      prefix={'$'}
-                    />
-                    <GoalText>/${goal}</GoalText>
-                  </div>
-                  <UserDonation>
-                    <AnimatePresence mode="wait">
-                      {donationQueue?.length >= 1 && (
-                        <motion.div
-                          style={{
-                            display: 'flex',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                          }}
-                          transition={{
-                            duration: 0.4,
-                            delay: 0.1,
-                          }}
-                          initial={{
-                            opacity: 0,
-                          }}
-                          animate={{
-                            opacity: 1,
-                          }}
-                          exit={{
-                            opacity: 0,
-                          }}
-                          key={`${donationQueue[0].date.getTime()}`}
-                        >
-                          <Amount>${donationQueue[0].amount}</Amount>
-                          <UserText>{donationQueue[0].user}</UserText>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </UserDonation>
-                  <PercentText>{percentage}%</PercentText>
-                </FlexBetween>
-                <ProgressBar>
-                  <StyledProgress percentage={percentage} />
-                </ProgressBar>
-              </ProgressBarContainer>
-            </motion.div>
-          )}
+      {loading ? (
+        <div style={{ color: 'white', fontSize: 24, marginTop: 40 }}>Loading...</div>
+      ) : (
+        <>
+          <ConfettiContainer>
+            <AnimatePresence initial={true}>
+              {confetti.map((c, index) => (
+                <Confetti key={index} mKey={index}>
+                  {c.content}
+                </Confetti>
+              ))}
+            </AnimatePresence>
+          </ConfettiContainer>
 
-          {!progressVisible && (
-            <motion.div
-              key="userDonation"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{
-                opacity: 1,
-                y: 0,
-              }}
-              exit={{
-                opacity: 0,
-                y: 30,
-              }}
-              transition={{
-                duration: 0.3,
-                delay: 0.1,
-              }}
-            >
-              <UserDonation>
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                    }}
-                    transition={{
-                      duration: 0.4,
-                      delay: 0.1,
-                    }}
-                    initial={{
-                      opacity: 0,
-                    }}
-                    animate={{
-                      opacity: 1,
-                    }}
-                    exit={{
-                      opacity: 0,
-                    }}
-                    key={`${donationQueue[0].date.getTime()}`}
-                  >
-                    <Amount>${donationQueue[0].amount}</Amount>
-                    <UserText>{donationQueue[0].user}</UserText>
-                  </motion.div>
-                </AnimatePresence>
-                {/* <DotContainer>
-                  {donationQueue.length > 1 &&
-                    donationQueue.map((_, index) => (
-                      <Dot key={index} active={index === 0} />
-                    ))}
-                </DotContainer> */}
-              </UserDonation>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </AnimateContainer>
-      {/* <PrimaryButton
-        onClick={() => {
-          const amount = Math.floor(Math.random() * 1000);
-          push({
-            date: new Date(),
-            life: 2,
-            amount,
-            user: 'Spicy P 🔥',
-          });
-          setAmountRaised((prev) => {
-            return prev + (amount || 0);
-          });
-        }}
-      >
-        Add Test
-      </PrimaryButton> */}
-      {/* <CenterTest>
-        <TestButton
-          onClick={() => {
-            setConfetti((prev) => {
-              const newConfetti: ConfettiData = { content: '🔥', lifetime: 1 };
-              return [...prev, newConfetti];
-            });
-          }}
-        >
-          Test
-        </TestButton>
-      </CenterTest> */}
+          <MainContentContainer>
+            <AnimatePresence mode="wait">
+              {showThankYou && currentDonation ? (
+                <motion.div
+                  key="thank-you"
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <Amount>${currentDonation.amount.toLocaleString()} - {currentDonation.user}</Amount>
+                  <ThankYouMessage>
+                    Thank you {currentDonation.user} for donating ${currentDonation.amount.toLocaleString()}!
+                  </ThankYouMessage>
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="progress-bar"
+                  initial={{ opacity: 0, y: -30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -30 }}
+                  transition={{ duration: 0.3 }}
+                  style={{ width: '100%' }}
+                >
+                  <ProgressBarContainer>
+                    <FlexBetween>
+                      <div>
+                        <AnimatedNumber
+                          value={amountRaised}
+                          style={{ color: 'white', fontSize: 26 }}
+                          prefix={'$'}
+                        />
+                        <GoalText>/${goal}</GoalText>
+                      </div>
+                      <PercentText>{percentage}%</PercentText>
+                    </FlexBetween>
+                    <ProgressBar>
+                      <StyledProgress percentage={percentage} />
+                    </ProgressBar>
+                  </ProgressBarContainer>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </MainContentContainer>
+        </>
+      )}
     </Root>
   );
 };
 
-const ConfettiContainer = styled.div`
-  position: relative;
-  top: 50%;
-  left 50%;
-  z-index: 9999;
-`;
-
-// const CenterTest = styled.div`
-//   width: 500px;
-//   height: 500px;
-//   display: flex;
-//   justify-content: center;
-//   align-items: center;
-// `;
-
-// const TestButton = styled.button`
-//   background-color: inherit;
-//   padding: 16px;
-//   color: white;
-
-//   border: 1px solid white;
-//   border-radius: 7px;
-
-//   font-weight: bold;
-
-//   margin-top: 16px;
-
-//   cursor: pointer;
-// `;
-
-// Money, pray hands, dove emoji 'confetti'
-const UserText = styled.p`
-  color: white;
-  font-size: 24px;
-  margin-left: 8px;
-`;
-
-const UserDonation = styled.div`
-  color: white;
+const Root = styled.div`
+  width: 100%;
+  min-height: 100vh;
   display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: black;
+  padding: 20px;
+  color: white;
+`;
+
+const ConfettiContainer = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+`;
+
+const MainContentContainer = styled.div`
+  width: 100%;
+  max-width: 800px;
+  height: 150px;
+  display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  flex-direction: column;
-  height: 100%;
-  right: 24px;
-  position: relative;
+  background-color: black;
+  color: white;
+  overflow: hidden;
+  border-radius: 4px;
+`;
+
+const ThankYouMessage = styled.div`
+  color: #4CAF50;
+  font-size: 30px;
+  font-weight: bold;
+  margin-top: 10px;
+  text-align: center;
 `;
 
 const FlexBetween = styled.div`
@@ -304,31 +307,10 @@ const FlexBetween = styled.div`
   justify-content: space-between;
   align-items: flex-end;
 `;
-const Root = styled.div`
-  width: 100%;
-  margin-left: 16px;
-  margin-right: 16px;
-`;
-
-const AnimateContainer = styled.div`
-  width: 100%;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: black;
-  color: white;
-  padding: 16px 12px;
-  overflow: hidden;
-  border-radius: 4px;
-
-  height: 86px;
-`;
 
 const ProgressBarContainer = styled.div`
   width: 100%;
   color: white;
-
   overflow: hidden;
   position: relative;
 `;
@@ -349,9 +331,7 @@ const ProgressBar = styled.div`
   background-color: #e8e8e877;
   height: 8px;
   border-radius: 16px;
-
   overflow: hidden;
-
   margin-top: 4px;
 `;
 
@@ -364,38 +344,14 @@ const StyledProgress = styled.div<StyledProgressProps>`
   height: 100%;
   width: ${(props) => props.percentage}%;
   opacity: 1;
-
   transition: all 1s ease;
 `;
 
-const Amount = styled.p`
-  font-size: 26px;
+const Amount = styled.div`
+  font-size: 34px;
   color: white;
-  margin-right: 8px;
-`;
-
-interface DotProps {
-  active: boolean;
-}
-
-const DotContainer = styled.div`
-  position: absolute;
-  bottom: -12px;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 8px;
-`;
-
-const Dot = styled.div<DotProps>`
-  height: 8px;
-  width: 8px;
-  border-radius: 50%;
-  background-color: white;
-  margin-right: 8px;
-  margin-left: 8px;
-  opacity: ${(props) => (props.active ? 1 : 0.5)};
+  font-weight: bold;
+  text-align: center;
 `;
 
 interface ConfettiData {

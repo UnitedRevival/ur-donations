@@ -3,7 +3,7 @@ import TierSelection from './subscriptions/TierSelection';
 import SubscriptionPayment from './subscriptions/SubscriptionPayment';
 
 const Subscription = () => {
-  const [selectedTier, setSelectedTier] = useState(0);
+  const [selectedTier, setSelectedTier] = useState<{ index: number; priceId: string; } | undefined>(undefined);
   const [step, setStep] = useState(0);
 
   return (
@@ -15,7 +15,7 @@ const Subscription = () => {
           onContinue={() => setStep(1)}
         />
       )}
-      {step === 1 && (
+      {step === 1 && selectedTier && (
         <SubscriptionPayment tier={selectedTier} onBack={() => setStep(0)} />
       )}
     </div>

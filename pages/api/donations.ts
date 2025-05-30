@@ -52,6 +52,7 @@ export async function getTotalDonationAmount(
     },
   ]);
 
+
   // if (redis) redis.set('totals', JSON.stringify(data));
 
   return data;

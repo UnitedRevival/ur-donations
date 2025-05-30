@@ -8,6 +8,7 @@ import TiktokPixel from 'tiktok-pixel';
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import * as fbq from '../lib/pixel';
+import { CampaignProvider } from '../contexts/CampaignContext';
 
 const tikTokOptions = {
   debug: true, // enable logs
@@ -25,7 +26,7 @@ const mappedFeatureImage = {
 
 export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter();
-  
+
   useEffect(() => {
     enableTikTokPixel();
 
@@ -44,9 +45,9 @@ export default function App({ Component, pageProps }: AppProps) {
     };
   }, [router.events]);
   return (
-    <>
+    <CampaignProvider>
       <GlobalStyles />
-      <Header featureImg={mappedFeatureImage[router.route]}/>
+      <Header featureImg={mappedFeatureImage[router.route]} />
       <Script
         src="https://fast.wistia.com/assets/external/E-v1.js"
         async
@@ -71,6 +72,6 @@ export default function App({ Component, pageProps }: AppProps) {
       <ThemeProvider theme={defaultTheme}>
         <Component {...pageProps} />
       </ThemeProvider>
-    </>
+    </CampaignProvider>
   );
 }

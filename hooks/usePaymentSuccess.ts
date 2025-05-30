@@ -4,6 +4,7 @@ import { useContext } from 'react';
 import { HomePageContext } from '../contexts/HomePageContext';
 import TiktokPixel from 'tiktok-pixel';
 import axios from 'axios';
+import { useCampaign } from '../contexts/CampaignContext';
 
 export async function createPaymentData({
   amount,
@@ -28,9 +29,10 @@ export async function createPaymentData({
   return response.data; // { client_secret: string }
 }
 
-export default function usePaymentSuccess(formData: { name: string; email: string; donationType: string }) {
+export function usePaymentSuccess(formData: any) {
   const { setStep } = useStepper();
   const { amountToDonate } = useContext(HomePageContext);
+  const { clearCampaign } = useCampaign();
 
   const handleSuccess = async () => {
     try {
@@ -44,7 +46,7 @@ export default function usePaymentSuccess(formData: { name: string; email: strin
       if (!amountToDonate || !name || !email) {
         throw new Error('Missing required payment data');
       }
-      
+
       const response = await createPaymentData({
         amount: amountToDonate,
         donationType,
@@ -62,6 +64,9 @@ export default function usePaymentSuccess(formData: { name: string; email: strin
         currency: 'USD',
         value: amountToDonate,
       });
+
+      // Clear campaign after successful payment
+      clearCampaign();
 
       return response; // Optionally return the response
     } catch (error) {

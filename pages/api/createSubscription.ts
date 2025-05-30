@@ -3,96 +3,196 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import stripe from '../../lib/stripe';
 import CustomerModel from '../../db/models/customer.model';
 import dbConnect from '../../db/connect';
+import type { Stripe } from 'stripe';
+import { createPaymentData } from '../../lib/donations';
+import ablyClient from '../../lib/ably';
+import { current_Diffrent_campaigns } from './stripeEvent';
 
-// Currently are test price ids... change to env variables later
-const PRICE_ID_1 = process.env.SUBSCRIPTION_ID_1;
-const PRICE_ID_2 = process.env.SUBSCRIPTION_ID_2;
-const PRICE_ID_3 = process.env.SUBSCRIPTION_ID_3;
-const PRICE_ID_4 = process.env.SUBSCRIPTION_ID_4;
-const PRICE_ID_5 = process.env.SUBSCRIPTION_ID_5;
-const PRICE_ID_6 = process.env.SUBSCRIPTION_ID_6;
-const priceIds = {
-  0: PRICE_ID_1, // 10
-  1: PRICE_ID_2, // 25
-  2: PRICE_ID_3, // 50
-  3: PRICE_ID_4, // 100, ...etc
-  4: PRICE_ID_5,
-  5: PRICE_ID_6,
-};
+const CHANNEL_NAME = 'payments';
+const channel = ablyClient.channels.get(CHANNEL_NAME);
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
   if (req.method === 'POST') {
-    const { email, name, address, utm, campaign } = req.body;
+    try {
+      const { email, name, address, utm, campaign, priceId, donationType } = req.body;
 
-    await dbConnect();
-
-    const foundCustomer = await CustomerModel.findOne({ email });
-
-    let customerId: any = null;
-    if (foundCustomer) customerId = foundCustomer?.stripeCustomer;
-    else {
-      const customer = await stripe.customers.create({
+      // Log request data for debugging
+      console.log('Creating subscription with data:', {
         email,
         name,
-        address,
-        // shipping: {
-        //   address,
-        //   name: name,
-        // },
+        campaign,
+        priceId,
+        donationType
       });
 
-      if (!customer) {
-        res.status(500).json({ error: 'Could not create customer' });
-        return;
+      // Get campaign details - with intelligent matching or use the provided donationType directly
+      let campaignTitle = '';
+      let campaignKey = '';
+
+      if (donationType) {
+        // Use the provided donationType directly
+        campaignTitle = donationType;
+
+        // Try to find a matching campaign key for backward compatibility
+        for (const [key, value] of Object.entries(current_Diffrent_campaigns)) {
+          if (value.title === donationType) {
+            campaignKey = key;
+            break;
+          }
+        }
+
+        if (!campaignKey) {
+          // If no exact match found, try to find a partial match
+          for (const [key, value] of Object.entries(current_Diffrent_campaigns)) {
+            if (value.title.toLowerCase().includes(donationType.toLowerCase()) ||
+              donationType.toLowerCase().includes(value.title.toLowerCase())) {
+              campaignKey = key;
+              campaignTitle = value.title; // Use the exact campaign title from our list
+              break;
+            }
+          }
+        }
+
+        if (!campaignKey) {
+          campaignKey = 'custom'; // Fallback if no matching key found
+        }
+
+        console.log(`Using provided donationType: ${campaignTitle}, mapped to key: ${campaignKey}`);
+      } else if (campaign && current_Diffrent_campaigns[campaign]) {
+        // Use provided campaign key if it exists
+        campaignKey = campaign;
+        campaignTitle = current_Diffrent_campaigns[campaign].title;
+        console.log(`Using provided campaign key: ${campaignKey}, title: ${campaignTitle}`);
+      } else {
+        // Fallback to default campaign
+        campaignKey = 'JESUS_MARCH_2025_MIAMI';
+        campaignTitle = current_Diffrent_campaigns.JESUS_MARCH_2025_MIAMI.title;
+        console.log(`Using default campaign: ${campaignTitle}`);
       }
 
-      const c = new CustomerModel({
-        email,
-        name,
-        stripeCustomer: customer.id,
+      // Connect to database
+      await dbConnect();
+
+      // Check if customer exists first
+      let customerId;
+      const foundCustomer = await CustomerModel.findOne({ email });
+
+      if (foundCustomer) {
+        customerId = foundCustomer?.stripeCustomer;
+        // Update customer metadata if needed
+        await stripe.customers.update(customerId, {
+          metadata: {
+            utm_source: utm ? utm : 'unknown',
+            campaign: campaignKey,
+            campaign_title: campaignTitle,
+            source_url: req.headers.referer || req.headers.origin || 'unknown'
+          }
+        });
+      } else {
+        const customer = await stripe.customers.create({
+          email,
+          name,
+          address,
+          metadata: {
+            utm_source: utm ? utm : 'unknown',
+            campaign: campaignKey,
+            campaign_title: campaignTitle,
+            source_url: req.headers.referer || req.headers.origin || 'unknown'
+          }
+        });
+
+        if (!customer) {
+          res.status(500).json({ error: 'Could not create customer' });
+          return;
+        }
+
+        const c = new CustomerModel({
+          email,
+          name,
+          stripeCustomer: customer.id,
+        });
+        customerId = customer.id;
+        await c.save();
+      }
+
+      // Fetch available prices
+      const prices = await stripe.prices.list({
+        active: true,
+        type: 'recurring',
+        limit: 100,
       });
-      customerId = customer.id;
-      await c.save();
-    }
 
-    const priceOption = req.body.priceOption;
-    const priceId = priceIds[priceOption];
+      // Find the price with the matching ID
+      const selectedPrice = prices.data.find(price => price.id === priceId);
 
-    if (!priceId)
-      throw new Error(
-        'Invalid price option passed in, cannot do' + priceOption
-      );
+      if (!selectedPrice) {
+        console.error('Invalid price ID:', priceId, 'Available prices:', prices.data.length);
+        return res.status(400).json({
+          error: `Invalid price ID. Please select a valid subscription tier.`
+        });
+      }
 
-    try {
-      const subscription = await stripe.subscriptions.create({
-        customer: customerId,
-        metadata: {
-          utm_source: utm ? utm : 'unknown',
-          campaign: campaign ? campaign : 'unknown'
-        },
-        items: [
-          {
-            price: priceId,
+      try {
+        const subscription = await stripe.subscriptions.create({
+          customer: customerId,
+          metadata: {
+            utm_source: utm ? utm : 'unknown',
+            campaign: campaignKey,
+            campaign_title: campaignTitle,
+            source_url: req.headers.referer || req.headers.origin || 'unknown',
+            name: name || ''
+          },
+          items: [
+            {
+              price: selectedPrice.id,
+              metadata: {
+                utm_source: utm ? utm : 'unknown',
+                campaign: campaignKey,
+                campaign_title: campaignTitle,
+                source_url: req.headers.referer || req.headers.origin || 'unknown',
+                name: name || ''
+              },
+            },
+          ],
+          payment_behavior: 'default_incomplete',
+          payment_settings: { save_default_payment_method: 'on_subscription' },
+          expand: ['latest_invoice.payment_intent'],
+        }) as Stripe.Subscription & {
+          latest_invoice: Stripe.Invoice & {
+            payment_intent: Stripe.PaymentIntent;
+          };
+        };
+
+        // Add campaign information to the payment intent
+        if (subscription.latest_invoice?.payment_intent) {
+          await stripe.paymentIntents.update(subscription.latest_invoice.payment_intent.id, {
             metadata: {
               utm_source: utm ? utm : 'unknown',
-            },
-          },
-        ],
-        payment_behavior: 'default_incomplete',
-        payment_settings: { save_default_payment_method: 'on_subscription' },
-        expand: ['latest_invoice.payment_intent'],
-      });
+              campaign: campaignKey,
+              campaign_title: campaignTitle,
+              source_url: req.headers.referer || req.headers.origin || 'unknown',
+              name: name || ''
+            }
+          });
+        }
 
-      res.send({
-        // @ts-ignore
-        url: subscription?.latest_invoice?.hosted_invoice_url,
-      });
-    } catch (error) {
-      // @ts-ignore
-      return res.status(400).send({ error: { message: error.message } });
+        // Send the invoice URL to client
+        res.send({
+          url: subscription.latest_invoice.hosted_invoice_url,
+        });
+      } catch (error: any) {
+        console.error('Stripe subscription creation error:', error);
+        return res.status(400).send({ error: { message: error.message } });
+      }
+    } catch (error: any) {
+      console.error('Subscription creation error:', error);
+      return res.status(500).json({ error: 'Internal server error' });
     }
-  } else throw new Error(`${req.method} is not supported for this route`);
+  } else {
+    res.setHeader('Allow', 'POST');
+    res.status(405).end('Method Not Allowed');
+  }
 }

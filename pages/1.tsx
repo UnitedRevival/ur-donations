@@ -6,7 +6,7 @@ import Payment from '../components/payment/Payment';
 import { StepContextProvider } from '../contexts/StepContext';
 import styled from 'styled-components';
 import InfoCard from '../components/infocard/InfoCard';
-import { GetStaticProps } from 'next';
+import { GetServerSideProps } from 'next';
 import Navbar from '../components/navbar/Navbar';
 import { currentCampaign } from './api/stripeEvent';
 
@@ -83,7 +83,7 @@ export default function Home(props: HomePageProps) {
   );
 }
 
-export const getStaticProps: GetStaticProps = async (ctx) => {
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const totals = await getTotalDonationAmount();
 
   const jesusMarchDonations = totals.find(
@@ -94,13 +94,11 @@ export const getStaticProps: GetStaticProps = async (ctx) => {
     props: {
       amountRaised: jesusMarchDonations?.total || 0,
       goal: currentCampaign.goal,
-    },
-    revalidate: 60 * 60 * 7,
+    }
   };
 };
 
-const VideoContainer = styled.div`
-  // max-width: 300px;
+const VideoContainer = styled.div`  // max-width: 300px;
 `;
 
 // Make a div styled component that hides text when it reaches a mobile breakpoint
@@ -157,3 +155,4 @@ const Title = styled.h1`
     display: block;
   }
 `;
+

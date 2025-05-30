@@ -6,7 +6,7 @@ import Payment from '../components/payment/Payment';
 import { StepContextProvider } from '../contexts/StepContext';
 import styled from 'styled-components';
 import InfoCard from '../components/infocard/InfoCard';
-import { GetStaticProps } from 'next';
+import { GetServerSideProps } from 'next';
 import Navbar from '../components/navbar/Navbar';
 import { currentCampaign, current_Diffrent_campaigns } from './api/stripeEvent';
 
@@ -36,7 +36,7 @@ export default function Denver({ amountRaised, goal, cardTitle }: HomePageProps)
 
         <main className={styles.main}>
           <Content>
-            <InfoCard 
+            <InfoCard
               hideProgress={false}
               title={cardTitle} // Pass the cardTitle prop
             >
@@ -51,7 +51,7 @@ export default function Denver({ amountRaised, goal, cardTitle }: HomePageProps)
   );
 }
 
-export const getStaticProps: GetStaticProps<HomePageProps> = async (ctx) => {
+export const getServerSideProps: GetServerSideProps<HomePageProps> = async (ctx) => {
   const totals = await getTotalDonationAmount();
   const jesusMarchDonations = totals.find(
     (t) => t._id === current_Diffrent_campaigns.JESUS_MARCH_2025_DENVER.title
@@ -65,6 +65,5 @@ export const getStaticProps: GetStaticProps<HomePageProps> = async (ctx) => {
       // Or use currentCampaign.title if you want it dynamic:
       // cardTitle: currentCampaign.title || 'Help Fund Jesus March 2025',
     },
-    revalidate: 60 * 60 * 7,
   };
 };

@@ -22,6 +22,8 @@ export default async function handler(
         integration_check: 'accept_a_payment',
         utm_source: utm ? utm : 'unknown',
         campaign: campaign ? campaign : 'unknown',
+        campaign_title: campaign ? campaign : 'unknown',
+        source_url: req.headers.referer || req.headers.origin || 'unknown'
       },
     });
 

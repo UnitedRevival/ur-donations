@@ -22,13 +22,13 @@ export default async function handler(
   }
 
   try {
-    const success = await createPaymentData({
-      amount,
-      donationType,
-      dateCreated: new Date(),
-      name,
-      email,
-    });
+    // const success = await createPaymentData({
+    //   amount,
+    //   donationType,
+    //   dateCreated: new Date(),
+    //   name,
+    //   email,
+    // });
     return res.status(200).json({ message: 'Payment created successfully' });
   } catch (error) {
     console.error('Error in createPayment:', error);

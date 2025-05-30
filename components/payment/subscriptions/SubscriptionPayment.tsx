@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import LabeledInput from '../../inputs/LabeledInput';
 
@@ -6,10 +6,11 @@ import PrimaryButton from '../../buttons/PrimaryButton';
 import SecondaryButton from '../../buttons/SecondaryButton';
 import { Title } from '../PaymentCard';
 import { useRouter } from 'next/router';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
+import { useCampaign } from '../../../contexts/CampaignContext';
 
 interface SubscriptionPaymentProps {
-  tier: number;
+  tier: { index: number, priceId: string };
   onBack: () => any;
 }
 
@@ -30,9 +31,46 @@ const SubscriptionPayment: React.FC<SubscriptionPaymentProps> = ({
 
   const [error, setError] = useState('');
   const router = useRouter();
+  const { currentCampaign } = useCampaign();
 
+  // Get UTM source
   const source = router?.query?.source as string;
-  const campaign = router?.query?.source as string;
+  // Get campaign from query param
+  const campaign = router?.query?.campaign as string;
+
+  // Get campaign title
+  const [campaignTitle, setCampaignTitle] = useState<string | null>(null);
+
+  // Extract campaign info from path/query
+  useEffect(() => {
+    // Try to get from direct query parameter
+    if (router?.query?.title) {
+      setCampaignTitle(router.query.title as string);
+      return;
+    }
+
+    // Try to detect from URL path segment
+    const path = router.pathname;
+    const pathSegments = path.split('/').filter(Boolean);
+
+    if (pathSegments.length > 0) {
+      const lastSegment = pathSegments[pathSegments.length - 1];
+      // Convert to title case and format
+      if (lastSegment && lastSegment !== 'index') {
+        const formattedTitle = lastSegment
+          .replace(/-/g, ' ')
+          .split(' ')
+          .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+          .join(' ');
+
+        // Remove "Event" suffix if present
+        const cleanTitle = formattedTitle.replace(/ Event$/i, '');
+
+        // Format like "Jesus March 2025 - City Name"
+        setCampaignTitle(`Jesus March 2025 - ${cleanTitle}`);
+      }
+    }
+  }, [router.pathname, router.query]);
 
   const onChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -41,28 +79,40 @@ const SubscriptionPayment: React.FC<SubscriptionPaymentProps> = ({
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setError(''); // Clear any previous errors
 
-    const url = await createSubscriptionURL(
-      {
-        priceOption: tier,
-        email: formData.email,
-        address: {
-          line1: formData.line1,
-          city: formData.city,
-          state: formData.state,
-          postal_code: formData.postal_code,
-          country: formData.country,
+    try {
+      const url = await createSubscriptionURL(
+        {
+          priceId: tier.priceId,
+          name: formData.name,
+          email: formData.email,
+          address: {
+            line1: formData.line1,
+            city: formData.city,
+            state: formData.state,
+            postal_code: formData.postal_code,
+            country: formData.country,
+          },
+          utm: source,
+          campaign: campaign,
+          donationType: currentCampaign, // Use the campaign from context
         },
-        utm: source,
-        campaign,
-      },
-      setError
-    );
+        setError
+      );
 
-    // @ts-ignore
-    window.location.href = url;
-
-    // setLoading(false);
+      if (url) {
+        // @ts-ignore
+        window.location.href = url;
+      } else {
+        // If no URL was returned, we already set the error in createSubscriptionURL
+        setLoading(false);
+      }
+    } catch (error: unknown) {
+      console.error('Unexpected error in handleSubmit:', error);
+      setError('An unexpected error occurred. Please try again.');
+      setLoading(false);
+    }
   };
 
   return (
@@ -145,6 +195,7 @@ const SubscriptionPayment: React.FC<SubscriptionPaymentProps> = ({
       >
         Complete Partnership
       </PrimaryButton>
+      {error && <ErrorMessage>{error}</ErrorMessage>}
       {!loading && (
         <SecondaryButton type="button" fullWidth onClick={() => onBack()}>
           Back
@@ -156,37 +207,57 @@ const SubscriptionPayment: React.FC<SubscriptionPaymentProps> = ({
 
 async function createSubscriptionURL(
   {
-    priceOption,
+    priceId,
     name,
     email,
     address,
     utm,
     campaign,
+    donationType,
   }: {
-    priceOption: number;
+    priceId: string;
     name?: string;
     email: string;
     utm?: string;
     address: any;
-    campaign: string;
+    campaign?: string;
+    donationType?: string | null;
   },
   setError: any
 ) {
   try {
     const response = await axios.post('/api/createSubscription', {
-      priceOption,
+      priceId,
       name,
       email,
       address,
       utm,
       campaign,
+      donationType,
     });
 
     const url = response.data?.url;
+
+    if (!url) {
+      console.error('No URL returned from subscription API');
+      setError('Failed to create subscription - no payment URL returned');
+      return null;
+    }
+
     return url as string;
-  } catch (err) {
-    // @ts-ignore
-    setError(err.message);
+  } catch (error: unknown) {
+    console.error('Error creating subscription:', error);
+    let errorMessage = 'Failed to create subscription';
+
+    // Extract detailed error message if available
+    if (error instanceof AxiosError && error.response?.data?.error?.message) {
+      errorMessage = error.response.data.error.message;
+    } else if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+
+    setError(errorMessage);
+    return null;
   }
 }
 
@@ -209,6 +280,15 @@ const CustomDivider = styled.div`
   height: 1px;
   background-color: ${({ theme }) => theme.colors.light};
   margin: 1rem 0;
+`;
+
+const ErrorMessage = styled.div`
+  color: red;
+  margin: 10px 0;
+  padding: 10px;
+  background-color: rgba(255, 0, 0, 0.1);
+  border-radius: 4px;
+  text-align: center;
 `;
 
 export default SubscriptionPayment;

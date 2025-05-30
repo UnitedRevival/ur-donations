@@ -7,6 +7,7 @@ export interface Payment {
   dateCreated: Date | number;
   name?: string;
   email?: string;
+  referenceId?: string; // For tracking invoice IDs, subscription IDs etc.
 }
 
 const PaymentSchema = new mongoose.Schema<Payment>({
@@ -16,6 +17,7 @@ const PaymentSchema = new mongoose.Schema<Payment>({
   dateCreated: { type: Date, required: true, default: () => Date.now() },
   name: { type: String, required: false },
   email: { type: String, required: false },
+  referenceId: { type: String, required: false }, // For tracking invoice IDs
 });
 
 let existingModel = mongoose.models.Payment<Payment>;

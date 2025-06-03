@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useRef } from 'react';
 import * as Ably from 'ably';
 import {
   AblyProvider,
@@ -61,6 +61,7 @@ const DonationPayments = () => {
   const [recentTotal, setRecentTotal] = useState(0);
   const [latestDonation, setLatestDonation] = useState<PaymentData | null>(null);
   const [loading, setLoading] = useState(true);
+  const lastDisplayedDonationIdRef = useRef<string | null>(null);
 
   // Function to fetch recent donations
   const fetchRecentDonations = async () => {
@@ -85,12 +86,15 @@ const DonationPayments = () => {
         if (!latestDonation || latest._id !== latestDonation._id) {
           setLatestDonation(latest);
 
-          // Show the latest donation immediately
-          showDonation({
-            amount: latest.amount,
-            user: latest.name,
-            date: new Date(latest.dateCreated)
-          });
+          // Only show the latest donation if we haven't displayed it yet
+          if (!lastDisplayedDonationIdRef.current || latest._id !== lastDisplayedDonationIdRef.current) {
+            showDonation({
+              amount: latest.amount,
+              user: latest.name,
+              date: new Date(latest.dateCreated)
+            });
+            lastDisplayedDonationIdRef.current = latest._id;
+          }
         }
       } else {
         setRecentDonations([]);
@@ -109,17 +113,6 @@ const DonationPayments = () => {
   useEffect(() => {
     fetchRecentDonations();
   }, []);
-
-  // Display the latest donation when data is loaded
-  useEffect(() => {
-    if (latestDonation && !showThankYou) {
-      showDonation({
-        amount: latestDonation.amount,
-        user: latestDonation.name,
-        date: new Date(latestDonation.dateCreated)
-      });
-    }
-  }, [latestDonation]);
 
   // Set up polling every 30 seconds
   useEffect(() => {
@@ -179,34 +172,43 @@ const DonationPayments = () => {
       // Get the donor name - support both user and name properties
       const donorName = message.data?.name || message.data?.user || 'Anonymous';
 
-      // Show the donation
-      showDonation({
-        amount: newAmount,
-        user: donorName,
-        date: new Date()
-      });
+      // Create a unique ID for this donation (use timestamp if no ID is provided)
+      const donationId = message.data?._id || new Date().getTime().toString();
 
-      // Update the amount raised based on recent total
-      setAmountRaised(prev => {
-        const updated = prev + newAmount;
-        return updated;
-      });
-
-      // Update the recent total
-      setRecentTotal(prev => prev + newAmount);
-
-      // Add to recent donations
-      if (message.data) {
-        const newDonation: PaymentData = {
-          _id: new Date().getTime().toString(),
+      // Only show the donation if we haven't displayed it yet
+      if (donationId !== lastDisplayedDonationIdRef.current) {
+        // Show the donation
+        showDonation({
           amount: newAmount,
-          name: donorName,
-          dateCreated: new Date().toISOString(),
-          anonymous: !donorName || donorName === 'Anonymous',
-          donationType: message.data.donationType
-        };
+          user: donorName,
+          date: new Date()
+        });
 
-        setRecentDonations(prev => [newDonation, ...prev.slice(0, 9)]); // Keep only 10 most recent
+        // Update tracking ID
+        lastDisplayedDonationIdRef.current = donationId;
+
+        // Update the amount raised based on recent total
+        setAmountRaised(prev => {
+          const updated = prev + newAmount;
+          return updated;
+        });
+
+        // Update the recent total
+        setRecentTotal(prev => prev + newAmount);
+
+        // Add to recent donations
+        if (message.data) {
+          const newDonation: PaymentData = {
+            _id: donationId,
+            amount: newAmount,
+            name: donorName,
+            dateCreated: new Date().toISOString(),
+            anonymous: !donorName || donorName === 'Anonymous',
+            donationType: message.data.donationType
+          };
+
+          setRecentDonations(prev => [newDonation, ...prev.slice(0, 9)]); // Keep only 10 most recent
+        }
       }
     }
   });

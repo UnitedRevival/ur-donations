@@ -84,6 +84,13 @@ const DonationPayments = () => {
         const latest = donationData.donations[0];
         if (!latestDonation || latest._id !== latestDonation._id) {
           setLatestDonation(latest);
+
+          // Show the latest donation immediately
+          showDonation({
+            amount: latest.amount,
+            user: latest.name,
+            date: new Date(latest.dateCreated)
+          });
         }
       } else {
         setRecentDonations([]);
@@ -102,6 +109,17 @@ const DonationPayments = () => {
   useEffect(() => {
     fetchRecentDonations();
   }, []);
+
+  // Display the latest donation when data is loaded
+  useEffect(() => {
+    if (latestDonation && !showThankYou) {
+      showDonation({
+        amount: latestDonation.amount,
+        user: latestDonation.name,
+        date: new Date(latestDonation.dateCreated)
+      });
+    }
+  }, [latestDonation]);
 
   // Set up polling every 30 seconds
   useEffect(() => {
@@ -151,18 +169,20 @@ const DonationPayments = () => {
   // Create a channel called 'get-started' and subscribe to all messages with the name 'first' using the useChannel hook
   const { channel } = useChannel('payments', 'newPayment', (message) => {
     // Check if the donation is for the specific event type before showing the thank you message
-    // If no donationType is specified or it matches "Jesus March 2025 - Boston", show it
+    // If no donationType is specified or it matches "Jesus March 2025 - Denver", show it
     const donationType = message.data?.donationType;
-    const isTargetEvent = !donationType || donationType === "Jesus March 2025 - Boston";
+    const isTargetEvent = !donationType || donationType === "Jesus March 2025 - Denver";
 
     if (isTargetEvent) {
       // Get the donation amount
       const newAmount = message.data?.amount || 0;
+      // Get the donor name - support both user and name properties
+      const donorName = message.data?.name || message.data?.user || 'Anonymous';
 
       // Show the donation
       showDonation({
         amount: newAmount,
-        user: message.data?.user || 'Anonymous',
+        user: donorName,
         date: new Date()
       });
 
@@ -180,9 +200,9 @@ const DonationPayments = () => {
         const newDonation: PaymentData = {
           _id: new Date().getTime().toString(),
           amount: newAmount,
-          name: message.data.user || 'Anonymous',
+          name: donorName,
           dateCreated: new Date().toISOString(),
-          anonymous: !message.data.user,
+          anonymous: !donorName || donorName === 'Anonymous',
           donationType: message.data.donationType
         };
 

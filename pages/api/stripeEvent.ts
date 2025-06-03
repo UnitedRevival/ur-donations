@@ -291,6 +291,7 @@ export default async function handler(
           donationType,
           dateCreated: Date.now(),
           anonymous: !name || name.trim() === '',
+          referenceId: paymentIntentId as string,
         });
 
         // try {
@@ -393,6 +394,7 @@ export default async function handler(
               donationType,
               dateCreated: new Date(paidInvoice.created * 1000),
               anonymous: !name || name.trim() === '',
+              referenceId: paidInvoice.id,
             });
 
             try {

@@ -19,6 +19,15 @@ export async function createPaymentData({
 
     console.log('name ==', name, "email==", email, "amount==", amount)
 
+    // Check for existing payment with same referenceId to prevent duplicates
+    if (referenceId) {
+      const existingPayment = await PaymentModel.findOne({ referenceId });
+      if (existingPayment) {
+        console.log(`Payment with referenceId ${referenceId} already exists, skipping duplicate`);
+        return existingPayment;
+      }
+    }
+
     // Create and save the payment
     const newPayment = new PaymentModel({
       amount,
@@ -26,7 +35,7 @@ export async function createPaymentData({
       name,
       donationType,
       anonymous: explicitAnonymous !== undefined ? explicitAnonymous : !name || name.trim() === '',
-      dateCreated: Date.now(),
+      dateCreated: dateCreated || Date.now(),
       referenceId,
     });
 

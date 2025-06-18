@@ -64,7 +64,6 @@ export const getServerSideProps: GetServerSideProps<HomePageProps> = async (ctx)
       cardTitle: 'Thanks For Signing-Up For Jesus March Atlanta 2025', // Pass it through props
       // Or use currentCampaign.title if you want it dynamic:
       // cardTitle: currentCampaign.title || 'Help Fund Jesus March 2025',
-    },
-    revalidate: 60 * 60 * 7,
+    }
   };
 };

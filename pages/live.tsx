@@ -2,7 +2,7 @@ import Head from 'next/head';
 import styles from '../styles/live.module.css';
 import styled from 'styled-components';
 import LivePayments from '../components/LivePayments';
-import { GetStaticProps } from 'next';
+import { GetServerSideProps } from 'next';
 import { getTotalDonationAmount } from './api/donations';
 import { currentCampaign } from './api/stripeEvent';
 import { HomePageProvider } from '../contexts/HomePageContext';
@@ -31,7 +31,7 @@ export default function Live(props) {
   );
 }
 
-export const getStaticProps: GetStaticProps = async (ctx) => {
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const totals = await getTotalDonationAmount();
 
   const jesusMarchDonations = totals.find(
@@ -43,7 +43,7 @@ export const getStaticProps: GetStaticProps = async (ctx) => {
       amountRaised: jesusMarchDonations?.total || 0,
       goal: currentCampaign.goal,
     },
-    revalidate: 60 * 60 * 7,
+    // revalidate: 60 * 60 * 7,
   };
 };
 

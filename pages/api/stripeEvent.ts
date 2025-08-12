@@ -93,7 +93,7 @@ const campaigns = {
   },
   JESUS_MARCH_2025_HOUSTON: {
     title: 'Jesus March 2025 - Houston',
-    goal: 20000,
+    goal: 15000,
   },
   JESUS_MARCH_2025_HUNTINGTON_BEACH: {
     title: 'Jesus March 2025 - Huntington Beach',

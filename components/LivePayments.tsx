@@ -53,7 +53,7 @@ interface DonationResponse {
 const DonationPayments = () => {
   const { amountRaised, goal: contextGoal, setAmountRaised } = useContext(HomePageContext);
   // Override goal to ensure it's 10000
-  const goal = 15000;
+  const goal = 20000;
   const [currentDonation, setCurrentDonation] = useState<LiveDonationData | null>(null);
   const [showThankYou, setShowThankYou] = useState(false);
   const [confetti, setConfetti] = useState<ConfettiData[]>([]);

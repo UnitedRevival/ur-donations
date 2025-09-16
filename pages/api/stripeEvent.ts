@@ -109,7 +109,7 @@ const campaigns = {
   },
   JESUS_MARCH_2025_DALLAS: {
     title: 'Jesus March 2025 - Dallas',
-    goal: 15000,
+    goal: 20000,
   }
 };
 

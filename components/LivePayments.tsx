@@ -53,7 +53,7 @@ interface DonationResponse {
 const DonationPayments = () => {
   const { amountRaised, goal: contextGoal, setAmountRaised } = useContext(HomePageContext);
   // Override goal to ensure it's 10000
-  const goal = 20000;
+  const goal = 25000;
   const [currentDonation, setCurrentDonation] = useState<LiveDonationData | null>(null);
   const [showThankYou, setShowThankYou] = useState(false);
   const [confetti, setConfetti] = useState<ConfettiData[]>([]);
@@ -68,7 +68,7 @@ const DonationPayments = () => {
     try {
       // Use the specific date (06/05/2025) for filtering
       const date = '2025-05-06';
-      const response = await axios.get(`/api/recentDonations?date=${date}&donationType=Jesus March 2025 - Dallas`);
+      const response = await axios.get(`/api/recentDonations?date=${date}&donationType=Jesus March 2025 - Houston`);
 
       const donationData = response.data as DonationResponse;
 
@@ -131,7 +131,7 @@ const DonationPayments = () => {
       timer = setTimeout(() => {
         setShowThankYou(false);
         setCurrentDonation(null);
-      }, 3000); // Show thank you for 3 seconds
+      }, 1000); // Show thank you for 3 seconds
     }
 
     return () => {
@@ -164,7 +164,7 @@ const DonationPayments = () => {
     // Check if the donation is for the specific event type before showing the thank you message
     // If no donationType is specified or it matches "Jesus March 2025 - Denver", show it
     const donationType = message.data?.donationType;
-    const isTargetEvent = !donationType || donationType === "Jesus March 2025 - Dallas";
+    const isTargetEvent = !donationType || donationType === "Jesus March 2025 - Houston";
 
     if (isTargetEvent) {
       // Get the donation amount
@@ -234,18 +234,19 @@ const DonationPayments = () => {
           <MainContentContainer>
             <AnimatePresence mode="wait">
               {showThankYou && currentDonation ? (
-                <motion.div
-                  key="thank-you"
-                  initial={{ opacity: 0, y: -20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.5 }}
-                >
-                  <Amount>${currentDonation.amount.toLocaleString()} - {currentDonation.user}</Amount>
-                  <ThankYouMessage>
-                    Thank you {currentDonation.user} for donating ${currentDonation.amount.toLocaleString()}!
-                  </ThankYouMessage>
-                </motion.div>
+                <></>
+                // <motion.div
+                //   key="thank-you"
+                //   initial={{ opacity: 0, y: -20 }}
+                //   animate={{ opacity: 1, y: 0 }}
+                //   exit={{ opacity: 0, y: -20 }}
+                //   transition={{ duration: 0.5 }}
+                // >
+                //   <Amount>${currentDonation.amount.toLocaleString()} - {currentDonation.user}</Amount>
+                //   <ThankYouMessage>
+                //     Thank you {currentDonation.user} for donating ${currentDonation.amount.toLocaleString()}!
+                //   </ThankYouMessage>
+                // </motion.div>
               ) : (
                 <motion.div
                   key="progress-bar"

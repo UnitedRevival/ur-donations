@@ -255,9 +255,9 @@ const DonationPayments = () => {
                   transition={{ duration: 0.5 }}
                 >
                   <Amount>${currentDonation.amount.toLocaleString()} - {formatUserName(currentDonation.user)}</Amount>
-                  <ThankYouMessage>
+                  {/* <ThankYouMessage>
                     Thank you {formatUserName(currentDonation.user)} for donating ${currentDonation.amount.toLocaleString()}!
-                  </ThankYouMessage>
+                  </ThankYouMessage> */}
                 </motion.div>
               ) : (
                 <motion.div

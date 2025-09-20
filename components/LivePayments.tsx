@@ -131,7 +131,7 @@ const DonationPayments = () => {
       timer = setTimeout(() => {
         setShowThankYou(false);
         setCurrentDonation(null);
-      }, 1000); // Show thank you for 3 seconds
+      }, 3000); // Show thank you for 3 seconds
     }
 
     return () => {
@@ -234,19 +234,18 @@ const DonationPayments = () => {
           <MainContentContainer>
             <AnimatePresence mode="wait">
               {showThankYou && currentDonation ? (
-                <></>
-                // <motion.div
-                //   key="thank-you"
-                //   initial={{ opacity: 0, y: -20 }}
-                //   animate={{ opacity: 1, y: 0 }}
-                //   exit={{ opacity: 0, y: -20 }}
-                //   transition={{ duration: 0.5 }}
-                // >
-                //   <Amount>${currentDonation.amount.toLocaleString()} - {currentDonation.user}</Amount>
-                //   <ThankYouMessage>
-                //     Thank you {currentDonation.user} for donating ${currentDonation.amount.toLocaleString()}!
-                //   </ThankYouMessage>
-                // </motion.div>
+                <motion.div
+                  key="thank-you"
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <Amount>${currentDonation.amount.toLocaleString()} - {currentDonation.user}</Amount>
+                  <ThankYouMessage>
+                    Thank you {currentDonation.user} for donating ${currentDonation.amount.toLocaleString()}!
+                  </ThankYouMessage>
+                </motion.div>
               ) : (
                 <motion.div
                   key="progress-bar"
@@ -319,7 +318,7 @@ const MainContentContainer = styled.div`
 
 const ThankYouMessage = styled.div`
   color: #4CAF50;
-  font-size: 30px;
+  font-size: 24px;
   font-weight: bold;
   margin-top: 10px;
   text-align: center;
@@ -371,7 +370,7 @@ const StyledProgress = styled.div<StyledProgressProps>`
 `;
 
 const Amount = styled.div`
-  font-size: 34px;
+  font-size: 24px;
   color: white;
   font-weight: bold;
   text-align: center;

@@ -54,6 +54,19 @@ const DonationPayments = () => {
   const { amountRaised, goal: contextGoal, setAmountRaised } = useContext(HomePageContext);
   // Override goal to ensure it's 10000
   const goal = 25000;
+
+  // Helper function to format names (e.g., "Susan Born" -> "Susan B")
+  const formatUserName = (name: string): string => {
+    if (!name || name === 'Anonymous') return 'Anonymous';
+
+    const nameParts = name.trim().split(' ');
+    if (nameParts.length === 1) return nameParts[0];
+
+    const firstName = nameParts[0];
+    const lastNameInitial = nameParts[nameParts.length - 1].charAt(0).toUpperCase();
+
+    return `${firstName} ${lastNameInitial}`;
+  };
   const [currentDonation, setCurrentDonation] = useState<LiveDonationData | null>(null);
   const [showThankYou, setShowThankYou] = useState(false);
   const [confetti, setConfetti] = useState<ConfettiData[]>([]);
@@ -241,9 +254,9 @@ const DonationPayments = () => {
                   exit={{ opacity: 0, y: -20 }}
                   transition={{ duration: 0.5 }}
                 >
-                  <Amount>${currentDonation.amount.toLocaleString()} - {currentDonation.user}</Amount>
+                  <Amount>${currentDonation.amount.toLocaleString()} - {formatUserName(currentDonation.user)}</Amount>
                   <ThankYouMessage>
-                    Thank you {currentDonation.user} for donating ${currentDonation.amount.toLocaleString()}!
+                    Thank you {formatUserName(currentDonation.user)} for donating ${currentDonation.amount.toLocaleString()}!
                   </ThankYouMessage>
                 </motion.div>
               ) : (

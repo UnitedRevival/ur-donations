@@ -39,6 +39,8 @@ export default function WashingtonDCEvent({ amountRaised, goal, cardTitle }: Hom
             <InfoCard 
               hideProgress={false}
               title={cardTitle} // Pass the cardTitle prop
+              txt={'If God leads you to give, your partnership will help bring the Jesus March to Washington, D.C. on October 11th. Every gift helps cover the practical needs — sound, permits, and travel — that carry this movement forward'}
+              cardImg={'/DSC.JPG'}
             >
               <StepContextProvider>
                 <Payment />

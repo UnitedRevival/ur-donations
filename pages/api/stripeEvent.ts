@@ -65,7 +65,7 @@ const campaigns = {
   },
   JESUS_MARCH_2024_SACRAMENTO: {
     title: 'Jesus March 2024 - Sacramento',
-    goal: 12000,
+    goal: 15000,
   },
   JESUS_MARCH_2025: {
     title: 'Jesus March 2025',

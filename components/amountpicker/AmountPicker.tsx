@@ -12,7 +12,7 @@ const quickPickValues = [15, 50, 100, 500, 1000, 2500];
 const AmountPicker = () => {
   const { setAmountToDonate } = useContext(HomePageContext);
   const { nextStep } = useStepper();
-  const [manualAmount, setManualAmount] = useState('Enter Price Manually');
+  const [manualAmount, setManualAmount] = useState('');
   const [selectedPick, setSelectedPick] = useState(-1);
   const [enabledItems, setEnabledItems] = useState({
     quickPick: false,
@@ -21,10 +21,13 @@ const AmountPicker = () => {
 
   const onChangeAmount = (e) => {
     setManualAmount(e.target.value);
+    if (!enabledItems.manual) setEnabledItems({ manual: true, quickPick: false });
+    if (selectedPick !== -1) setSelectedPick(-1);
   };
 
   const onQuickPickSelect = (amount) => () => {
     setSelectedPick(amount);
+    setManualAmount('');
     if (!enabledItems.quickPick)
       setEnabledItems({ quickPick: true, manual: false });
   };
@@ -68,6 +71,7 @@ const AmountPicker = () => {
         onChange={onChangeAmount}
         onClick={() => {
           setEnabledItems({ manual: true, quickPick: false });
+          if (selectedPick !== -1) setSelectedPick(-1);
         }}
         current={enabledItems.manual}
       />
@@ -96,7 +100,7 @@ export const QuickPickContainer = styled.div<{ current?: boolean }>`
   ${(props) => (props.current ? '' : 'opacity: 0.5;')}
 `;
 
-const StyledTextInput = styled(TextInput)<{ current?: boolean }>`
+const StyledTextInput = styled(TextInput) <{ current?: boolean }>`
   ${({ current, theme }) =>
     current ? `border: 1px solid ${theme.colors.primary};` : `opacity: 0.5; `}
 

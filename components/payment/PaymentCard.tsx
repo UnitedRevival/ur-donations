@@ -127,6 +127,10 @@ const PaymentCard = () => {
     if (elements == null || stripe == null) {
       return;
     }
+    if (!formData?.name || !formData.name.trim()) {
+      setError("Name is required");
+      return;
+    }
     if (!formData?.email) {
       setError("Email is required");
       return;
@@ -146,7 +150,7 @@ const PaymentCard = () => {
       payment_method: {
         card: elements.getElement(CardElement)!,
         billing_details: {
-          name: formData.name,
+          name: formData.name.trim(),
           email: formData.email,
         },
       },

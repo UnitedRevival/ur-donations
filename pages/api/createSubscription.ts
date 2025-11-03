@@ -82,15 +82,55 @@ export default async function handler(
 
       if (foundCustomer) {
         customerId = foundCustomer?.stripeCustomer;
-        // Update customer metadata if needed
-        await stripe.customers.update(customerId, {
-          metadata: {
-            utm_source: utm ? utm : 'unknown',
-            campaign: campaignKey,
-            campaign_title: campaignTitle,
-            source_url: req.headers.referer || req.headers.origin || 'unknown'
+
+        // Verify the customer exists in Stripe (handles environment mismatch)
+        try {
+          // Try to retrieve the customer to verify it exists in current environment
+          await stripe.customers.retrieve(customerId);
+
+          // Update customer metadata if needed
+          await stripe.customers.update(customerId, {
+            metadata: {
+              utm_source: utm ? utm : 'unknown',
+              campaign: campaignKey,
+              campaign_title: campaignTitle,
+              source_url: req.headers.referer || req.headers.origin || 'unknown'
+            }
+          });
+        } catch (error: any) {
+          // If customer doesn't exist in current Stripe environment (e.g., test vs live mismatch),
+          // create a new customer and update the database record
+          if (error.code === 'resource_missing' || error?.raw?.code === 'resource_missing' || error.type === 'StripeInvalidRequestError') {
+            console.log(`Customer ${customerId} not found in current Stripe environment, creating new customer`);
+
+            const customer = await stripe.customers.create({
+              email,
+              name,
+              address,
+              metadata: {
+                utm_source: utm ? utm : 'unknown',
+                campaign: campaignKey,
+                campaign_title: campaignTitle,
+                source_url: req.headers.referer || req.headers.origin || 'unknown'
+              }
+            });
+
+            if (!customer) {
+              res.status(500).json({ error: 'Could not create customer' });
+              return;
+            }
+
+            // Update the database with the new customer ID
+            customerId = customer.id;
+            await CustomerModel.updateOne(
+              { email },
+              { stripeCustomer: customerId }
+            );
+          } else {
+            // Re-throw if it's a different error
+            throw error;
           }
-        });
+        }
       } else {
         const customer = await stripe.customers.create({
           email,

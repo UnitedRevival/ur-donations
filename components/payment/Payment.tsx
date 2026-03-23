@@ -40,11 +40,12 @@ const Payment = () => {
           setSelectedTab(changedIndex);
         }}
       >
+        <Tab>One Time</Tab>
         <Tab>
           Monthly
           <Heart selected={selectedTab === 0} ref={heartElem} />
         </Tab>
-        <Tab>One Time</Tab>
+        
       </Tabs>
 
       <ExpandablePanel

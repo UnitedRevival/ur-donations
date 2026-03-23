@@ -107,6 +107,10 @@ const campaigns = {
     title: 'Jesus March 2025 - Washington Dc',
     goal: 20000,
   },
+   JESUS_MARCH_2026_SAN_DIEGO: {
+    title: 'Jesus March 2026 - San Diego',
+    goal: 20000,
+  },
   JESUS_MARCH_2025_DALLAS: {
     title: 'Jesus March 2025 - Dallas',
     goal: 20000,

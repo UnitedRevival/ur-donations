@@ -14,14 +14,16 @@ import { currentCampaign, current_Diffrent_campaigns } from './api/stripeEvent';
 interface HomePageProps {
   amountRaised: number;
   goal: number;
-  cardTitle: string; // Add cardTitle to props
+  cardTitle: string;
+  cardSubtitle: string;
+  cardText: string;
 }
 
 const Content = styled.div`
   max-width: 615px;
 `;
 
-export default function Sacramento({ amountRaised, goal, cardTitle }: HomePageProps) {
+export default function SanDiego({ amountRaised, goal, cardTitle, cardSubtitle, cardText }: HomePageProps) {
   return (
     <HomePageProvider data={{ amountRaised, goal }}>
       <Navbar />
@@ -38,7 +40,10 @@ export default function Sacramento({ amountRaised, goal, cardTitle }: HomePagePr
           <Content>
             <InfoCard
               hideProgress={false}
-              title={cardTitle} // Pass the cardTitle prop
+              title={cardTitle}
+              subtitle={cardSubtitle}
+              txt={cardText}
+              isH1={true}
             >
               <StepContextProvider>
                 <Payment />
@@ -61,10 +66,9 @@ export const getServerSideProps: GetServerSideProps<HomePageProps> = async (ctx)
     props: {
       amountRaised: jesusMarchDonations?.total || 0,
       goal: current_Diffrent_campaigns.JESUS_MARCH_2026_SAN_DIEGO.goal,
-      cardTitle: 'Thanks For Signing-Up For Jesus March San Diego 2026',
-      // Pass it through props
-      // Or use currentCampaign.title if you want it dynamic:
-      // cardTitle: currentCampaign.title || 'Help Fund Jesus March 2025',
+      cardTitle: "You're Registered for San Diego Jesus March 2026",
+      cardSubtitle: 'Want to support the mission?',
+      cardText: "Thank you for signing up for San Diego Jesus March. Your registration is confirmed and we'll send you event details soon.. If you feel led to support the mission, you can make a donation below, but it is completely optional and not required to attend. We can't wait to see you at the Jesus March",
     },
   };
 };

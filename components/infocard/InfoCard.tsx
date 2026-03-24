@@ -33,6 +33,17 @@ const Title = styled.h2`
   }
 `;
 
+const Subtitle = styled.h3`
+  color: ${({ theme }) => theme.colors.black};
+  margin-bottom: 0.5rem;
+  font-size: 18px;
+  font-weight: 600;
+
+  @media (min-width: ${({ theme }) => theme.breakpoints.small}) {
+    font-size: 20px;
+  }
+`;
+
 const Text = styled.p`
   color: ${({ theme }) => theme.colors.black};
 `;
@@ -68,6 +79,8 @@ interface InfoCardProps {
   cardImg?: string;
   txt?: string;
   title?: string;
+  subtitle?: string;
+  isH1?: boolean;
 }
 
 const cardTitle = 'Help Fund Jesus March 2025';
@@ -79,12 +92,17 @@ const InfoCard: React.FC<InfoCardProps> = ({
   cardImg,
   title,
   txt,
+  subtitle,
+  isH1,
 }) => {
   return (
     <Root noPad>
       {!hideImg && <Image src={cardImg || '/infoPic.jpg'} />}
       <Content>
-        <Title>{title || cardTitle}</Title>
+        <Title as={isH1 ? 'h1' : 'h2'}>{title || cardTitle}</Title>
+        {subtitle && (
+          <Subtitle as={isH1 ? 'h2' : 'h3'}>{subtitle}</Subtitle>
+        )}
         {!hideTxt && (
           <Text>
             {txt ||

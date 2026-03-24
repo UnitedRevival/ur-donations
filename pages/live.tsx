@@ -5,6 +5,7 @@ import LivePayments from '../components/LivePayments';
 import { GetServerSideProps } from 'next';
 import { getTotalDonationAmount } from './api/donations';
 import { currentCampaign } from './api/stripeEvent';
+import { CAMPAIGN_YEAR } from '../lib/campaign';
 import { HomePageProvider } from '../contexts/HomePageContext';
 
 export default function Live(props) {
@@ -15,7 +16,7 @@ export default function Live(props) {
         <Head>
           <meta
             name="description"
-            content="Give to support Jesus Marches in 2025"
+            content={`Give to support Jesus Marches in ${CAMPAIGN_YEAR}`}
           />
           <link rel="icon" href="/favicon.png" />
         </Head>

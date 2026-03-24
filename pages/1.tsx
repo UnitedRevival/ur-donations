@@ -9,6 +9,7 @@ import InfoCard from '../components/infocard/InfoCard';
 import { GetServerSideProps } from 'next';
 import Navbar from '../components/navbar/Navbar';
 import { currentCampaign } from './api/stripeEvent';
+import { CAMPAIGN_YEAR } from '../lib/campaign';
 
 interface HomePageProps {
   amountRaised: number;
@@ -22,7 +23,7 @@ export default function Home(props: HomePageProps) {
         <Head>
           <meta
             name="description"
-            content="Give to support Jesus Marches in 2025"
+            content={`Give to support Jesus Marches in ${CAMPAIGN_YEAR}`}
           />
           <link rel="icon" href="/favicon.png" />
         </Head>
@@ -31,7 +32,7 @@ export default function Home(props: HomePageProps) {
 
         <main className={styles.main}>
           <Container>
-            <Title>Help Fund Jesus March 2025</Title>
+            <Title>Help Fund Jesus March {CAMPAIGN_YEAR}</Title>
             <Flex>
               <InfoContent>
                 <VideoContainer>
@@ -62,7 +63,7 @@ export default function Home(props: HomePageProps) {
                   </h2>
                   <p>
                     Partner with the Jesus March by making a donation to help us
-                    reach 8 cities across America in 2025. Your donation will
+                    reach 8 cities across America in {CAMPAIGN_YEAR}. Your donation will
                     help cover expenses like sound equipment rental, team
                     travel, hotel accommodations, city permits, and more.
                   </p>

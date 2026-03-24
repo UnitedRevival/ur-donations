@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import Card from '../card/Card';
 import CheckFilled from '../icons/CheckFilled';
 import FundCounter from '../fundcounter/FundCounter';
+import { CAMPAIGN_YEAR } from '../../lib/campaign';
 
 const Root = styled(Card)`
   display: flex;
@@ -83,7 +84,7 @@ interface InfoCardProps {
   isH1?: boolean;
 }
 
-const cardTitle = 'Help Fund Jesus March 2025';
+const cardTitle = 'Help Fund Jesus March 2026';
 const InfoCard: React.FC<InfoCardProps> = ({
   children,
   hideProgress,
@@ -107,7 +108,7 @@ const InfoCard: React.FC<InfoCardProps> = ({
           <Text>
             {txt ||
               `Partner with the Jesus March by making a donation to help us reach 8
-            cities across America in 2025. Your donation will help cover
+            cities across America in ${CAMPAIGN_YEAR}. Your donation will help cover
             expenses like sound equipment rental, team travel, hotel
             accommodations, city permits, and more.`}
           </Text>

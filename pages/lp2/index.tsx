@@ -12,6 +12,7 @@ import { GetStaticProps } from 'next';
 import FundCounter from '../../components/fundcounter/FundCounter';
 import Card from '../../components/card/Card';
 import { currentCampaign } from '../api/stripeEvent';
+import { CAMPAIGN_YEAR } from '../../lib/campaign';
 
 interface HomePageProps {
   amountRaised: number;
@@ -24,7 +25,7 @@ export default function Home(props: HomePageProps) {
         <Head>
           <meta
             name="description"
-            content="Give to support Jesus Marches in 2023"
+            content={`Give to support Jesus Marches in ${CAMPAIGN_YEAR}`}
           />
           <link rel="icon" href="/favicon.png" />
         </Head>

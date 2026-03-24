@@ -9,6 +9,7 @@ import InfoCard from '../components/infocard/InfoCard';
 import { GetServerSideProps } from 'next';
 import Navbar from '../components/navbar/Navbar';
 import { currentCampaign, current_Diffrent_campaigns } from './api/stripeEvent';
+import { CAMPAIGN_YEAR } from '../lib/campaign';
 
 // Define the props interface
 interface HomePageProps {
@@ -30,7 +31,7 @@ export default function HuntingtonBeach({ amountRaised, goal, cardTitle, cardImg
         <Head>
           <meta
             name="description"
-            content="Give to support Jesus Marches in 2025"
+            content={`Give to support Jesus Marches in ${CAMPAIGN_YEAR}`}
           />
           <link rel="icon" href="/favicon.png" />
         </Head>
@@ -63,7 +64,7 @@ export const getServerSideProps: GetServerSideProps<HomePageProps> = async (ctx)
     props: {
       amountRaised: jesusMarchDonations?.total || 0,
       goal: current_Diffrent_campaigns.JESUS_MARCH_2025_HUNTINGTON_BEACH.goal,
-      cardTitle: 'Thanks For Signing-Up For Jesus March Huntington Beach 2025',
+      cardTitle: `Thanks For Signing-Up For Jesus March Huntington Beach ${CAMPAIGN_YEAR}`,
       cardImg: './Huntington.jpg',
       // Pass it through props
       // Or use currentCampaign.title if you want it dynamic:

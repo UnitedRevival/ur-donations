@@ -10,6 +10,7 @@ import styled from 'styled-components';
 import InfoCard from '../components/infocard/InfoCard';
 import { GetStaticProps } from 'next';
 import { currentCampaign } from './api/stripeEvent';
+import { CAMPAIGN_YEAR } from '../lib/campaign';
 
 interface HomePageProps {
   amountRaised: number;
@@ -22,7 +23,7 @@ export default function Home(props: HomePageProps) {
         <Head>
           <meta
             name="description"
-            content="Give to support Jesus Marches in 2023"
+            content={`Give to support Jesus Marches in ${CAMPAIGN_YEAR}`}
           />
           <link rel="icon" href="/favicon.png" />
         </Head>

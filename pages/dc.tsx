@@ -9,6 +9,7 @@ import InfoCard from '../components/infocard/InfoCard';
 import { GetStaticProps } from 'next';
 import Navbar from '../components/navbar/Navbar';
 import { currentCampaign } from './api/stripeEvent';
+import { CAMPAIGN_YEAR } from '../lib/campaign';
 
 interface HomePageProps {
   amountRaised: number;
@@ -31,7 +32,7 @@ export default function DC(props: HomePageProps) {
       <Navbar />
       <div>
         <Head>
-          <meta name="description" content="Give to support DC March 2025" />
+          <meta name="description" content={`Give to support DC March ${CAMPAIGN_YEAR}`} />
           <link rel="icon" href="/favicon.png" />
         </Head>
 

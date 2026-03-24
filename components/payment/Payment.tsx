@@ -36,14 +36,14 @@ const Payment = () => {
       <Tabs
         selectedIndex={selectedTab}
         onChange={(changedIndex) => {
-          if (changedIndex === 0) addHeart();
+          if (changedIndex === 1) addHeart();
           setSelectedTab(changedIndex);
         }}
       >
         <Tab>One Time</Tab>
         <Tab>
           Monthly
-          <Heart selected={selectedTab === 0} ref={heartElem} />
+          <Heart selected={selectedTab === 1} ref={heartElem} />
         </Tab>
         
       </Tabs>
@@ -52,8 +52,8 @@ const Payment = () => {
         animateKey={`${step}-${selectedTab}`}
         slide={selectedTab === 0 ? 'Right' : 'Left'}
       >
-        {selectedTab === 0 && <Subscription />}
-        {selectedTab === 1 && <SinglePayment step={step} />}
+        {selectedTab === 0 && <SinglePayment step={step} />}
+        {selectedTab === 1 && <Subscription />}
       </ExpandablePanel>
     </Root>
   );

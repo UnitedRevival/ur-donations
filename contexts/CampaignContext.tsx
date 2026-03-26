@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
+import { CAMPAIGN_YEAR } from '../lib/campaign';
 
 interface CampaignContextType {
     currentCampaign: string;
@@ -10,7 +11,7 @@ interface CampaignContextType {
 const CampaignContext = createContext<CampaignContextType | undefined>(undefined);
 
 export function CampaignProvider({ children }: { children: React.ReactNode }) {
-    const [currentCampaign, setCurrentCampaignState] = useState<string>('Jesus March 2025 - Miami- new');
+    const [currentCampaign, setCurrentCampaignState] = useState<string>(`Jesus March ${CAMPAIGN_YEAR} - Miami- new`);
     const router = useRouter();
 
     // Load campaign from localStorage on mount
@@ -28,7 +29,7 @@ export function CampaignProvider({ children }: { children: React.ReactNode }) {
 
         // If we're on the home page, reset to default campaign
         if (path === '/' || path === '/index' || pathSegments.length === 0) {
-            setCurrentCampaign('Jesus March 2025 - Miami- new');
+            setCurrentCampaign(`Jesus March ${CAMPAIGN_YEAR} - Miami- new`);
             localStorage.removeItem('currentCampaign');
             return;
         }
@@ -47,7 +48,7 @@ export function CampaignProvider({ children }: { children: React.ReactNode }) {
                 const cleanTitle = formattedTitle.replace(/ Event$/i, '');
 
                 // Format like "Jesus March 2025 - City Name"
-                const campaignTitle = `Jesus March 2025 - ${cleanTitle}`;
+                const campaignTitle = `Jesus March ${CAMPAIGN_YEAR} - ${cleanTitle}`;
                 setCurrentCampaign(campaignTitle);
                 localStorage.setItem('currentCampaign', campaignTitle);
             }
@@ -60,7 +61,7 @@ export function CampaignProvider({ children }: { children: React.ReactNode }) {
     };
 
     const clearCampaign = () => {
-        setCurrentCampaignState('Jesus March 2025 - Miami- new');
+        setCurrentCampaignState(`Jesus March ${CAMPAIGN_YEAR} - Miami- new`);
         localStorage.removeItem('currentCampaign');
     };
 

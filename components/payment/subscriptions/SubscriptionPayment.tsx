@@ -8,6 +8,7 @@ import { Title } from '../PaymentCard';
 import { useRouter } from 'next/router';
 import axios, { AxiosError } from 'axios';
 import { useCampaign } from '../../../contexts/CampaignContext';
+import { CAMPAIGN_YEAR } from '../../../lib/campaign';
 
 interface SubscriptionPaymentProps {
   tier: { index: number, priceId: string };
@@ -67,7 +68,7 @@ const SubscriptionPayment: React.FC<SubscriptionPaymentProps> = ({
         const cleanTitle = formattedTitle.replace(/ Event$/i, '');
 
         // Format like "Jesus March 2025 - City Name"
-        setCampaignTitle(`Jesus March 2025 - ${cleanTitle}`);
+        setCampaignTitle(`Jesus March ${CAMPAIGN_YEAR} - ${cleanTitle}`);
       }
     }
   }, [router.pathname, router.query]);

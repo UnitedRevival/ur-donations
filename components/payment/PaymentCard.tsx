@@ -20,6 +20,7 @@ import { usePaymentSuccess } from "../../hooks/usePaymentSuccess";
 import CenteredLoader from "../loaders/CenteredLoader";
 import { useRouter } from "next/router";
 import { useCampaign } from '../../contexts/CampaignContext';
+import { CAMPAIGN_YEAR } from '../../lib/campaign';
 
 const PaymentCard = () => {
   const stripe = useStripe();
@@ -54,7 +55,7 @@ const PaymentCard = () => {
       .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
       .join(' ');
 
-    return `Jesus March 2025 - ${formattedCity}`;
+    return `Jesus March ${CAMPAIGN_YEAR} - ${formattedCity}`;
   };
 
   const [formData, setFormData] = useState({

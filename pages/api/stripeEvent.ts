@@ -262,7 +262,12 @@ export default async function handler(
                     .split('-')
                     .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
                     .join(' ');
-                  donationType = `Jesus March 2025 - ${formattedCity}`;
+                    
+                  if (formattedCity === 'San Diego') {
+                      donationType = `Jesus March 2026 - San Diego`;
+                  } else {
+                      donationType = `Jesus March 2025 - ${formattedCity}`;
+                  }
                 } else {
                   donationType = currentCampaign.title;
                 }

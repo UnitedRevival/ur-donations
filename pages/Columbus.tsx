@@ -8,21 +8,21 @@ import styled from "styled-components";
 import InfoCard from "../components/infocard/InfoCard";
 import { GetServerSideProps } from "next";
 import Navbar from "../components/navbar/Navbar";
-import { currentCampaign, current_Diffrent_campaigns } from './api/stripeEvent';
+import { current_Diffrent_campaigns } from './api/stripeEvent';
 import { CAMPAIGN_YEAR } from '../lib/campaign';
 
 // Define the props interface
 interface HomePageProps {
   amountRaised: number;
   goal: number;
-  cardTitle: string; // Add cardTitle to props
+  cardTitle: string;
 }
 
 const Content = styled.div`
   max-width: 615px;
 `;
 
-export default function Atlanta({
+export default function Columbus({
   amountRaised,
   goal,
   cardTitle,
@@ -43,7 +43,7 @@ export default function Atlanta({
           <Content>
             <InfoCard
               hideProgress={false}
-              title={cardTitle} // Pass the cardTitle prop
+              title={cardTitle}
             >
               <StepContextProvider>
                 <Payment />
@@ -61,16 +61,14 @@ export const getServerSideProps: GetServerSideProps<HomePageProps> = async (
 ) => {
   const totals = await getTotalDonationAmount();
   const jesusMarchDonations = totals.find(
-    (t) => t._id === current_Diffrent_campaigns.JESUS_MARCH_2025_ATL.title,
+    (t) => t._id === current_Diffrent_campaigns.JESUS_MARCH_2026_COLUMBUS.title,
   );
 
   return {
     props: {
       amountRaised: jesusMarchDonations?.total || 0,
-      goal: current_Diffrent_campaigns.JESUS_MARCH_2025_ATL.goal,
+      goal: current_Diffrent_campaigns.JESUS_MARCH_2026_COLUMBUS.goal,
       cardTitle: `Thank You For Signing Up`,
-      // Or use currentCampaign.title if you want it dynamic:
-      // cardTitle: currentCampaign.title || 'Help Fund Jesus March 2025',
     },
   };
 };

@@ -64,7 +64,7 @@ export const getServerSideProps: GetServerSideProps<HomePageProps> = async (ctx)
     props: {
       amountRaised: jesusMarchDonations?.total || 0,
       goal: current_Diffrent_campaigns.JESUS_MARCH_2025_WASHINGTON_DC.goal,
-      cardTitle: `Thanks For Signing-Up For Jesus March Washington DC ${CAMPAIGN_YEAR}`,
+      cardTitle: `Thank You For Signing Up`,
 
       // Pass it through props
       // Or use currentCampaign.title if you want it dynamic:

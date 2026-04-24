@@ -62,7 +62,7 @@ export const getServerSideProps: GetServerSideProps<HomePageProps> = async (ctx)
     props: {
       amountRaised: jesusMarchDonations?.total || 0,
       goal: current_Diffrent_campaigns.JESUS_MARCH_2025_DALLAS.goal,
-      cardTitle: `Thanks For Signing-Up For Jesus March Dallas ${CAMPAIGN_YEAR}`,
+      cardTitle: `Help Fund Jesus March Dallas ${CAMPAIGN_YEAR}`,
     },
   };
 };

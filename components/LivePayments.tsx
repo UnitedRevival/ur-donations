@@ -81,7 +81,7 @@ const DonationPayments = () => {
     try {
       // Use the specific date (06/05/2025) for filtering
       const date = '2026-01-01';
-      const response = await axios.get(`/api/recentDonations?date=${date}&donationType=Jesus March 2026 - San Diego`);
+      const response = await axios.get(`/api/recentDonations?date=${date}&donationType=Jesus March 2026 - Columbus`);
 
       const donationData = response.data as DonationResponse;
 
@@ -177,7 +177,7 @@ const DonationPayments = () => {
     // Check if the donation is for the specific event type before showing the thank you message
     // If no donationType is specified or it matches "Jesus March 2025 - Denver", show it
     const donationType = message.data?.donationType;
-    const isTargetEvent = !donationType || donationType === "Jesus March 2026 - San Diego";
+    const isTargetEvent = !donationType || donationType === "Jesus March 2026 - Columbus";
 
     if (isTargetEvent) {
       // Get the donation amount

@@ -67,7 +67,7 @@ export const getServerSideProps: GetServerSideProps<HomePageProps> = async (ctx)
     props: {
       amountRaised: jesusMarchDonations?.total || 0,
       goal: current_Diffrent_campaigns.JESUS_MARCH_2026_SAN_DIEGO.goal,
-      cardTitle: `You're Registered for San Diego Jesus March ${CAMPAIGN_YEAR}`,
+      cardTitle: `Thank You For Signing Up`,
       cardSubtitle: 'Want to support the mission?',
       cardText: "Thank you for signing up for San Diego Jesus March. Your registration is confirmed and we'll send you event details soon.. If you feel led to support the mission, you can make a donation below, but it is completely optional and not required to attend. We can't wait to see you at the Jesus March",
     },

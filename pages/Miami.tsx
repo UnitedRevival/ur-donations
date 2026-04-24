@@ -30,7 +30,7 @@ export default function Miami(props: HomePageProps) {
 
         <main className={styles.main}>
           <Content>
-            <InfoCard hideProgress={true}>
+            <InfoCard hideProgress={true} title={`Thank You For Signing Up`}>
               <StepContextProvider>
                 <Payment />
               </StepContextProvider>

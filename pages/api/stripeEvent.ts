@@ -117,7 +117,7 @@ const campaigns = {
   },
   JESUS_MARCH_2026_COLUMBUS: {
     title: 'Jesus March 2026 - Columbus',
-    goal: 20000,
+    goal: 10000,
   }
 };
 

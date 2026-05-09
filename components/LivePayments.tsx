@@ -53,7 +53,7 @@ interface DonationResponse {
 const DonationPayments = () => {
   const { amountRaised, goal: contextGoal, setAmountRaised } = useContext(HomePageContext);
   // Override goal to ensure it's 10000
-  const goal = 20000;
+  const goal = 10000;
 
   // Helper function to format names (e.g., "Susan Born" -> "Susan B")
   const formatUserName = (name: string): string => {

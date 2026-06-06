@@ -118,6 +118,14 @@ const campaigns = {
   JESUS_MARCH_2026_COLUMBUS: {
     title: 'Jesus March 2026 - Columbus',
     goal: 10000,
+  },
+  JESUS_MARCH_2026_PORTLAND: {
+    title: 'Jesus March 2026 - Portland',
+    goal: 15000,
+  },
+  JESUS_MARCH_2026_CHICAGO: {
+    title: 'Jesus March 2026 - Chicago',
+    goal: 15000,
   }
 };
 

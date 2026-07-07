@@ -40,8 +40,6 @@ export default function WashingtonDC({ amountRaised, goal, cardTitle }: HomePage
             <InfoCard
               hideProgress={false}
               title={cardTitle} // Pass the cardTitle prop
-              txt={'If God leads you to give, your partnership will help bring the Jesus March to Washington, D.C. on October 11th. Every gift helps cover the practical needs — sound, permits, and travel — that carry this movement forward'}
-              cardImg={'/DSC.JPG'}
             >
               <StepContextProvider>
                 <Payment />
@@ -57,13 +55,13 @@ export default function WashingtonDC({ amountRaised, goal, cardTitle }: HomePage
 export const getServerSideProps: GetServerSideProps<HomePageProps> = async (ctx) => {
   const totals = await getTotalDonationAmount();
   const jesusMarchDonations = totals.find(
-    (t) => t._id === current_Diffrent_campaigns.JESUS_MARCH_2025_WASHINGTON_DC.title
+    (t) => t._id === current_Diffrent_campaigns.JESUS_MARCH_2026_WASHINGTON_DC.title
   );
 
   return {
     props: {
       amountRaised: jesusMarchDonations?.total || 0,
-      goal: current_Diffrent_campaigns.JESUS_MARCH_2025_WASHINGTON_DC.goal,
+      goal: current_Diffrent_campaigns.JESUS_MARCH_2026_WASHINGTON_DC.goal,
       cardTitle: `Thank You For Signing Up`,
 
       // Pass it through props
